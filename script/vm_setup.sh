@@ -49,9 +49,3 @@ echo "Done! You're good to go!"
 
 # TODO: what db should I install? Postgres?
 
-# After setup steps
-
-# Setting git global configs
-# git config --global user.name "yourusername"
-# git config --global user.email "youremail"
-
