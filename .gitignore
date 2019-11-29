@@ -1,3 +1,14 @@
 # Ignore vagrant created dir
 .vagrant/
+.cpcache/
+
+# Ignore leiningen dirs
+target/
+
+# Ignore leiningen files
+.lein-repl-history
+.nrepl-port
+
+# Ignore data sources dir
+data_sources/
 
