@@ -77,5 +77,9 @@ sudo -u postgres createdb -O screeneruser screener_dev
 # -- Create db tables based off EDGAR's datasets
 # -- Populate db tables from datasets csv
 
+# **********
+# To allow project local db connection fix local pg_hba.conf authentication method
+# peer => md5
+
 echo "Done! You're good to go!"
 
