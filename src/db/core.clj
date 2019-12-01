@@ -1,5 +1,4 @@
 (ns db.core
-  (:require [clojure.java.jdbc :as jdbc])
   (:import (com.mchange.v2.c3p0 ComboPooledDataSource)))
 
 ;; TODO: read db implementation details from a config
