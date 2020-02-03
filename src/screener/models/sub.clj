@@ -1,4 +1,4 @@
-(ns screener.models)
+(ns screener.models.sub)
 
 (defrecord Sub
     [adsh
@@ -37,6 +37,4 @@
      instance
      nciks
      aciks])
-
-;; Validations
 

@@ -2,7 +2,8 @@
 (require '[clojure.data.csv :as csv]
          '[clojure.java.io :as io]
          '[screener.models :as models]
-         '[db.operations :as db-ops])
+         '[db.operations :as db-ops]
+         '[clojure.string :as str])
 
 (defn load
   "Loads records to db from csv data source in specified path"
@@ -27,7 +28,8 @@
   "Transforms a collection of maps into a collection of records of the specified record-type"
   [record-type data-maps]
   (let [record-name (models/records-map record-type)]
-    (map #((-> (str 'map '-> record-name) symbol resolve) %))))
+    (map #((-> (str 'map '-> record-name) symbol resolve) %)
+         data-maps)))
 
 (defn write-to-table
   "Loops over records sequence writing to target-table"
@@ -52,4 +54,26 @@
   "Returns the corresponding db table name as a symbol for the provided data type"
   [data-type]
   (models/tables data-type))
+
+;; Testing crap
+
+;; (defrecord Foo [foo bar])
+
+;; (def test-map-vector
+;;   (vector {:foo "foo0" :bar "bar0"} {:foo "foo1" :bar "bar1"} {:foo "foo2" :bar "bar2"}))
+
+;; (def records-map {:foo "Foo"})
+
+;; (defn maps->Records
+;;   [record-type data-maps]
+;;   (let [record-name (records-map record-type)]
+;;     (map #((-> (str 'map '-> record-name) symbol resolve) %) data-maps)))
+
+;; (defn log-to-console
+;;   [target records]
+;;   (if (first records)
+;;     (recur (do (println (str (:foo (first records))))
+;;                (println (str (:bar (first records)))))
+;;            (next records))
+;;     (println (str "Done writing to " target))))
 
