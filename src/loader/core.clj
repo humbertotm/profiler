@@ -1,9 +1,9 @@
-(ns loader.core)
-(require '[clojure.data.csv :as csv]
-         '[clojure.java.io :as io]
-         '[screener.models :as models]
-         '[db.operations :as db-ops]
-         '[clojure.string :as str])
+(ns loader.core
+  (:require [clojure.data.csv :as csv]
+            [clojure.java.io :as io]
+            [screener.models :as models]
+            [db.operations :as db-ops]
+            [clojure.string :as str]))
 
 (defn load
   "Loads records to db from csv data source in specified path"
@@ -24,21 +24,46 @@
             repeat)
        (rest csv-data)))
 
+;; [wololo] Probably won't need this if validations are added at record constructor
+;; Need to add error handling at this level for failed record construction
+;; (defn maps->Records
+;;   "Transforms a collection of maps into a collection of records of the specified record-type"
+;;   [record-type data-maps]
+;;   (let [record-name (models/records-map record-type)]
+;;     (map #((-> (str 'map '-> record-name) symbol resolve) %)
+;;          data-maps)))
+
 (defn maps->Records
-  "Transforms a collection of maps into a collection of records of the specified record-type"
+  "Transforms a collection of maps into a collection of records of the specified record type"
   [record-type data-maps]
-  (let [record-name (models/records-map record-type)]
-    (map #((-> (str 'map '-> record-name) symbol resolve) %)
+  (let [record-name (models/records-map record-type)
+        constructor-name (str 'create- (lower-case record-name))]
+    (map #(let [validation-name (str ':unq/ (str/lower-case record-name))]
+            (if (s/valid? (resolve (symbol validation-name)) %)
+              ((resolve (symbol constructor-name)) %)
+              (list :validation-error %)))
          data-maps)))
 
+;; (defn write-to-table
+;;   "Loops over records sequence writing to target-table"
+;;   [target-table records]
+;;   (if (first records)
+;;     (recur (do (try (db-ops/insert target-table (first records))
+;;                     (catch org.postgresql.util.PSQLException e
+;;                       (println (str "Error while writing: " e)))))
+;;            (next records))
+;;     (println (str "Done writing to " target-table))))
+
 (defn write-to-table
-  "Loops over records sequence writing to target-table"
+  "Loops over records sequence writing to target table"
   [target-table records]
   (if (first records)
-    (recur (do (try (db-ops/insert target-table (first records))
-                    (catch org.postgresql.util.PSQLException e
-                      (println (str "Error while writing: " e)))))
-           (next records))
+    (do (if (and (list? (first records)) (= (first (first records)) :validation-error))
+          (println (str "Invalid record: " (first records)))
+          (try (db-ops/insert target-table (first records))
+               (catch org.postgresql.util.PSQLException e
+                 (println (str "Error while writing: " e)))))
+        (recur target-table (rest records)))
     (println (str "Done writing to " target-table))))
 
 (defn get-type-from-file-name

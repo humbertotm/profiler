@@ -152,7 +152,7 @@
   (s/keys :req-un [::tag ::version ::custom ::abstract ::iord]
           :opt-un [::datatype ::crdr ::tlabel ::doc]))
 
-(s/def :unq/tag
+(s/def :unq/sub
   (s/keys :req-un [::adsh ::cik ::name ::countryba ::cityba ::countryinc ::wksi ::fye ::form ::period ::fy ::fp ::filed ::accepted ::prevrpt ::detail ::instance ::nciks]
           ::opt-un [::sic ::stprba ::zipba ::bas1 ::bas2 ::baph ::countryma ::stprma ::cityma ::zipma ::mas1 ::mas2 ::stprinc ::ein ::former ::changed ::afs ::aciks]))
 
