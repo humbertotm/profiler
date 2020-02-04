@@ -162,70 +162,114 @@
 
 (defn create-num
   "Creates a new Num record from a map with all-string values from csv"
-  [{:keys [adsh
+  [num]
+  {:pre [(s/valid? :unq/num num)]}
+  (let [{:keys [adsh
+                tag
+                version
+                coreg
+                ddate
+                qtrs
+                uom
+                value
+                footnote]} num]
+    (->Num adsh
            tag
            version
-           coreg
+           (read-string coreg)
            ddate
-           qtrs
+           (read-string qtrs)
            uom
-           value
-           footnote]}]
-  (->Num adsh
-         tag
-         version
-         (read-string coreg)
-         ddate
-         (read-string qtrs)
-         uom
-         (read-string value)
-         footnote))
+           (read-string value)
+           footnote)))
 
 (defn create-pre
-  [{:keys [adsh
-           report
-           line
+  [pre]
+  {:pre [(s/valid? :unq/pre pre)]}
+  (let [{:keys [adsh
+                report
+                line
+                stmt
+                inpth
+                rfile
+                tag
+                version
+                plabel]} pre]
+    (->Pre adsh
+           (read-string report)
+           (read-string line)
            stmt
-           inpth
+           (read-string inpth)
            rfile
            tag
            version
-           plabel]}]
-  (->Pre adsh
-         (read-string report)
-         (read-string line)
-         stmt
-         (read-string inpth)
-         rfile
-         tag
-         version
-         plabel))
+           plabel)))
 
 (defn create-tag
-  [{:keys [tag
+  [tag]
+  {:pre [(s/valid? :unq/tag tag)]}
+  (let [{:keys [tag
+                version
+                custom
+                abstract
+                datatype
+                iord
+                crdr
+                tlabel
+                doc]} tag]
+    (->Tag tag
            version
-           custom
-           abstract
+           (read-string custom)
+           (read-string abstract)
            datatype
            iord
            crdr
            tlabel
-           doc]}]
-  (->Tag tag
-         version
-         (read-string custom)
-         (read-string abstract)
-         datatype
-         iord
-         crdr
-         tlabel
-         doc))
+           doc)))
 
 (defn create-sub
-  [{:keys [adsh
-           cik
+  [sub]
+  {:pre [(s/valid? :unq/sub sub)]}
+  (let [{:keys [adsh
+                cik
+                name
+                sic
+                countryba
+                stprba
+                cityba
+                zipba
+                bas1
+                bas2
+                baph
+                countryma
+                stprma
+                cityma
+                zipma
+                mas1
+                mas2
+                countryinc
+                stprinc
+                ein
+                former
+                changed
+                afs
+                wksi
+                fye
+                form
+                period
+                fy
+                fp
+                filed
+                accepted
+                prevrpt
+                detail
+                instance
+                nciks
+                aciks]} sub]
+    (->Sub adsh
+           (read-string cik)
            name
-           sic
+           (read-string sic)
            countryba
            stprba
            cityba
@@ -241,11 +285,11 @@
            mas2
            countryinc
            stprinc
-           ein
+           (read-string ein)
            former
            changed
            afs
-           wksi
+           (read-string wksi)
            fye
            form
            period
@@ -253,45 +297,9 @@
            fp
            filed
            accepted
-           prevrpt
-           detail
+           (read-string prevrpt)
+           (read-string detail)
            instance
-           nciks
-           aciks]}]
-  (->Sub adsh
-         (read-string cik)
-         name
-         (read-string sic)
-         countryba
-         stprba
-         cityba
-         zipba
-         bas1
-         bas2
-         baph
-         countryma
-         stprma
-         cityma
-         zipma
-         mas1
-         mas2
-         countryinc
-         stprinc
-         (read-string ein)
-         former
-         changed
-         afs
-         (read-string wksi)
-         fye
-         form
-         period
-         fy
-         fp
-         filed
-         accepted
-         (read-string prevrpt)
-         (read-string detail)
-         instance
-         (read-string nciks)
-         aciks))
+           (read-string nciks)
+           aciks)))
 
