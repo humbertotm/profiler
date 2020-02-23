@@ -1,4 +1,4 @@
-(ns screener.models)
+(ns screener.models.pre)
 
 (defrecord Pre
     [adsh
@@ -10,6 +10,4 @@
      tag
      version
      plabel])
-
-;; Validations
 

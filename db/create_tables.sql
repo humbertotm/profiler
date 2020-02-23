@@ -15,9 +15,9 @@
 -- ** DROPPED NOT NULL CONSTRAINT ON SOME COLUMNS
 CREATE TABLE submissions (
        adsh varchar(20) PRIMARY KEY,
-       cik  integer NOT NULL,
+       cik  varchar(10) NOT NULL,
        name varchar(150) NOT NULL,
-       sic integer,
+       sic varchar(4),
        countryba varchar(2),
        stprba varchar(2),
        cityba varchar(30),
@@ -33,7 +33,7 @@ CREATE TABLE submissions (
        mas2 varchar(40),
        countryinc varchar(3),
        stprinc varchar(2),
-       ein integer,
+       ein varchar(10),
        former varchar(150),
        changed date,		-- Date format not specified, assuming it is a std one
        afs varchar(5),
@@ -48,7 +48,7 @@ CREATE TABLE submissions (
        prevrpt boolean NOT NULL,
        detail boolean NOT NULL,
        instance varchar(32) NOT NULL,
-       nciks integer NOT NULL,
+       nciks varchar(4) NOT NULL,
        aciks varchar(120)
 );
 
@@ -91,7 +91,7 @@ CREATE TABLE numbers (
 -- item in a statement.
 CREATE TABLE presentations (
        adsh varchar(20) NOT NULL REFERENCES submissions (adsh),
-       report integer NOT NULL,
+       report varchar(6) NOT NULL,
        line integer NOT NULL,
        stmt varchar(2) NOT NULL,
        inpth boolean NOT NULL,

@@ -1,4 +1,4 @@
-(ns screener.models)
+(ns screener.models.num)
 
 (defrecord Num
     [adsh
@@ -10,6 +10,4 @@
      uom
      value
      footnote])
-
-;; Validations
 

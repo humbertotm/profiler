@@ -6,7 +6,9 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/java.jdbc "0.7.10"]
                  [org.postgresql/postgresql "42.2.8"]
-                 [com.mchange/c3p0 "0.9.5.4"]]
+                 [com.mchange/c3p0 "0.9.5.4"]
+                 [org.clojure/data.csv "0.1.4"]
+                 [clojure.java-time "0.3.2"]]
   :main ^:skip-aot screener.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

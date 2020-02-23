@@ -1,4 +1,4 @@
-(ns screener.models)
+(ns screener.models.tag)
 
 (defrecord Tag
   [tag
@@ -10,6 +10,4 @@
    crdr
    tlabel
    doc])
-
-;; Validations
 
