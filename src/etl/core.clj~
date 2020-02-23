@@ -1,4 +1,4 @@
-(ns loader.core
+(ns etl.core
   (:require [clojure.spec.alpha :as s]
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
@@ -23,7 +23,9 @@
           (println (str "Invalid record: " (first records)))
           (try (db-ops/insert target-table (first records))
                (catch org.postgresql.util.PSQLException e
-                 (println (str "Error while writing: " e)))))
+                 (println (str "Error while writing: " e)))
+               (catch Exception e
+                 (println (str "Some other unexpected error: " e)))))
         (recur target-table (rest records)))
     (println (str "Done writing to " target-table))))
 
@@ -42,23 +44,23 @@
        (rest csv-data)))
 
 (defn maps->Records
+  "Creates list of Records of type record-type from a list of data-maps"
   [record-type data-maps]
-  (let [record-name (models/records-map record-type)
-        constructor-name (str "create-" (str/lower-case record-name))]
-    (map #(try ((resolve (symbol constructor-name)) %)
-               (catch AssertionError e
-                 (do (println (str "Error in " record-name " :" %))
-                     (list :validation-error %))))
-         data-maps)))
+  (map #(try (models/create-record record-type %)
+             (catch Exception e
+               (do (println (str "Error in " record-type %))
+                   (list :validation-error %))))
+       data-maps))
 
 ;; Main loader method
-(defn load-data
-  "Loads records to db from csv data source in specified path"
+(defn etl
+  "Extracts data from csv data source in specified path, transforms it into adhoc records
+  and finally loads into into the corresponding db tables"
   [file-path]
   (let [data-type (get-type-from-file-name file-path)]
     (with-open [reader (io/reader file-path)]
-      (->> (csv/read-csv reader)
-           (csv-data->maps)
-           (maps->Records data-type)
-           (write-to-table (get-target-table data-type))))))
+      (try (->> (csv/read-csv reader :separator \tab :quote \')
+                (csv-data->maps)
+                (maps->Records data-type)
+                (write-to-table (get-target-table data-type)))))))
 
