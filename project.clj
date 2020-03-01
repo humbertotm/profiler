@@ -11,4 +11,5 @@
                  [clojure.java-time "0.3.2"]]
   :main ^:skip-aot screener.core
   :target-path "target/%s"
+  :test-paths ["test"]
   :profiles {:uberjar {:aot :all}})
