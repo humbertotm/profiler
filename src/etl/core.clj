@@ -49,6 +49,7 @@
   (map #(try (models/create-record record-type %)
              (catch Exception e
                (do (println (str "Error in " record-type %))
+                   (println e)
                    (list :validation-error %))))
        data-maps))
 
