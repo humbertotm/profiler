@@ -1,7 +1,8 @@
 (ns screener.models.num
   (:require [clojure.spec.alpha :as s]
             [screener.models.value-setters :refer :all]
-            [screener.models.validations :refer :all]))
+            [screener.models.validations :refer :all]
+            [screener.cache.core :as cache]))
 
 (defrecord Num
     [adsh
@@ -37,18 +38,28 @@
            ((number-or-nil) value)
            ((string-or-nil) footnote))))
 
-(def test-nums [{:adsh "someadsh"
-                 :tag "sometag"
-                 :version "someversion"
-                 :coreg "4515"
-                 :ddate "20200205"
-                 :uom "someuom"}
-                {:adsh "someadsh"
-                 :tag "sometag"
-                 :version "someversion"
-                 :coreg "4515"
-                 :qtrs "2"
-                 :ddate "20200205"
-                 :uom "someuom"}])
+(defn initialize-numbers-cache
+  "Initializes a cache for numbers with the following structure:
+   {:adsh0|tag0|version0 {:adsh 'adsh0', :tag 'tag0', ...},
+    :adsh1|tag1|version0 {:adsh 'adsh1', :tag 'tag1', ...}}
 
+   The key for each entry is constructed by keywording the related adsh|tag|version.
+   TODO: DETERMINE THE APPROPRIATE THRESHOLD VALUE FOR THIS CACHE. DETERMINE IF ANOTHER
+         CACHING STRATEGY SUITS THIS USE CASE BETTER THAN FIFO."
+  []
+  (cache/create-fifo-cache numbers-cache {} 100))
+
+(defn create-cache-entry-key
+  ""
+  [num-map]
+  (keyword (str (num-map :adsh) "|" (num-map))))
+
+(defn create-cache-entry-key
+  "Creates a keyword with the structure :adsh|tag|version to be employed as the
+   cache entry key for numbers-cache."
+  [num-map]
+  (let [adsh (num-map :adsh)
+        tag (num-map :tag)
+        version (num-map :version)]
+    (keyword (str adsh "|" tag "|" version))))
 

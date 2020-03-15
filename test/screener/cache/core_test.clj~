@@ -1,0 +1,17 @@
+(ns screener.cache.core-test
+  (:require [clojure.test :refer :all]
+            [clojure.core.cache :as cache]
+            [screener.cache.core :refer :all]))
+
+(defn create-cache-fixture
+  [f]
+  (create-fifo-cache test-cache {:a 1, :b 2} 3)
+  (f)
+  (ns-unamp *ns* test-cache))
+
+(use-fixtures :each create-cache-fixture)
+
+(deftest test-create-fifo-cache
+  (testing "creates cache with specified seed"
+    (is (instance? Atom test-cache))))
+
