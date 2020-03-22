@@ -2,7 +2,8 @@
   (:require [clojure.spec.alpha :as s]
             [screener.models.value-setters :refer :all]
             [screener.models.validations :refer :all]
-            [screener.cache.core :as cache]))
+            [screener.cache.core :as cache]
+            [db.operations :as dbops]))
 
 (defrecord Sub
     [adsh
@@ -133,16 +134,30 @@
   []
   (cache/create-fifo-cache submissions-cache {} 40))
 
-(defn create-cache-entry-key
+(defn create-sub-cache-entry-key
   "Creates a keyword with the structure :adsh to be employed as the cache entry key for
    submissions-cache."
   [sub-map]
   (let [adsh (sub-map :adsh)]
     (keyword adsh)))
 
-;; BOOKMARK:
-;; [] add tests for create-cache methods
-;; [] add method to create submissions index by cik cache
-;; [] Create new table with CIK, Company Name, Ticker and populate first two fields from
-;;    available records
+(defn retrieve-subs-per-cik
+  ""
+  [cik]
+  (let [query-string "SELECT * FROM :table WHERE cik = ?"]
+    (dbops/query query-string :sub cik)))
+
+(defn retrieve-form-per-cik
+  ""
+  [cik form]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ?"]
+    (dbops/query query-string :sub cik form)))
+
+(defn retrieve-sub
+  ""
+  [cik adsh]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND adsh = ?"]
+    (dbops/query query-string :sub cik adsh)))
+
+;; TODO: Define a function to store a collection of subs into cache
 

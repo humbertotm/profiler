@@ -2,7 +2,8 @@
   (:require [clojure.spec.alpha :as s]
             [screener.models.value-setters :refer :all]
             [screener.models.validations :refer :all]
-            [screener.cache.core :as cache]))
+            [screener.cache.core :as cache]
+            [db.operations :as dbops]))
 
 (defrecord Num
     [adsh
@@ -49,12 +50,7 @@
   []
   (cache/create-fifo-cache numbers-cache {} 100))
 
-(defn create-cache-entry-key
-  ""
-  [num-map]
-  (keyword (str (num-map :adsh) "|" (num-map))))
-
-(defn create-cache-entry-key
+(defn create-num-cache-entry-key
   "Creates a keyword with the structure :adsh|tag|version to be employed as the
    cache entry key for numbers-cache."
   [num-map]
@@ -62,4 +58,18 @@
         tag (num-map :tag)
         version (num-map :version)]
     (keyword (str adsh "|" tag "|" version))))
+
+(defn retrieve-num
+  ""
+  [adsh tag version]
+  (let [query-string "SELECT * FROM :table WHERE adsh = ? AND tag = ? AND version = ?"]
+    (dbops/query query-string :num adsh tag version)))
+
+(defn retrieve-nums-per-sub
+  ""
+  [adsh]
+  (let [query-string "SELECT * FROM :table WHERE adsh = ?"]
+    (dbops/query query-string :num adsh)))
+
+;; TODO: Define function to store a collection of nums into cache
 

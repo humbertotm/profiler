@@ -2,14 +2,12 @@
 -- https://www.sec.gov/dera/data/financial-statement-data-sets.html
 -- https://www.sec.gov/files/aqfs.pdf
 
--- TODOS:
--- Figure out a strategy to load records from csv when uniqueness
--- conflict arises.
--- Load data and test.
--- Getting a lot of conflicts on data load on numbers table. Figure out a way
--- to handle this unexpected errors programatically.
-
 -- Create tables in the order in which they appear.
+
+CREATE TABLE cik_ticker_mappings (
+       ticker varchar(20) PRIMARY KEY,
+       cik varchar(10) NOT NULL
+);
 
 -- Each record represents an XBRL submission
 -- ** DROPPED NOT NULL CONSTRAINT ON SOME COLUMNS

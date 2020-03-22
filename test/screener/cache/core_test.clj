@@ -28,6 +28,6 @@
                (count (deref test-cache)))
            3)
         "max amount of elements in cache is <= threshold")
-    (is (= (get-cached-data test-cache :a retrieve-data) "a not found")
+    (is (= (get-cached-data test-cache :a retrieve-data) ":a not found")
         "first in evicted after cache exceeds threshold")))
 
