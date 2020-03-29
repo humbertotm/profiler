@@ -4,7 +4,7 @@
 
 -- Create tables in the order in which they appear.
 
-CREATE TABLE cik_ticker_mappings (
+CREATE TABLE tickers (
        ticker varchar(20) PRIMARY KEY,
        cik varchar(10) NOT NULL
 );

@@ -3,6 +3,7 @@
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [screener.models.core :as models :refer :all]
+            [screener.models.tables :as tables :refer :all]
             [db.operations :as db-ops]
             [clojure.string :as str]))
 
@@ -32,7 +33,7 @@
 (defn get-target-table
   "Returns the corresponding db table name as a symbol for the provided data type"
   [data-type]
-  (models/tables data-type))
+  (tables/data-type-to-table-map data-type))
 
 (defn csv-data->maps
   "Maps a csv line into a keyworded map based off the column names defined in the first row"

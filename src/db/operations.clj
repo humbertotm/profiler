@@ -2,7 +2,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]
             [db.core :as core]
-            [screener.models.core :as models]))
+            [screener.models.tables :as tables :refer :all]))
 
 ;; These are simplistic wrappers over jdbc native functions. Will revisit this as progress
 ;; is made in the project and use cases become more apparent.
@@ -10,7 +10,7 @@
 (defn get-table-name
   "Returns the associated table name for the specified record-type"
   [record-type]
-  (name (models/tables record-type)))
+  (name (tables/data-type-to-table-map record-type)))
 
 (defn query
   "Queries the db with the given parameterized SQL string.

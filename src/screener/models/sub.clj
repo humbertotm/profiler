@@ -134,12 +134,25 @@
   []
   (cache/create-fifo-cache submissions-cache {} 40))
 
+(defn initialize-submissions-index-cache
+  ""
+  []
+  (cache/create-fifo-cache submissions-index-cache {} 40))
+
 (defn create-sub-cache-entry-key
   "Creates a keyword with the structure :adsh to be employed as the cache entry key for
    submissions-cache."
   [sub-map]
   (let [adsh (sub-map :adsh)]
     (keyword adsh)))
+
+(defn create-sub-index-cache-entry-key
+  ""
+  [sub-map]
+  (let [adsh (sub-map :adsh)
+        form (sub-map :form)
+        year (sub-map :fy)]
+    (keyword (str cik "|" form "|" year))))
 
 (defn retrieve-subs-per-cik
   ""
@@ -151,7 +164,7 @@
   ""
   [cik form]
   (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ?"]
-    (dbops/query query-string :sub cik form)))
+    (cache-subs (dbops/query query-string :sub cik form))))
 
 (defn retrieve-sub
   ""
@@ -159,5 +172,23 @@
   (let [query-string "SELECT * FROM :table WHERE cik = ? AND adsh = ?"]
     (dbops/query query-string :sub cik adsh)))
 
-;; TODO: Define a function to store a collection of subs into cache
+(defn cache-subs
+  ""
+  [subs]
+  (if (first subs)
+    (do (cache/get-cached-data submissions-cache
+                               (create-sub-cache-entry-key (first subs))
+                               (fn [key] (first subs)))
+        (recur (rest subs)))
+    (println "Done caching retrieved submissions")))
+
+(defn cache-subs-index
+  ""
+  [subs]
+  (if (first subs)
+    (do (cache/get-cached-data submissions-index-cache
+                               (create-sub-index-cache-entry-key (first subs))
+                               (fn [key] (first subs)))
+        (recur (rest subs)))
+    (println "Done caching retrieved submissions")))
 

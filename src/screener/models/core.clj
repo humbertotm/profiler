@@ -10,12 +10,6 @@
                   :num "num"
                   :pre "pre"})
 
-(def tables {:cik-ticker :cik-ticker-mappings
-             :sub :submissions
-             :tag :tags
-             :num :numbers
-             :pre :presentations})
-
 (defmacro create-record
   "Returns an expression to be evaluated to create a record of type record-type from src-map"
   [record-type src-map]

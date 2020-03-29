@@ -59,6 +59,13 @@
         version (num-map :version)]
     (keyword (str adsh "|" tag "|" version))))
 
+(defn create-adsh-num-cache-entry-key
+  ""
+  [num-map]
+  (let [tag (num-map :tag)
+        version (num-map :version)]
+    (keyword (str tag "|" version))))
+
 (defn retrieve-num
   ""
   [adsh tag version]
@@ -72,4 +79,34 @@
     (dbops/query query-string :num adsh)))
 
 ;; TODO: Define function to store a collection of nums into cache
+
+(defn get-numbers-for-submission
+  ""
+  [adsh]
+  (let [query-string "SELECT * FROM :table WHERE adsh = ?"]
+    (dbops/query query-string :num adsh)))
+
+(defn map-numbers-to-submission
+  ""
+  [adsh numbers]
+  (reduce (fn [accum val]
+            (assoc accum
+                   (create-adsh-num-cache-entry-key val)
+                   val))
+          {}
+          numbers))
+
+(defn cache-numbers
+  ""
+  [nums-map]
+  (cache/get-cached-data submission-numbers-cache
+                         (keyword adsh)
+                         (fn [key] (nums-map))))
+
+(defn cache-numbers-for-submission
+  ""
+  [adsh]
+  (->> (get-numbers-for-submission adsh)
+       (map-numbers-to-submission)
+       (cache-numbers)))
 
