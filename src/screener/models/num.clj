@@ -63,7 +63,7 @@
   ""
   [num-map]
   (let [tag (num-map :tag)
-        version (num-map :version)]
+        version (clojure.string/replace (num-map :version) #"/" ".")]
     (keyword (str tag "|" version))))
 
 (defn retrieve-num
@@ -88,7 +88,7 @@
 
 (defn map-numbers-to-submission
   ""
-  [adsh numbers]
+  [numbers]
   (reduce (fn [accum val]
             (assoc accum
                    (create-adsh-num-cache-entry-key val)
@@ -98,15 +98,24 @@
 
 (defn cache-numbers
   ""
-  [nums-map]
-  (cache/get-cached-data submission-numbers-cache
+  [adsh nums-map]
+  (cache/get-cached-data numbers-cache
                          (keyword adsh)
-                         (fn [key] (nums-map))))
+                         (fn [key] nums-map)))
 
 (defn cache-numbers-for-submission
   ""
   [adsh]
   (->> (get-numbers-for-submission adsh)
        (map-numbers-to-submission)
-       (cache-numbers)))
+       (cache-numbers adsh)))
+
+(defn fetch-numbers-for-submission
+  ""
+  [adsh]
+  (cache/get-cached-data numbers-cache
+                         (keyword adsh)
+                         (fn [key]
+                           (->> (get-numbers-for-submission adsh)
+                                (map-numbers-to-submission)))))
 

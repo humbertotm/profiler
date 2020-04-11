@@ -149,7 +149,7 @@
 (defn create-sub-index-cache-entry-key
   ""
   [sub-map]
-  (let [adsh (sub-map :adsh)
+  (let [cik (sub-map :cik)
         form (sub-map :form)
         year (sub-map :fy)]
     (keyword (str cik "|" form "|" year))))
@@ -160,18 +160,6 @@
   (let [query-string "SELECT * FROM :table WHERE cik = ?"]
     (dbops/query query-string :sub cik)))
 
-(defn retrieve-form-per-cik
-  ""
-  [cik form]
-  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ?"]
-    (cache-subs (dbops/query query-string :sub cik form))))
-
-(defn retrieve-sub
-  ""
-  [cik adsh]
-  (let [query-string "SELECT * FROM :table WHERE cik = ? AND adsh = ?"]
-    (dbops/query query-string :sub cik adsh)))
-
 (defn cache-subs
   ""
   [subs]
@@ -180,7 +168,7 @@
                                (create-sub-cache-entry-key (first subs))
                                (fn [key] (first subs)))
         (recur (rest subs)))
-    (println "Done caching retrieved submissions")))
+    (println "Cached retrieved submissions")))
 
 (defn cache-subs-index
   ""
@@ -188,7 +176,21 @@
   (if (first subs)
     (do (cache/get-cached-data submissions-index-cache
                                (create-sub-index-cache-entry-key (first subs))
-                               (fn [key] (first subs)))
+                               (fn [key] ((first subs) :adsh)))
         (recur (rest subs)))
-    (println "Done caching retrieved submissions")))
+    (println "Cached retrieved submissions in index")))
+
+(defn retrieve-form-per-cik
+  ""
+  [cik form]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ?"
+        subs (dbops/query query-string :sub cik form)]
+    (do (cache-subs-index subs)
+        (cache-subs subs))))
+
+(defn retrieve-sub
+  ""
+  [cik adsh]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND adsh = ?"]
+    (dbops/query query-string :sub cik adsh)))
 
