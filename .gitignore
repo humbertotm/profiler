@@ -7,8 +7,12 @@ target/
 
 # Ignore leiningen files
 .lein-repl-history
+.lein-failures
 .nrepl-port
 
 # Ignore data sources dir
 data_sources/
+
+# Vagrant files
+ubuntu-xenial-16.04-cloudimg-console.log
 
