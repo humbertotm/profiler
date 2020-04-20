@@ -9,6 +9,7 @@ target/
 .lein-repl-history
 .lein-failures
 .nrepl-port
+.lein-env
 
 # Ignore data sources dir
 data_sources/

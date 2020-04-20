@@ -1,11 +1,12 @@
 (ns screener.models.core-test
   (:require [clojure.test :refer :all]
-            [screener.models.core :refer :all]))
+            [screener.models.tables :refer :all]))
 
 (deftest test-numbers
-  (testing "screener.models/tables"
-    (is (= tables {:sub :submissions
-                   :tag :tags
-                   :num :numbers
-                   :pre :presentations}))))
+  (testing "data-type-to-table-map"
+    (is (= data-type-to-table-map {:ticker :tickers
+                                   :sub :submissions
+                                   :tag :tags
+                                   :num :numbers
+                                   :pre :presentations}))))
 
