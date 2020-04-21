@@ -3,7 +3,7 @@
             [screener.models.tag :refer :all]
             [screener.models.pre :refer :all]
             [screener.models.sub :refer :all]
-            [screener.models.cik-ticker-mapping :refer :all]))
+            [screener.models.tickers :refer :all]))
 
 (def records-map {:sub "sub"
                   :tag "tag"

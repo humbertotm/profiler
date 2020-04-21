@@ -1,15 +1,14 @@
 (ns db.core
-  (:import (com.mchange.v2.c3p0 ComboPooledDataSource)))
-
-;; TODO: read db implementation details from a config
+  (:import (com.mchange.v2.c3p0 ComboPooledDataSource))
+  (:require [environ.core :refer [env]]))
 
 (def spec
-  {
-   :classname "org.postgresql.Driver"
+  "Returns a spec map for db connection"
+  {:classname "org.postgresql.Driver"
    :subprotocol "postgresql"
-   :subname "//localhost:5432/screener_dev"
-   :user "screeneruser"
-   :password "screeneruser"})
+   :subname (env :db-subname)
+   :user (env :db-user)
+   :password (env :db-password)})
 
 (defn pool
   "Returns a pooled datasource from the specified spec"

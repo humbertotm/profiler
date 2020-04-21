@@ -71,6 +71,7 @@ echo "update pg_database set datallowconn = FALSE where datname = 'template0';" 
 
 # TODO: put db creation and migration tasks in a separate script. 
 sudo -u postgres createdb -O screeneruser screener_dev
+sudo -u postgres createdb -O screeneruser screener_test
 
 # NEXT:
 # To log into screener_dev db: sudo -u screeneruser psql screener_dev

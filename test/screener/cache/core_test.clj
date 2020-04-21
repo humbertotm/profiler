@@ -5,7 +5,7 @@
 
 (defn create-cache-fixture
   [f]
-  (create-fifo-cache test-cache {:a 1, :b 2} 3)
+  (def test-cache (atom (cache/fifo-cache-factory {:a 1, :b 2} :threshold 3)))
   (f)
   (ns-unmap *ns* 'test-cache))
 
@@ -30,4 +30,15 @@
         "max amount of elements in cache is <= threshold")
     (is (= (get-cached-data test-cache :a retrieve-data) ":a not found")
         "first in evicted after cache exceeds threshold")))
+
+(deftest test-evict-key
+  (testing "eviction of specified key from cache"
+    (do (is (not (nil? (get-in @test-cache [:b]))))
+        (evict-key test-cache :b)
+        (is (nil? (get-in @test-cache [:b]))))))
+
+(deftest test-clear-cache
+  (testing "clearance of specified cache"
+    (is (do (clear-cache test-cache)
+            (= {} @test-cache)))))
 
