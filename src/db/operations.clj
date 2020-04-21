@@ -26,3 +26,8 @@
   [table record]
   (jdbc/insert! (core/connection) table record))
 
+(defn execute
+  "Executes the provided SQL statement."
+  [sql-statement]
+  (jdbc/execute! (core/connection) sql-statement))
+

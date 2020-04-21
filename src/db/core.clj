@@ -3,6 +3,7 @@
   (:require [environ.core :refer [env]]))
 
 (def spec
+  "Returns a spec map for db connection"
   {:classname "org.postgresql.Driver"
    :subprotocol "postgresql"
    :subname (env :db-subname)

@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [screener.models.tables :refer :all]))
 
-(deftest test-numbers
+(deftest test-data-to-table-mappings
   (testing "data-type-to-table-map"
     (is (= data-type-to-table-map {:ticker :tickers
                                    :sub :submissions

@@ -18,15 +18,13 @@
                           (cache/miss % key (retrieve-data key))))
                 key))
 
-;; TODO: Add test cases for this new function
-(defn evict
+(defn evict-key
   "Evicts the provided key from the target-cache"
   [target-cache key]
   (swap! target-cache cache/evict key))
 
-;; TODO
-;; (defn clear-cache
-;;   "Clears every entry in the target-cache"
-;;   [target-cache]
-;;   ())
+(defn clear-cache
+  "Clears every entry in the target-cache"
+  [target-cache]
+  (reset! target-cache {}))
 

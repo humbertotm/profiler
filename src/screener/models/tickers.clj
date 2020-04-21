@@ -3,9 +3,6 @@
             [screener.cache.core :as cache]
             [db.operations :as dbops]))
 
-;; GENERAL COMMENT: Make sure that cache is initialized before calling any of the functions
-;; in this namespace.
-
 (defn initialize-tickers-cache
   ""
   []
@@ -21,7 +18,7 @@
   "Data retrieval function to be passed for cache misses"
   [ticker]
   (let [query-string "SELECT * FROM :table WHERE ticker = ?"]
-    (dbops/query query-string :ticker (string/lower-case (name ticker)))))
+    (first (dbops/query query-string :ticker (string/lower-case (name ticker))))))
 
 (defn get-ticker-cik-mapping
   "Function employed to retrieve a ticker-cik mapping from the cache if present, database
@@ -29,7 +26,7 @@
   [ticker]
   (cache/get-cached-data cik-tickers-cache
                          (keyword (string/lower-case ticker))
-                         screener.models.tickers/retrieve-mapping))
+                         retrieve-mapping))
 
 ;; TODO: will get back to it later as there is no simple way to handle the
 ;; WHERE ticker IN ('A', 'B') part of the query.
