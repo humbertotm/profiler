@@ -39,9 +39,16 @@
                  :wksi false,
                  :stprma "TX",
                  :fp "Q2",
-                 :detail true}))
+                 :detail true})
+  (f))
 
+(defn initialize-caches
+  [f]
+  (initialize-submissions-cache)
+  (initialize-submissions-index-cache)
+  (f))
 
+(use-fixtures :once initialize-caches)
 (use-fixtures :each create-sub-fixture)
 
 ;; TODO
@@ -52,4 +59,32 @@
 (deftest test-create-sub-cache-entry-key
   (testing "cache key for sub is keyworded adsh"
     (is (= (create-sub-cache-entry-key test-sub) (keyword (test-sub :adsh))))))
+
+(deftest test-sub-index-cache-entry-key
+  (testing "submissions index cache key has the format :cik|form|fy"
+    (is (= (create-sub-index-cache-entry-key test-sub) :2178|10-Q|2019))))
+
+;; (deftest test-retrieve-subs-per-cik
+;;   (testing "returns a list of submission records associated to a specific cik"
+;;     ())
+;;   (testing "returns empty list when no submissions are associated to cik"
+;;     ()))
+
+;; (deftest test-retrieve-sub
+;;   (testing "returns a sub record for specified cik and adsh"
+;;     ())
+;;   (testing "returns an empty list if no submissions records for cik and adsh are found"
+;;     ()))
+
+;; (deftest test-retrieve-form-per-cik
+;;   (testing "caches are empty"
+;;     ())
+;;   (testing "pulls records from db when not cached"
+;;     ())
+;;   (testing "records are cached in submissions index cache"
+;;     ())
+;;   (testing "records are cached in submissions cache"
+;;     ())
+;;   (testing "pulls records from cache when present"
+;;     ()))
 
