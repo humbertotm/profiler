@@ -4,28 +4,19 @@
             [screener.models.tickers :refer :all]
             [screener.cache.core :refer [clear-cache]]
             [db.operations :as db-ops]
-            [fixtures.core :refer :all]
+            [helpers.core :refer :all]
             [fixtures.tickers :refer :all]))
-
-;; TODO: Move factories to a fixtures folder in test directory
 
 (defn initialize-cache
   [f]
   (initialize-tickers-cache)
   (f))
 
-;; (defn load-and-clear-test-data
-;;   [f]
-;;   (db-ops/insert :tickers {:ticker "fb", :cik "1326801"})
-;;   (f)
-;;   (clear-cache cik-tickers-cache)
-;;   (db-ops/execute "TRUNCATE tickers"))
-
 (defn load-and-clear-test-data
   [f]
   (load-test-data :tickers (list test-fb-ticker-mapping))
   (f)
-  (clear-cache cik-tickers-cache)
+  (clear-test-cache cik-tickers-cache)
   (db-ops/execute "TRUNCATE tickers"))
 
 (use-fixtures :once initialize-cache)

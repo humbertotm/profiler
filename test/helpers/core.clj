@@ -1,4 +1,4 @@
-(ns fixtures.core
+(ns helpers.core
   (:require [db.operations :as db-ops]
             [screener.cache.core :refer [clear-cache]]))
 
@@ -12,4 +12,8 @@
     (do (db-ops/insert table (first records))
         (recur table (rest records)))
     nil))
+
+(defn clear-test-table
+  [table]
+  (db-ops/execute (str "TRUNCATE " (name table) " CASCADE")))
 

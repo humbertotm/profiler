@@ -167,8 +167,7 @@
     (do (cache/get-cached-data submissions-cache
                                (create-sub-cache-entry-key (first subs))
                                (fn [key] (first subs)))
-        (recur (rest subs)))
-    (println "Cached retrieved submissions")))
+        (recur (rest subs)))))
 
 (defn cache-subs-index
   ""
@@ -177,8 +176,7 @@
     (do (cache/get-cached-data submissions-index-cache
                                (create-sub-index-cache-entry-key (first subs))
                                (fn [key] ((first subs) :adsh)))
-        (recur (rest subs)))
-    (println "Cached retrieved submissions in index")))
+        (recur (rest subs)))))
 
 (defn retrieve-form-per-cik
   ""
