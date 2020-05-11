@@ -6,7 +6,9 @@
 (def cik-tickers-cache-threshold 20)
 
 (defn initialize-tickers-cache
-  ""
+  "Initializes a cache with the structure
+   {:lowercaseticker0 {:ticker 'ticker0', :cik 'somecik0'},
+    :lowercaseticker1 {:ticker 'ticker1', :cik 'somecik1'}}"
   []
   (cache/create-fifo-cache cik-tickers-cache {} cik-tickers-cache-threshold))
 
