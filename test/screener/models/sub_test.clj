@@ -4,50 +4,50 @@
             [helpers.core :refer :all]
             [fixtures.sub :refer :all]))
 
-(defn create-sub-fixture
-  [f]
-  (def test-sub sub-adams-10q)
-  (f))
-
-(defn load-and-clear-test-data
+(defn load-test-subs-data
   [f]
   (load-test-data :submissions
                   (list sub-adams-10q
                         sub-adams-10k-2019
                         sub-adams-10k-2018))
+  (f))
+
+(defn clear-test-subs-data
+  [f]
   (f)
   (clear-test-table :submissions))
 
 (defn initialize-caches
   [f]
-  (initialize-submissions-cache)
   (initialize-submissions-index-cache)
+  (initialize-submissions-cache)
   (f))
 
-(defn clear-caches
+(defn reset-caches
   [f]
-  (clear-test-cache submissions-index-cache)
-  (clear-test-cache submissions-cache)
-  (f))
+  (f)
+  (reset-test-cache submissions-cache)
+  (reset-test-cache submissions-index-cache))
 
 (use-fixtures :once initialize-caches)
-(use-fixtures :each
-  create-sub-fixture
-  load-and-clear-test-data
-  clear-caches)
 
-;; TODO
+(use-fixtures :each
+  load-test-subs-data
+  clear-test-subs-data
+  reset-caches)
+
+;; TODO: test record creation and validations
 ;; (deftest test-create-sub
 ;;   (testing "successfully creates Sub record"
 ;;     ()))
 
 (deftest test-create-sub-cache-entry-key
   (testing "cache key for sub is keyworded adsh"
-    (is (= (create-sub-cache-entry-key test-sub) (keyword (test-sub :adsh))))))
+    (is (= (create-sub-cache-entry-key sub-adams-10q) (keyword (sub-adams-10q :adsh))))))
 
 (deftest test-sub-index-cache-entry-key
   (testing "submissions index cache key has the format :cik|form|fy"
-    (is (= (create-sub-index-cache-entry-key test-sub) :2178|10-Q|2019))))
+    (is (= (create-sub-index-cache-entry-key sub-adams-10q) :2178|10-Q|2019))))
 
 (deftest test-retrieve-subs-per-cik
   (testing "returns a list of submission records associated to a specific cik"
@@ -61,17 +61,24 @@
   (testing "returns an empty list if no submissions records for cik and adsh are found"
     (is (empty? (retrieve-sub "2222" "1234567890-11-222222")))))
 
-;; DEBUG THIS CRAP
+(deftest test-cache-subs-index
+  (testing "submissions-index-cache is empty before caching subs"
+    (is (empty? @submissions-index-cache)))
+  (testing "caches list of submissions in submissions-index-cache"
+    (do (cache-subs-index (list sub-adams-10k-2019 sub-adams-10k-2018))
+        (is (= 2 (count @submissions-index-cache)))
+        (is (= "0000002178-19-000087"
+               (get-in @submissions-index-cache [:2178|10-K|2019])))
+        (is (= "0000002178-19-000080"
+               (get-in @submissions-index-cache [:2178|10-K|2018]))))))
+
 (deftest test-retrieve-form-per-cik
   (testing "caches are empty"
-    (do (is (empty? (deref submissions-index-cache)))
-        (is (empty? (deref submissions-cache)))))
-  (testing "pulls records from db when not cached"
-    (is (= 2 (retrieve-form-per-cik "2178" "10-K")))))
-  (testing "records are cached in submissions index cache"
-    (do (is (not (empty? (deref submissions-index-cache))))
-        (is (= (((deref submissions-index-cache) :somekey) :someotherkey) "somevalue"))))
-  (testing "records are cached in submissions cache"
-    (do (is (not (empty? (deref submissions-cache))))
-        (is (= 2 (count (deref submissions-cache)))))))
+    (do (is (empty? @submissions-index-cache))
+        (is (empty? @submissions-cache))))
+  (testing "pulls records from db and caches them"
+    (do (is (empty? @submissions-index-cache))
+        (is (= 2 (count (retrieve-form-per-cik "2178" "10-K"))))
+        (is (= 2 (count @submissions-index-cache)))
+        (is (= 2 (count @submissions-cache))))))
 

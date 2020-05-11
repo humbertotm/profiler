@@ -1,5 +1,6 @@
 (ns screener.models.sub
   (:require [clojure.spec.alpha :as s]
+            [clojure.tools.trace :as trace]
             [screener.models.value-setters :refer :all]
             [screener.models.validations :refer :all]
             [screener.cache.core :as cache]
@@ -184,7 +185,8 @@
   (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ?"
         subs (dbops/query query-string :sub cik form)]
     (do (cache-subs-index subs)
-        (cache-subs subs))))
+        (cache-subs subs)
+        subs)))
 
 (defn retrieve-sub
   ""

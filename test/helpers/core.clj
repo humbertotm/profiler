@@ -1,10 +1,10 @@
 (ns helpers.core
   (:require [db.operations :as db-ops]
-            [screener.cache.core :refer [clear-cache]]))
+            [screener.cache.core :refer [reset-cache]]))
 
-(defn clear-test-cache
+(defn reset-test-cache
   [target-cache]
-  (clear-cache target-cache))
+  (reset-cache target-cache 3))
 
 (defn load-test-data
   [table records]

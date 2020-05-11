@@ -3,10 +3,17 @@
             [screener.cache.core :as cache]
             [db.operations :as dbops]))
 
+(def cik-tickers-cache-threshold 20)
+
 (defn initialize-tickers-cache
   ""
   []
-  (cache/create-fifo-cache cik-tickers-cache {} 20))
+  (cache/create-fifo-cache cik-tickers-cache {} cik-tickers-cache-threshold))
+
+(defn reset-cik-tickers-cache
+  "Resets cik-tickers-cache to an empty cache."
+  []
+  (cache/reset-cache cik-tickers-cache cik-tickers-cache-threshold))
 
 (defn create-tickers-cache-entry-key
   "Keywords the ticker portion of the mapping to be employed as a cache entry key
