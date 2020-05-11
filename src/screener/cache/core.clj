@@ -23,8 +23,11 @@
   [target-cache key]
   (swap! target-cache cache/evict key))
 
-(defn clear-cache
-  "Clears every entry in the target-cache"
-  [target-cache]
-  (reset! target-cache {}))
+(defn reset-cache
+  "Resets target-cache by resetting its value to an empty FIFOCache.
+   Downside: user must specify the threshold value of the reset FIFOCache.
+   Used for testing purposes so far."
+  [target-cache threshold-value]
+  (reset! target-cache
+          (clojure.core.cache/fifo-cache-factory {} :threshold threshold-value)))
 

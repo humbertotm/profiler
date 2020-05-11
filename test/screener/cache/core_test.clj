@@ -37,8 +37,10 @@
         (evict-key test-cache :b)
         (is (nil? (get-in @test-cache [:b]))))))
 
-(deftest test-clear-cache
+(deftest test-reset-cache
   (testing "clearance of specified cache"
-    (is (do (clear-cache test-cache)
-            (= {} @test-cache)))))
+    (do (is (not (empty? @test-cache)))
+        (reset-cache test-cache 3)
+        (is (instance? clojure.core.cache.FIFOCache @test-cache))
+        (= {} @test-cache))))
 

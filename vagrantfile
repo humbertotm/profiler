@@ -30,4 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Run external install script
   config.vm.provision :shell, privileged: false, path: 'script/vm_setup.sh'
+
+  # Move to /vagrnat upon sshing into the virtual machine
+  config.ssh.extra_args = ['-t', 'cd /vagrant; bash --login']
 end

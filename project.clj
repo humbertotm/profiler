@@ -10,12 +10,14 @@
                  [org.clojure/data.csv "0.1.4"]
                  [clojure.java-time "0.3.2"]
                  [org.clojure/core.cache "0.8.1"]
+                 [org.clojure/tools.trace "0.7.10"]
                  [environ "1.1.0"]]
   :plugins [[lein-environ "1.1.0"]] ; Don't know if this is the right place to keep plugins
   :main ^:skip-aot screener.core
   :target-path "target/%s"
   :test-paths ["test"]
   :profiles {:uberjar {:aot :all}
+             :user {:plugins [[cider/cider-nrepl "0.24.0"]]} ; Place somewhere else
              :dev {:env {:db-subname "//localhost:5432/screener_dev"
                          :db-user "screeneruser"
                          :db-password "screeneruser"}}
