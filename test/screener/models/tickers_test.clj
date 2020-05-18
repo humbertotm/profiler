@@ -20,8 +20,16 @@
   (f)
   (clear-test-table :tickers))
 
+(defn reset-cache
+  [f]
+  (f)
+  (reset-test-cache cik-tickers-cache))
+
 (use-fixtures :once initialize-cache)
-(use-fixtures :each load-test-tickers-data clear-test-tickers-data)
+(use-fixtures :each
+  load-test-tickers-data
+  clear-test-tickers-data
+  reset-cache)
 
 (deftest test-create-tickers-cache-entry-key
   (testing "returns a keyword with the form :ticker"

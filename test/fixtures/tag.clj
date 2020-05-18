@@ -1,0 +1,31 @@
+(ns fixtures.tag)
+
+(def test-set
+  (list
+   {:datatype "monetary",
+    :abstract false,
+    :custom false,
+    :tlabel "Accumulated Depreciation Depletion And Amortization Property Plant And Equipment",
+    :iord "I",
+    :crdr "C",
+    :tag "AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
+    :version "us-gaap/2019",
+    :doc "test doc"},
+   {:datatype "monetary",
+    :abstract false,
+    :custom false,
+    :tlabel "Accounts Receivable Net Current",
+    :iord "D",
+    :crdr nil,
+    :tag "AccountsReceivableNetCurrent",
+    :version "us-gaap/2019",
+    :doc "Test doc"},
+   {:datatype "date",
+    :abstract false,
+    :custom false,
+    :tlabel "Accrued Liabilities Current",
+    :iord "D",
+    :crdr nil,
+    :tag "AccruedLiabilitiesCurrent",
+    :version "us-gaap/2019",
+    :doc "test dox"}))
