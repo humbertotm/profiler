@@ -112,4 +112,8 @@
                          :fp "Q4",
                          :detail true})
 
+(def test-set
+  (list sub-adams-10q
+        sub-adams-10k-2019
+        sub-adams-10k-2018))
 
