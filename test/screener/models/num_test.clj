@@ -48,7 +48,8 @@
 
 (use-fixtures :once initialize-test-cache)
 
-;; TODO: implement a rudimentary test data factory that deals with data deps.
+; TODO: implement a rudimentary test data factory that deals with data dependencies to avoid
+; the need for sequential fixture execution.
 (use-fixtures :each
   load-test-subs
   load-test-tags
@@ -60,13 +61,23 @@
 (deftest test-create-num-cache-entry-key
   (testing "cache key for sub is :adsh|tag|version|year"
     (is (= (keyword "0000002178-19-000087|AccountsReceivableNetCurrent|us-gaap/2019|2019")
-         (create-num-cache-entry-key (nth sub-adams-10k-2019-nums 1))))))
+           (create-num-cache-entry-key (nth sub-adams-10k-2019-nums 1))))))
 
-(deftest test-fetch-numbers-for-submission
+(deftest test-create-num-tag-yr-cache-entry-key
+  (testing "cache key for sub is :tag|year"
+    (is (= (keyword "AccountsReceivableNetCurrent|2019")
+           (create-num-tag-yr-cache-entry-key (nth sub-adams-10k-2019-nums 1))))))
+
+(deftest test-fetch-numbers-for-submission-success
   (testing "retrieves data from db and caches it"
     (do (is (empty? @numbers-cache))
         (fetch-numbers-for-submission "0000002178-19-000087")
-        (println @numbers-cache)
         (is (= 1 (count @numbers-cache)))
         (is (= 3 (count (get-in @numbers-cache [:0000002178-19-000087])))))))
+
+(deftest test-fetch-numbers-for-submission-failure
+  (testing "caches an empty list if no data is found in db"
+    (do (is (empty? @numbers-cache))
+        (fetch-numbers-for-submission "000000000-00-00000")
+        (is (empty? (get-in @numbers-cache [:000000000-00-00000]))))))
 
