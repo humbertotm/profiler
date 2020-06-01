@@ -200,6 +200,14 @@
         (cache-subs subs)
         subs)))
 
+(defn retrieve-form-per-cik-for-year
+  [cik form year]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"
+        sub (dbops/query query-string :sub cik form year)]
+    (do (cache-subs-index sub)
+        (cache-subs sub)
+        sub)))
+
 (defn retrieve-sub
   "Retrieves the associated submission record for the specified cik and adsh from the
    database."

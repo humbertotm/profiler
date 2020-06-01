@@ -1,0 +1,139 @@
+(ns screener.calculations.core
+  (:require [screener.models.tickers :as tickers]
+            [screener.models.num :as num]))
+
+(defn current-assets-to-current-liabilities
+  ""
+  [current-assets current-liabilities]
+  (if (or (empty? current-assets)
+          (empty? current-liabilities))
+    nil
+    (float (/ current-assets current-liabilities))))
+
+(defn accounts-payable-to-current-assets
+  ""
+  [accounts-payable current-assets]
+  (if (or (empty? accounts-payable)
+          (current-assets))
+    nil
+    (float (/ accounts-payable current-assets))))
+
+(defn current-assets-to-total-liabilities
+  ""
+  [current-assets total-liabilities]
+  (if (or (empty? current-assets)
+          (empty? total-liabilities))
+    nil
+    (float (/ current-assets total-liabilities))))
+
+(defn total-tangible-assets-to-total-liabilities
+  ""
+  [tangible-assets total-liabilities]
+  (if (or (empty? tangible-assets)
+          (empty? total-liabilities))
+    nil
+    (float (/ tangible-assets total-liabilities))))
+
+(defn goodwill-to-total-assets
+  ""
+  [goodwill total-assets]
+  (if (or (empty? goodwill)
+          (empty? total-assets))
+    nil
+    (float (/ goodwill total-assets))))
+
+(defn free-cash-flow
+  ""
+  [net-income depreciation-and-amortization capital-expenditures]
+  (if (or (empty? net-income)
+          (empty? depreciation-and-amortization)
+          (empty? capital-expenditures))
+    nil
+    (+ (- net-income depreciation-and-amortization)
+       capital-expenditures)))
+
+(defn working-capital
+  ""
+  [current-assets current-liabilities]
+  (if (or (empty? )
+          ())
+    nil
+    ()))
+
+(defn return-on-equity
+  ""
+  [net-income total-equity]
+  (if (or (empty? net-income)
+          (empty? total-equity))
+    nil
+    (float (/ net-income total-equity))))
+
+(defn return-on-working-capital
+  ""
+  [net-income working-capital]
+  (if (or (empty? net-income)
+          (empty? working-capital))
+    nil
+    (float (/ net-income working-capital))))
+
+(defn build-profile
+  ""
+  [sub-numbers year]
+  (let [current-assets-tag (keyword (str "AssetsCurrent|" year))
+        current-liabilities-tag (keyword (str "LiabilitiesCurrent|" year))
+        accounts-payable-tag (keyword (str "AccountsPayable|" year))
+        total-liabilities-tag (keyword (str "Liabilities|" year))
+        total-assets-tag (keyword (str "Assets|" year))
+        goodwill-tag (keyword (str "Goodwill|" year))
+        depreciation-and-amortization-tag (keyword (str "DepreciationAndAmortization|" year))
+        capital-expenditures-tag (keyword (str "CapitalExpenditures|" year))
+        net-income-tag (keyword (str "NetIncome|" year))
+        total-equity-tag (keyword (str "StockholdersEquity|" year))
+        current-assets (sub-numbers current-assets-tag)
+        current-liabilites (sub-numbers current-liabilities-tag)
+        accounts-payable (sub-numbers accounts-payable-tag)
+        total-liabilities (sub-numbers total-liabilities-tag)
+        total-assets (sub-numbers total-assets-tag)
+        goodwill (sub-numbers goodwill-tag)
+        depreciation-and-amortization (sub-numbers depreciation-and-amortization-tag)
+        capital-expenditures (sub-numbers capital-expenditures-tag)
+        net-income (sub-numbers net-income-tag)
+        total-equity (sub-numbers total-equity-tag)
+        working-capital (working-capital current-assets current-liabilites)
+        total-tangible-assets (tangible-assets total-assets goodwill)]
+    {:CurrentAssetsToCurrentLiabilities (current-assets-to-current-liabilities
+                                         current-assets
+                                         current-liabilities)
+     :AccountsPayableToCurrentAssets (accounts-payable-to-current-assets
+                                      accounts-payable
+                                      current-assets)
+     :CurrentAssetsToTotalLiabilities (current-assets-to-total-liabilities
+                                       current-assets
+                                       total-liabilities)
+     :TotalTangibleAssetsToTotalLiabilities (total-tangible-assets-to-total-liabilities
+                                             tangible-assets
+                                             total-liabilities)
+     :GoodwillToTotalAssets (goodwill-to-total-assets
+                             goodwill
+                             total-assets)
+     :FreeCashFlow (free-cash-flow
+                    net-income
+                    depreciation-and-amortization
+                    capital-expenditures)
+     :ReturnOnEquity (return-on-equity
+                      net-income
+                      total-equity)
+     :ReturnOnWorkingCapital (return-on-working-capital
+                              net-income
+                              working-capital)}))
+
+(defn profile-company
+  "Returns a financial profile for specified company in specified year"
+  [ticker year]
+  (-> (tickers/get-ticker-cik-mapping ticker)
+      (:cik)
+      (screener.models.sub/retrieve-form-per-cik-for-year "10-K" year)
+      (:adsh)
+      (num/fetch-numbers-for-submission)
+      (build-profile year)))
+

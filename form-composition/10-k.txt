@@ -1,0 +1,5 @@
+[] MSFT 10-K 2019
+SELECT DISTINCT ON(tag) tag FROM numbers WHERE adsh = '0001564590-19-027952';
+
+[] Do a comparison with some other 10Ks in different industries.
+
