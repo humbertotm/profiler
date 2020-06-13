@@ -133,6 +133,7 @@
                     (:value net-income)
                     (:value depreciation-and-amortization)
                     (:value capital-expenditures))
+     :NetIncome (:value net-income)
      :ReturnOnEquity (return-on-equity
                       (:value net-income)
                       (:value total-equity))
@@ -140,15 +141,12 @@
                               (:value net-income)
                               working-capital)}))
 
-;; TODO: debug. Everything seems to be working independently but when calling this function
-;; I get nil results for every ratio/calculatioin in the profile map.
 (defn profile-company
   "Returns a financial profile for specified company in specified year"
   [ticker year]
   (-> (tickers/get-ticker-cik-mapping ticker)
       (:cik)
-      (sub/retrieve-form-per-cik-for-year "10-K" year)
-      (:adsh)
+      (sub/fetch-form-adsh-for-cik-year "10-K" year)
       (num/fetch-numbers-for-submission)
       (build-profile year)))
 
