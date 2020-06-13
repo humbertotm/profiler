@@ -1,0 +1,19 @@
+Balance sheet calculations
+
+[] Working capital (current assets - current liabilities)
+[] Accounts payable to current assets ratio
+[] Current assets to current liabilites ratio
+[] Current assets to total liabilities ratio
+[] Total assets - goodwill to total liabilities ratio
+[] Goodwill to total assets ratio
+[] Net income + depreciation + amortization - capital expenditures (CapitalExpendituresAndInvestments)
+[] Uninterruptedly profitable over the last ten years?
+
+[] Share dilution (arbitrary amount of shares / (shares outstanding + total outstanding options))
+
+RETURNS
+[] Return on equity
+[] Return on working capital (free cash flow / working capital)
+[] Total return on equity over a period of time (considering cash paid out as dividends)
+[] 
+

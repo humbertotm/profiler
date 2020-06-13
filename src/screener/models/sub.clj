@@ -1,6 +1,7 @@
 (ns screener.models.sub
   (:require [clojure.spec.alpha :as s]
             [clojure.tools.trace :as trace]
+            [clojure.string :as string]
             [screener.models.value-setters :refer :all]
             [screener.models.validations :refer :all]
             [screener.cache.core :as cache]
@@ -179,6 +180,13 @@
                                (fn [key] (first subs)))
         (recur (rest subs)))))
 
+;; TODO: Need to rethink this whole crap. There are some cases when if there's a cache miss,
+;; I want to retrieve from the db. All these functions assume that a list of submissions has
+;; been previously retrieved and that I want to cache them if they are not already.
+(defn cache-sub
+  ""
+  [])
+
 (defn cache-subs-index
   "Caches the provided list of subs into the submissions-index-cache."
   [subs]
@@ -199,6 +207,33 @@
     (do (cache-subs-index subs)
         (cache-subs subs)
         subs)))
+
+(defn retrieve-form-from-db
+  ""
+  [key]
+  (let [descriptors (string/split (name key) #"\|") ;(cik form year), not lazy
+        query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"
+        cik (nth descriptors 0)
+        form (nth descriptors 1)
+        year (nth descriptors 2)]
+    (:adsh (first (dbops/query query-string :sub cik form year)))))
+
+(defn fetch-form-adsh-for-cik-year
+  ""
+  [cik form year]
+  (cache/get-cached-data submissions-index-cache
+                         (keyword (str cik "|" form "|" year))
+                         retrieve-form-from-db))
+
+;; TODO: fix this function. It goes to the database every time. Does not check for presence
+;; in cache before retrieving.
+(defn retrieve-form-per-cik-for-year
+  [cik form year]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"
+        sub (dbops/query query-string :sub cik form year)]
+    (do (cache-subs-index sub)
+        (cache-subs sub)
+        sub)))
 
 (defn retrieve-sub
   "Retrieves the associated submission record for the specified cik and adsh from the
