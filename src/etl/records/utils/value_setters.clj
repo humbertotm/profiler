@@ -1,4 +1,4 @@
-(ns screener.models.value-setters
+(ns etl.records.utils.value-setters
   (:require [java-time :as jtime]))
 
 (defn string-or-nil

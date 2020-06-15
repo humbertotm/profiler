@@ -1,11 +1,11 @@
 (ns etl.core
-  (:require [clojure.spec.alpha :as s]
+  (:require [clojure.string :as str]
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
-            [screener.models.core :as models :refer :all]
+            [etl.records.core :as records :refer :all]
+            [etl.utils.string :refer :all]
             [screener.models.tables :as tables :refer :all]
-            [db.operations :as db-ops]
-            [clojure.string :as str]))
+            [db.operations :as db-ops]))
 
 (defn get-type-from-file-name
   "Infers data type from file name in file-path and returns it as a symbol"
@@ -30,11 +30,6 @@
         (recur target-table (rest records)))
     (println (str "Done writing to " target-table))))
 
-(defn get-target-table
-  "Returns the corresponding db table name as a symbol for the provided data type"
-  [data-type]
-  (tables/data-type-to-table-map data-type))
-
 (defn csv-data->maps
   "Maps a csv line into a keyworded map based off the column names defined in the first row"
   [csv-data]
@@ -47,7 +42,7 @@
 (defn maps->Records
   "Creates list of Records of type record-type from a list of data-maps"
   [record-type data-maps]
-  (map #(try (models/create-record record-type %)
+  (map #(try (records/create-record record-type %)
              (catch Exception e
                (do (println (str "Error in " record-type %))
                    (println e)
@@ -64,5 +59,5 @@
       (try (->> (csv/read-csv reader :separator \tab :quote \')
                 (csv-data->maps)
                 (maps->Records data-type)
-                (write-to-table (get-target-table data-type)))))))
+                (write-to-table (pluralize data-type)))))))
 

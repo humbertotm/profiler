@@ -1,6 +1,5 @@
-(ns screener.models.validations
-  (:require [clojure.spec.alpha :as s]
-            [java-time :as jtime]
+(ns etl.records.utils.validations
+  (:require [java-time :as jtime]
             [clojure.string :as str]))
 
 ;; Field validations
@@ -137,17 +136,18 @@
 
 ;; Record validations
 
-(s/def :unq/num
+(s/def :unq/number
   (s/keys :req-un [::adsh ::tag ::version ::ddate ::qtrs ::uom]
           :opt-un [::coreg ::value ::footnote]))
 
-(s/def :unq/pre
+(s/def :unq/presentation
   (s/keys :req-un [::adsh ::report ::line ::stmt ::inpth ::rfile ::tag ::version ::plabel]))
 
 (s/def :unq/tag
   (s/keys :req-un [::tag ::version ::custom ::abstract ::iord]
           :opt-un [::datatype ::crdr ::tlabel ::doc]))
 
-(s/def :unq/sub
+(s/def :unq/submission
   (s/keys :req-un [::adsh ::cik ::name ::countryba ::cityba ::countryinc ::wksi ::fye ::form ::period ::fy ::fp ::filed ::accepted ::prevrpt ::detail ::instance ::nciks]
           ::opt-un [::sic ::stprba ::zipba ::bas1 ::bas2 ::baph ::countryma ::stprma ::cityma ::zipma ::mas1 ::mas2 ::stprinc ::ein ::former ::changed ::afs ::aciks]))
+
