@@ -1,6 +1,6 @@
-(ns screener.models.sub-test
+(ns screener.data.sub-test
   (:require [clojure.test :refer :all]
-            [screener.models.sub :refer :all]
+            [screener.data.sub :refer :all]
             [helpers.core :refer :all]
             [fixtures.sub :refer :all]))
 

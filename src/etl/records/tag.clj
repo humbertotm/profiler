@@ -1,7 +1,6 @@
-(ns screener.models.tag
-  (:require [clojure.spec.alpha :as s]
-            [screener.models.value-setters :refer :all]
-            [screener.models.validations :refer :all]))
+(ns etl.records.tag
+  (:require [etl.records.utils.validations :refer :all]
+            [etl.records.utils.value-setters :refer :all]))
 
 (defrecord Tag
   [tag

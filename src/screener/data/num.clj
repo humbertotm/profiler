@@ -1,46 +1,11 @@
-(ns screener.models.num
-  (:require [clojure.spec.alpha :as s]
-            [screener.models.value-setters :refer :all]
-            [screener.models.validations :refer :all]
-            [screener.cache.core :as cache]
+(ns screener.data.num
+  (:require [cache.core :as cache]
             [db.operations :as dbops]
             [screener.utils.date :refer :all]))
 
-(defrecord Num
-    [adsh
-     tag
-     version
-     coreg
-     ddate
-     qtrs
-     uom
-     value
-     footnote])
-
-(defn create-num
-  "Creates a new Num record from a map with all-string values from csv"
-  [num]
-  {:pre [(s/valid? :unq/num num)]}
-  (let [{:keys [adsh
-                tag
-                version
-                coreg
-                ddate
-                qtrs
-                uom
-                value
-                footnote]} num]
-    (->Num ((string-or-nil) adsh)
-           ((string-or-nil) tag)
-           ((string-or-nil) version)
-           ((string-or-nil) coreg)
-           ((date-or-nil) ddate "yyyyMMdd")
-           ((number-or-nil) qtrs)
-           ((string-or-nil) uom)
-           ((number-or-nil) value)
-           ((string-or-nil) footnote))))
-
 (def numbers-cache-threshold-value 100)
+
+(def table-name "numbers")
 
 (defn initialize-numbers-cache
   "Initializes a cache for numbers with the following structure:
@@ -77,7 +42,7 @@
    records in the returned value since :ddate field is also required for uniqueness."
   [adsh tag version]
   (let [query-string "SELECT * FROM :table WHERE adsh = ? AND tag = ? AND version = ?"]
-    (dbops/query query-string :num adsh tag version)))
+    (dbops/query query-string table-name adsh tag version)))
 
 ;; TODO: define a predetermined list of tags for specific purposes (balance sheet, cash flow
 ;; statement, income statement) to be more selective when caching numbers for specific use
@@ -86,7 +51,7 @@
   "Retrieves all number records associated to a particular adsh (submission)."
   [adsh]
   (let [query-string "SELECT * FROM :table WHERE adsh = ?"]
-    (dbops/query query-string :num adsh)))
+    (dbops/query query-string table-name adsh)))
 
 (defn map-numbers-to-submission
   "Creates a map of number records where keys are of the form :tag|year. The purpose is to

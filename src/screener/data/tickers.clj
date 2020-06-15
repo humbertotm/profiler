@@ -1,9 +1,11 @@
-(ns screener.models.tickers
+(ns screener.data.tickers
   (:require [clojure.string :as string]
-            [screener.cache.core :as cache]
+            [cache.core :as cache]
             [db.operations :as dbops]))
 
 (def cik-tickers-cache-threshold 20)
+
+(def table-name "tickers")
 
 (defn initialize-tickers-cache
   "Initializes a cache with the structure
@@ -27,7 +29,7 @@
   "Data retrieval function to be passed for cache misses"
   [ticker]
   (let [query-string "SELECT * FROM :table WHERE ticker = ?"]
-    (first (dbops/query query-string :ticker (string/lower-case (name ticker))))))
+    (first (dbops/query query-string table-name (string/lower-case (name ticker))))))
 
 (defn get-ticker-cik-mapping
   "Function employed to retrieve a ticker-cik mapping from the cache if present, database
@@ -47,5 +49,5 @@
 ;;                                 '()
 ;;                                 tickers)
 ;;         query-string (str "SELECT * FROM :table WHERE ticker IN " list-of-tickers)]
-;;     (dbops/query query-string :ticker)))
+;;     (dbops/query query-string table-name)))
 
