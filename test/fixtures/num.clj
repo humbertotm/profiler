@@ -1,5 +1,5 @@
 (ns fixtures.num
-  (:require [screener.models.value-setters :refer :all]))
+  (:require [etl.records.utils.value-setters :refer :all]))
 
 (def sub-adams-10k-2019-nums
   (list {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),

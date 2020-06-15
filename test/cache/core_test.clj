@@ -1,7 +1,7 @@
-(ns screener.cache.core-test
+(ns cache.core-test
   (:require [clojure.test :refer :all]
             [clojure.core.cache :as cache]
-            [screener.cache.core :refer :all]))
+            [cache.core :refer :all]))
 
 (defn create-cache-fixture
   [f]

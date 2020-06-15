@@ -1,7 +1,6 @@
 (ns helpers.core
   (:require [db.operations :as db-ops]
-            [screener.cache.core :refer [reset-cache]]
-            [screener.models.tables :as tables]))
+            [cache.core :refer [reset-cache]]))
 
 (defmacro get-test-set
   ""
@@ -19,12 +18,7 @@
         (recur table (rest records)))
     nil))
 
-;; (defn load-test-data-with-deps
-;;   [table records]
-;;   (if (not (empty? (data-dependencies table)))
-;;     (do (load-test-data (get-test-set (tables/data-dependencies table)))
-;;         (load-test-data (get-test-set (tables/data-type-to-table-map table))))
-;;     (load-test-data records)))
+;; TODO: Devise a way to load test data with dependencies.
 
 (defn clear-test-table
   [table]

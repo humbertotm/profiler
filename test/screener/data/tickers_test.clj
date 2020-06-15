@@ -1,7 +1,6 @@
-(ns screener.models.tickers-test
+(ns screener.data.tickers-test
   (:require [clojure.test :refer :all]
-            [screener.models.tickers :refer :all]
-            [db.operations :as db-ops]
+            [screener.data.tickers :refer :all]
             [helpers.core :refer :all]
             [fixtures.tickers :refer :all]))
 
