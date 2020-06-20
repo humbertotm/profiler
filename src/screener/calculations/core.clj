@@ -1,7 +1,7 @@
 (ns screener.calculations.core
-  (:require [screener.models.tickers :as tickers]
-            [screener.models.num :as num]
-            [screener.models.sub :as sub]))
+  (:require [screener.data.tickers :as tickers]
+            [screener.data.num :as num]
+            [screener.data.sub :as sub]))
 
 ;; TODO: format output numbers to 2 decimal places
 ;; Write tests
@@ -20,26 +20,13 @@
    :net-income (keyword (str "NetIncomeLoss|" year))
    :total-equity (keyword (str "StockholdersEquity|" year))})
 
-(defn current-assets-to-current-liabilities
-  [current-assets current-liabilities]
-  (if (or (nil? current-assets)
-          (nil? current-liabilities))
+(defn ratio
+  [divisor dividend]
+  (if (or (nil? divisor)
+          (or (nil? dividend)
+              (zero? dividend)))
     nil
-    (/ (float current-assets) (float current-liabilities))))
-
-(defn accounts-payable-to-current-assets
-  [accounts-payable current-assets]
-  (if (or (nil? accounts-payable)
-          (nil? current-assets))
-    nil
-    (/ (float accounts-payable) (float current-assets))))
-
-(defn current-assets-to-total-liabilities
-  [current-assets total-liabilities]
-  (if (or (nil? current-assets)
-          (nil? total-liabilities))
-    nil
-    (/ (float current-assets) (float total-liabilities))))
+    (with-precision 3 (/ (bigdec divisor) (bigdec dividend)))))
 
 (defn tangible-assets
   [total-assets goodwill]
@@ -47,20 +34,6 @@
           (nil? goodwill))
     nil
     (- (float total-assets) (float goodwill))))
-
-(defn total-tangible-assets-to-total-liabilities
-  [tangible-assets total-liabilities]
-  (if (or (nil? tangible-assets)
-          (nil? total-liabilities))
-    nil
-    (/ (float tangible-assets) (float total-liabilities))))
-
-(defn goodwill-to-total-assets
-  [goodwill total-assets]
-  (if (or (nil? goodwill)
-          (nil? total-assets))
-    nil
-    (/ (float goodwill) (float total-assets))))
 
 (defn free-cash-flow
   [net-income depreciation-and-amortization capital-expenditures]
@@ -77,20 +50,6 @@
           (nil? current-liabilities))
     nil
     (- (float current-assets) (float current-liabilities))))
-
-(defn return-on-equity
-  [net-income total-equity]
-  (if (or (nil? net-income)
-          (nil? total-equity))
-    nil
-    (/ (float net-income) (float total-equity))))
-
-(defn return-on-working-capital
-  [net-income working-capital]
-  (if (or (nil? net-income)
-          (nil? working-capital))
-    nil
-    (/ (float net-income) (float working-capital))))
 
 (defn build-profile
   "Builds a simplistic financial profile based on a provided list of Numbers and year.
@@ -109,33 +68,18 @@
         total-equity (:value ((:total-equity profile-keys) sub-numbers))
         working-capital (working-capital current-assets current-liabilities)
         total-tangible-assets (tangible-assets total-assets goodwill)]
-
-    {:CurrentAssetsToCurrentLiabilities (current-assets-to-current-liabilities
-                                         current-assets
-                                         current-liabilities)
-     :AccountsPayableToCurrentAssets (accounts-payable-to-current-assets
-                                      accounts-payable
-                                      current-assets)
-     :CurrentAssetsToTotalLiabilities (current-assets-to-total-liabilities
-                                       current-assets
-                                       total-liabilities)
-     :TotalTangibleAssetsToTotalLiabilities (total-tangible-assets-to-total-liabilities
-                                             total-tangible-assets
-                                             total-liabilities)
-     :GoodwillToTotalAssets (goodwill-to-total-assets
-                             goodwill
-                             total-assets)
+    {:CurrentAssetsToCurrentLiabilities (ratio current-assets current-liabilities)
+     :AccountsPayableToCurrentAssets (ratio accounts-payable current-assets)
+     :CurrentAssetsToTotalLiabilities (ratio current-assets total-liabilities)
+     :TotalTangibleAssetsToTotalLiabilities (ratio total-tangible-assets total-liabilities)
+     :GoodwillToTotalAssets (ratio goodwill total-assets)
+     :NetIncome net-income
+     :ReturnOnEquity (ratio net-income total-equity)
+     :ReturnOnWorkingCapital (ratio net-income working-capital)
      :FreeCashFlow (free-cash-flow
                     net-income
                     depreciation-and-amortization
-                    capital-expenditures)
-     :NetIncome net-income
-     :ReturnOnEquity (return-on-equity
-                      net-income
-                      total-equity)
-     :ReturnOnWorkingCapital (return-on-working-capital
-                              net-income
-                              working-capital)}))
+                    capital-expenditures)}))
 
 (defn profile-company
   "Returns a financial profile for specified company in specified year"
