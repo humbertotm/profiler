@@ -3,8 +3,13 @@
             [screener.data.num :as num]
             [screener.data.sub :as sub]))
 
-;; TODO: format output numbers to 2 decimal places
-;; Write tests
+(defn ratio
+  [divisor dividend]
+  (if (or (nil? divisor)
+          (or (nil? dividend)
+              (zero? dividend)))
+    nil
+    (with-precision 3 (/ (bigdec divisor) (bigdec dividend)))))
 
 (defn profile-component-keys
   ""
@@ -20,13 +25,10 @@
    :net-income (keyword (str "NetIncomeLoss|" year))
    :total-equity (keyword (str "StockholdersEquity|" year))})
 
-(defn ratio
-  [divisor dividend]
-  (if (or (nil? divisor)
-          (or (nil? dividend)
-              (zero? dividend)))
-    nil
-    (with-precision 3 (/ (bigdec divisor) (bigdec dividend)))))
+;; ---- PROFILE DESCRIPTOR CALCULATORS ----
+
+;; This calculations assume that the number maps for the submission of interest
+;; are already cached. Otherwise, this will blow up.
 
 (defn tangible-assets
   [total-assets goodwill]
@@ -50,6 +52,93 @@
           (nil? current-liabilities))
     nil
     (- (float current-assets) (float current-liabilities))))
+
+(defn current-assets-to-current-liabilities
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        current-assets-key (:current-assets (profile-component-keys year))
+        current-liabilities-key (:current-liabilities (profile-component-keys year))
+        current-assets-value (:value (current-assets-key submission-numbers))
+        current-liabilities-value (:value (current-liabilities-key submission-numbers))]
+    (ratio current-assets-value current-liabilities-value)))
+
+(defn accounts-payable-to-current-assets
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        accounts-payable-key (:accounts-payable (profile-component-keys year))
+        current-assets-key (:current-assets (profile-component-keys year))
+        current-assets-value (:value (current-assets-key submission-numbers))
+        accounts-payable-value (:value (accounts-payable-key submission-numbers))]
+    (ratio accounts-payable-value current-assets-value)))
+
+(defn current-assets-to-total-liabilities
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        current-assets-key (:current-assets (profile-component-keys year))
+        total-liabilities-key (:total-liabilities (profile-component-keys year))
+        current-assets-value (:value (current-assets-key submission-numbers))
+        total-liabilities-value (:value (total-liabilities-key submission-numbers))]
+    (ratio current-assets-value total-liabilities-value)))
+
+(defn total-tangible-assets-to-total-liabilities
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        total-assets-key (:total-assets (profile-component-keys year))
+        goodwill-key (:goodwill (profile-component-keys year))
+        total-liabilities-key (:total-liabilities (profile-component-keys year))
+        total-assets-value (:value (total-assets-key submission-numbers))
+        goodwill-value (:value (goodwill-key submission-numbers))
+        total-liabilities-value (:value (total-liabilities-key submission-numbers))
+        tangible-assets-value (tangible-assets total-assets-value goodwill-value)]
+    (ratio tangible-assets-value total-liabilities-value)))
+
+(defn goodwill-to-total-assets
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        goodwill-key (:goodwill (profile-component-keys year))
+        total-assets-key (:total-assets (profile-component-keys year))
+        total-assets-value (:value (total-assets-key submission-numbers))
+        goodwill-value (:value (goodwill-key submission-numbers))]
+    (ratio goodwill-value total-assets-value)))
+
+(defn net-income
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        net-income-key (:net-income (profile-component-keys year))]
+    (:value (net-income-key submission-numbers))))
+
+(defn return-on-equity
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        net-income-key (:net-income (profile-component-keys year))
+        total-equity-key (:total-equity (profile-component-keys year))
+        net-income-value (:value (net-income-key submission-numbers))
+        total-equity-value (:value (total-equity-key submission-numbers))]
+    (ratio net-income-value total-equity-value)))
+
+(defn return-on-working-capital
+  ""
+  [adsh year]
+  (let [submission-numbers (get-in @num/numbers-cache [(keyword adsh)])
+        net-income-key (:net-income (profile-component-keys year))
+        current-assets-key (:current-assets (profile-component-keys year))
+        current-liabilities-key (:current-liabilities (profile-component-keys year))
+        net-income-value (:value (net-income-key submission-numbers))
+        current-assets-value (:value (current-assets-key submission-numbers))
+        current-liabilities-value (:value (current-liabilities-key submission-numbers))
+        working-capital-value (working-capital current-assets-value current-liabilities-value)]
+    (ratio net-income-value working-capital-value)))
+
+;; ---- PROFILE DESCRIPTOR CALCULATORS ----
+
+
 
 (defn build-profile
   "Builds a simplistic financial profile based on a provided list of Numbers and year.
