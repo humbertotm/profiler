@@ -1,5 +1,6 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
+            [screener.calculations.core :as calcs]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
