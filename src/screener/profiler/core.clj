@@ -1,5 +1,6 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
+            [screener.calculations.core :as calcs]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
@@ -74,8 +75,20 @@
    ticker
    year))
 
+(defn profile-list-of-companies
+  "Builds a map for a list of companies where keys are tickers and values are a
+   profile map containing the specified descriptors for the specified year."
+  [tickers-list descriptors year]
+  (reduce (fn
+            [accum-map ticker]
+            (assoc accum-map
+                   (keyword ticker)
+                   (build-company-custom-profile descriptors ticker year)))
+          {}
+          tickers-list))
+
 ;; (defn build-time-series-profile
-;;   ""
+;;  pp ""
 ;;   [descriptors ticker number-of-years]
 ;;   ())
 
