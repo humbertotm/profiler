@@ -25,19 +25,24 @@
   [cik-ticker-mapping]
   (keyword (cik-ticker-mapping :ticker)))
 
+(defn tickers-cache-key
+  "Returns ticker as keyword to be employed as a key."
+  [ticker]
+  (keyword (string/lower-case ticker)))
+
 (defn retrieve-mapping
   "Data retrieval function to be passed for cache misses"
   [ticker]
   (let [query-string "SELECT * FROM :table WHERE ticker = ?"]
     (first (dbops/query query-string table-name (string/lower-case (name ticker))))))
 
-(defn get-ticker-cik-mapping
+(defn fetch-ticker-cik-mapping
   "Function employed to retrieve a ticker-cik mapping from the cache if present, database
    otherwise."
   [ticker]
-  (cache/get-cached-data cik-tickers-cache
-                         (keyword (string/lower-case ticker))
-                         retrieve-mapping))
+  (cache/fetch-cacheable-data cik-tickers-cache
+                              (keyword (string/lower-case ticker))
+                              retrieve-mapping))
 
 ;; TODO: will get back to it later as there is no simple way to handle the
 ;; WHERE ticker IN ('A', 'B') part of the query.

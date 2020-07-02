@@ -17,3 +17,11 @@ RETURNS
 [] Total return on equity over a period of time (considering cash paid out as dividends)
 [] 
 
+[] ENGINEERING TODOS
+[] Remove the need for a test db to test code to set a github pipeline.
+   - Redesign code to have a layer that handles data fetching and caching regardless of
+     data we're handling.
+   - Try the approach were this functions does not know anything about how it will fetch
+     and cache. It will be passed functions for each of these purposes as arguments.
+   - Otherwise check out clojure.core/with-redefs to mock functions during testing.
+

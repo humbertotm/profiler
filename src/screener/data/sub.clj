@@ -55,43 +55,6 @@
   (let [query-string "SELECT * FROM :table WHERE cik = ?"]
     (dbops/query query-string table-name cik)))
 
-(defn cache-subs
-  "Caches the provided list of subs into submissions-cache."
-  [subs]
-  (if (first subs)
-    (do (cache/get-cached-data submissions-cache
-                               (create-sub-cache-entry-key (first subs))
-                               (fn [key] (first subs)))
-        (recur (rest subs)))))
-
-;; TODO: Need to rethink this whole crap. There are some cases when if there's a cache miss,
-;; I want to retrieve from the db. All these functions assume that a list of submissions has
-;; been previously retrieved and that I want to cache them if they are not already.
-(defn cache-sub
-  ""
-  [])
-
-(defn cache-subs-index
-  "Caches the provided list of subs into the submissions-index-cache."
-  [subs]
-  (if (first subs)
-    (do (cache/get-cached-data submissions-index-cache
-                               (create-sub-index-cache-entry-key (first subs))
-                               (fn [key] ((first subs) :adsh)))
-        (recur (rest subs)))))
-
-(defn retrieve-form-per-cik
-  "Retrieves the associated submission records for the specified cik and form (10-K, 10-Q)
-   from the database, and caches them in the submissions-index-cache and the
-   submissions-cache.
-   Returns the list of retrieved submissions."
-  [cik form]
-  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ?"
-        subs (dbops/query query-string table-name cik form)]
-    (do (cache-subs-index subs)
-        (cache-subs subs)
-        subs)))
-
 (defn retrieve-form-from-db
   ""
   [form-key]
@@ -105,24 +68,7 @@
 (defn fetch-form-adsh-for-cik-year
   ""
   [cik form year]
-  (cache/get-cached-data submissions-index-cache
+  (cache/fetch-cacheable-data submissions-index-cache
                          (keyword (str cik "|" form "|" year))
                          retrieve-form-from-db))
-
-;; TODO: fix this function. It goes to the database every time. Does not check for presence
-;; in cache before retrieving.
-(defn retrieve-form-per-cik-for-year
-  [cik form year]
-  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"
-        sub (dbops/query query-string table-name cik form year)]
-    (do (cache-subs-index sub)
-        (cache-subs sub)
-        sub)))
-
-(defn retrieve-sub
-  "Retrieves the associated submission record for the specified cik and adsh from the
-   database."
-  [cik adsh]
-  (let [query-string "SELECT * FROM :table WHERE cik = ? AND adsh = ?"]
-    (dbops/query query-string table-name cik adsh)))
 
