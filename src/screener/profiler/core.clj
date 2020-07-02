@@ -1,5 +1,6 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
+            [cache.core :as cache]
             [screener.calculations.core :as calcs]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
@@ -51,12 +52,11 @@
           descriptors))
 
 (defn build-company-custom-profile
-  "Returns a company profile map as specified in build-profile-map for ticker, year
-   containing the specified descriptor list."
+  ""
   [descriptors ticker year]
-  (let [cik (:cik (tickers/get-ticker-cik-mapping ticker))
+  (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
         adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
-    (do (num/fetch-numbers-for-submission adsh)
+    (do (num/fetch-numbers-for-submission adsh) ; Retrieving and caching numbers beforehand.
         (build-profile-map descriptors adsh year))))
 
 (defn build-basic-company-profile

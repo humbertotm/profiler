@@ -18,17 +18,17 @@
   (testing "cache creation with specified seed"
     (is (instance? clojure.lang.Atom test-cache))))
 
-(deftest test-get-cached-data
+(deftest test-fetch-cacheable-data
   (testing "successful retrieval of cached data"
-    (is (= (get-cached-data test-cache :a retrieve-data) 1)
+    (is (= (fetch-cacheable-data test-cache :a retrieve-data) 1)
         "hit")
-    (is (= (get-cached-data test-cache :c retrieve-data) ":c not found")
+    (is (= (fetch-cacheable-data test-cache :c retrieve-data) ":c not found")
         "miss")
-    (is (= (do (get-cached-data test-cache :d retrieve-data)
+    (is (= (do (fetch-cacheable-data test-cache :d retrieve-data)
                (count (deref test-cache)))
            3)
         "max amount of elements in cache is <= threshold")
-    (is (= (get-cached-data test-cache :a retrieve-data) ":a not found")
+    (is (= (fetch-cacheable-data test-cache :a retrieve-data) ":a not found")
         "first in evicted after cache exceeds threshold")))
 
 (deftest test-evict-key

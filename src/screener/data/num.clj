@@ -68,9 +68,9 @@
   "Fetches all number records for a particular adsh from cache. Retrieves from
    database as fallback."
   [adsh]
-  (cache/get-cached-data numbers-cache
-                         (keyword adsh)
-                         (fn [key]
-                           (->> (retrieve-numbers-for-submission adsh)
-                                (map-numbers-to-submission)))))
+  (cache/fetch-cacheable-data numbers-cache
+                              (keyword adsh)
+                              (fn [key]
+                                (->> (retrieve-numbers-for-submission adsh)
+                                     (map-numbers-to-submission)))))
 

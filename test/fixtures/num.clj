@@ -9,7 +9,7 @@
          :uom "USD",
          :coreg nil,
          :tag
-         "AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
+         "NetIncome",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
