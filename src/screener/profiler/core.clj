@@ -6,14 +6,6 @@
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
 
-(defn build-function-name-from-string
-  "Constructs the associated string representing the target descriptor calculation function
-   from name-string,
-   eg. 'Current Assets to Current Liabilites' => current-assets-to-current-liabilities"
-  [name-string]
-  (let [split-name (string/split name-string #" ")]
-    (string/lower-case (string/join "-" split-name))))
-
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
    eg. 'Net Income' => #screener.calculations.core/net-income."
@@ -35,32 +27,29 @@
                      ""
                      split-name))))
 
-(defn get-descriptor-key-from-keyword
-  ""
-  [descriptor-kw]
-  (let [split-name (string/split (name descriptor-kw) #"-")]
-    (keyword (reduce (fn
-                       [accum-str next-str]
-                       (str accum-str (string/capitalize next-str)))
-                     ""
-                     split-name))))
-
 (defn descriptor-to-keyword
-  ""
+  "Returns a descriptor string as a keyword to employ as lookup key in descriptor property
+   maps.
+   'Net Income' => :net-income"
   [descriptor]
   (let [lower-case-name (string/lower-case descriptor)
         split-name (string/split lower-case-name #" ")]
     (keyword (string/join "-" split-name))))
 
+;; Declaring beforehand since it is employed in a mutually recursive definition of calculate.
 (declare build-args-map)
 
 (defmacro calculate
-  ""
+  "Defines the expression required calculate the provided descriptor for adsh and year.
+   Example:
+   (calculate :goodwill-to-total-assets 'someadsh' '2019') =>
+   (screener.calculations.core/goodwill-to-total-assets {:goodwill 100, :total-assets 1000})"
   [descriptor-kw adsh year]
   `((~get-descriptor-function ~descriptor-kw) (~build-args-map ~descriptor-kw ~adsh ~year)))
 
 (defn build-args-map
-  ""
+  "Builds the argument map required for a specific descriptor calculating function as
+   defined by screener.calculations.core/descriptor-args-spec map."
   [descriptor-kw adsh year]
   (let [numbers (num/fetch-numbers-for-submission adsh)]
     (reduce (fn [accum next]
@@ -91,7 +80,8 @@
           descriptors))
 
 (defn build-company-custom-profile
-  ""
+  "Builds a mapping of financial descriptors to values for specified company (ticker)
+   and year."
   [descriptors ticker year]
   (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
         adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
@@ -126,7 +116,7 @@
           tickers-list))
 
 ;; (defn build-time-series-profile
-;;  pp ""
+;;   ""
 ;;   [descriptors ticker number-of-years]
 ;;   ())
 
