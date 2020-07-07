@@ -17,8 +17,8 @@
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
    eg. 'Net Income' => #screener.calculations.core/net-income."
-  [descriptor]
-  (let [descriptor-fn-name (build-function-name-from-string descriptor)
+  [descriptor-kw]
+  (let [descriptor-fn-name (name descriptor-kw)
         descriptor-fn (resolve (symbol (str "screener.calculations.core/" descriptor-fn-name)))]
     (if (nil? descriptor-fn)
       (throw (NullPointerException. (str "Function " descriptor-fn-name " does not exist.")))
@@ -35,8 +35,46 @@
                      ""
                      split-name))))
 
-;; For the time being, I'll just let the exception blow up the application.
-;; I'll get to handling exceptions later.
+(defn get-descriptor-key-from-keyword
+  ""
+  [descriptor-kw]
+  (let [split-name (string/split (name descriptor-kw) #"-")]
+    (keyword (reduce (fn
+                       [accum-str next-str]
+                       (str accum-str (string/capitalize next-str)))
+                     ""
+                     split-name))))
+
+(defn descriptor-to-keyword
+  ""
+  [descriptor]
+  (let [lower-case-name (string/lower-case descriptor)
+        split-name (string/split lower-case-name #" ")]
+    (keyword (string/join "-" split-name))))
+
+(declare build-args-map)
+
+(defmacro calculate
+  ""
+  [descriptor-kw adsh year]
+  `((~get-descriptor-function ~descriptor-kw) (~build-args-map ~descriptor-kw ~adsh ~year)))
+
+(defn build-args-map
+  ""
+  [descriptor-kw adsh year]
+  (let [numbers (num/fetch-numbers-for-submission adsh)]
+    (reduce (fn [accum next]
+              (assoc accum
+                     (:name next)
+                     (if (= :plain-number (:type next))
+                       (:value ((keyword (str ((:name next) calcs/profile-descriptor-tags)
+                                              "|"
+                                              year))
+                                numbers))
+                      (calculate (:name next) adsh year))))
+            {}
+            (descriptor-kw calcs/descriptor-args-spec))))
+
 (defn build-profile-map
   "Builds a profile map from provided list of descriptors for submission corresponding to
    adsh and year, eg.
@@ -45,9 +83,10 @@
   [descriptors adsh year]
   (reduce (fn
             [accum-map next-descriptor]
-            (assoc accum-map
-                   (get-descriptor-key next-descriptor)
-                   ((get-descriptor-function next-descriptor) adsh year)))
+            (let [descriptor-keyword (descriptor-to-keyword next-descriptor)]
+              (assoc accum-map
+                     (get-descriptor-key next-descriptor)
+                     (calculate descriptor-keyword adsh year))))
           {}
           descriptors))
 
@@ -56,8 +95,7 @@
   [descriptors ticker year]
   (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
         adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
-    (do (num/fetch-numbers-for-submission adsh) ; Retrieving and caching numbers beforehand.
-        (build-profile-map descriptors adsh year))))
+    (build-profile-map descriptors adsh year)))
 
 (defn build-basic-company-profile
   "Same as build-company-custom-profile with a preset list of basic descriptors.
