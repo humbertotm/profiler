@@ -38,6 +38,7 @@
 
 ;; Declaring beforehand since it is employed in a mutually recursive definition of calculate.
 (declare build-args-map)
+(declare calculate)
 
 (defmacro calculate
   "Defines the expression required calculate the provided descriptor for adsh and year.
@@ -45,7 +46,7 @@
    (calculate :goodwill-to-total-assets 'someadsh' '2019') =>
    (screener.calculations.core/goodwill-to-total-assets {:goodwill 100, :total-assets 1000})"
   [descriptor-kw adsh year]
-  `((~get-descriptor-function ~descriptor-kw) (~build-args-map ~descriptor-kw ~adsh ~year)))
+  `((~get-descriptor-function ~descriptor-kw) (build-args-map ~descriptor-kw ~adsh ~year)))
 
 (defn build-args-map
   "Builds the argument map required for a specific descriptor calculating function as
