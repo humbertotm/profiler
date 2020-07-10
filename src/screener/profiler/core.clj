@@ -37,7 +37,7 @@
     (keyword (string/join "-" split-name))))
 
 ;; Declaring beforehand since it is employed in a mutually recursive definition of calculate.
-(declare build-args-map)
+(declare Build-args-map)
 (declare calculate)
 
 (defmacro calculate

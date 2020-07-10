@@ -57,6 +57,8 @@
    })
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
+;; TODO: this calculations can be incorporated in the map above as an additional key
+;; specifying how the descriptor is to be computed off some basic operation.
 
 (defn tangible-assets
   "Total assets - goodwill"

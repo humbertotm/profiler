@@ -31,3 +31,55 @@
          :version "us-gaap/2019",
          :qtrs 0}))
 
+(def build-args-test-numbers
+  (list {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 745000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag
+         "NetIncomeLoss",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 45000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag
+         "Assets",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 8450000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag
+         "Goodwill",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 1045000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag
+         "AssetsCurrent",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 645000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag
+         "LiabilitiesCurrent",
+         :version "us-gaap/2019",
+         :qtrs 0}))
+
