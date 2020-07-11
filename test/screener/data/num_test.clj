@@ -1,6 +1,7 @@
 (ns screener.data.num-test
   (:require [clojure.test :refer :all]
             [screener.data.num :refer :all]
+            [helpers.core :refer :all]
             [fixtures.num :refer :all]))
 
 (defn initialize-test-cache

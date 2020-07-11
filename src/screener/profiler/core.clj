@@ -37,7 +37,7 @@
     (keyword (string/join "-" split-name))))
 
 ;; Declaring beforehand since it is employed in a mutually recursive definition of calculate.
-(declare Build-args-map)
+(declare build-args-map)
 (declare calculate)
 
 (defmacro calculate
@@ -86,7 +86,9 @@
   [descriptors ticker year]
   (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
         adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
-    (build-profile-map descriptors adsh year)))
+    (if (not (nil? adsh))
+      (build-profile-map descriptors adsh year)
+      {})))
 
 (defn build-basic-company-profile
   "Same as build-company-custom-profile with a preset list of basic descriptors.

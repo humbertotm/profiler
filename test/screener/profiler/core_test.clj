@@ -6,7 +6,7 @@
 
 (defn initialize-caches
   [f]
-  (screener.data.sub/initialize-submissions-cache)
+  (screener.data.sub/initialize-submissions-index-cache)
   (screener.data.num/initialize-numbers-cache)
   (screener.data.tickers/initialize-tickers-cache)
   (f))
@@ -14,7 +14,7 @@
 (defn reset-caches
   [f]
   (f)
-  (reset-test-cache screener.data.sub/submissions-cache)
+  (reset-test-cache screener.data.sub/submissions-index-cache)
   (reset-test-cache screener.data.num/numbers-cache)
   (reset-test-cache screener.data.tickers/cik-tickers-cache))
 
@@ -84,9 +84,9 @@
                    (build-profile-map '("not exists") "someadsh" "2019"))))))
 
 (deftest test-build-company-custom-profile
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] build-args-test-numbers)
-                screener.data.tickers/retrieve-mapping (fn [t] {:cik "2678", :ticker "adp"})
-                screener.data.sub/retrieve-form-from-db (fn [s] "0000234-234234-1")]
+  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] build-args-test-numbers)
+                screener.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
+                screener.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
       (is (= {:NetIncome 745000000.0000M, :CurrentAssetsToCurrentLiabilities 1.62M}
              (build-company-custom-profile
@@ -106,4 +106,60 @@
                     "someasdhs"
                     "2019"))))))
 
+(deftest test-profile-list-of-companies
+  (testing "Returns empty map for companies in list not found"
+    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+                  (let [numbers (atom (list build-args-test-numbers
+                                            '()))]
+                    (fn [_] (ffirst (swap-vals! numbers rest))))
+                  screener.data.tickers/retrieve-mapping
+                  (let [mappings (atom (list {:ticker "fb", :cik "8770"} nil))]
+                    (fn [_] (ffirst (swap-vals! mappings rest))))
+                  screener.data.sub/retrieve-form-from-db
+                  (let [subs (atom ["0000002178-19-000087" nil])]
+                    (fn [_] (ffirst (swap-vals! subs rest))))]
+      (is (= {:fb {:TangibleAssets 3.655E7,
+                   :CurrentAssetsToCurrentLiabilities 1.62M},
+              :xxx {}}
+             (profile-list-of-companies
+              '("fb", "xxx")
+              '("Tangible Assets", "Current assets to current liabilities")
+              "2019")))))
+  (testing "Returns expected profiling maps for each company in list"
+    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+                  (let [numbers (atom (list build-args-test-numbers
+                                            build-args-test-numbers-1))]
+                    (fn [_] (ffirst (swap-vals! numbers rest))))
+                  screener.data.tickers/retrieve-mapping
+                  (let [mappings (atom (list {:ticker "adp", :cik "8670" }
+                                             {:ticker "avt", :cik "8858"}))]
+                    (fn [_] (ffirst (swap-vals! mappings rest))))
+                  screener.data.sub/retrieve-form-from-db
+                  (let [subs (atom ["0000002178-19-000089" "0000002222-19-000090"])]
+                    (fn [_] (ffirst (swap-vals! subs rest))))]
+      (is (= {:adp {:TangibleAssets 3.655E7,
+                    :CurrentAssetsToCurrentLiabilities 1.62M},
+              :avt {:TangibleAssets 2.51E7,
+                    :CurrentAssetsToCurrentLiabilities 1.63M}}
+             (profile-list-of-companies
+              '("adp", "avt")
+              '("Tangible Assets", "Current assets to current liabilities")
+              "2019")))))
+  (testing "Throws a NullPointerException when a descriptor is not recognized"
+    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+                  (let [numbers (atom (list build-args-test-numbers
+                                            build-args-test-numbers-1))]
+                    (fn [_] (ffirst (swap-vals! numbers rest))))
+                  screener.data.tickers/retrieve-mapping
+                  (let [mappings (atom (list {:ticker "goog", :cik "8680" }
+                                             {:ticker "amzn", :cik "8881"}))]
+                    (fn [_] (ffirst (swap-vals! mappings rest))))
+                  screener.data.sub/retrieve-form-from-db
+                  (let [subs (atom ["0000002178-19-000091" "0000002222-19-000092"])]
+                    (fn [_] (ffirst (swap-vals! subs rest))))]
+      (is (thrown? java.lang.NullPointerException
+                   (profile-list-of-companies
+                    '("goog", "amzn")
+                    '("Tangible Assets", "Does not exist")
+                    "2019"))))))
 
