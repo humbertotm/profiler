@@ -56,7 +56,8 @@
     (dbops/query query-string table-name cik)))
 
 (defn retrieve-form-from-db
-  ""
+  "Returns adsh string value of submission record described by the provided form-key.
+  form-key contains cik, form and year data in the following structure cik|form|year."
   [form-key]
   (let [descriptors (string/split (name form-key) #"\|") ;(cik form year), not lazy
         query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"
@@ -66,7 +67,8 @@
     (:adsh (first (dbops/query query-string table-name cik form year)))))
 
 (defn fetch-form-adsh-for-cik-year
-  ""
+  "Returns adsh string value for submissions corresponding to specified cik, form and year.
+   Looks up in cache as a first resource, falls back to database."
   [cik form year]
   (cache/fetch-cacheable-data submissions-index-cache
                          (keyword (str cik "|" form "|" year))

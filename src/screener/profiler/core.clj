@@ -6,12 +6,18 @@
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
 
+;; TODOS:
+;; - Time series profiler: return an ordered list of profiling maps for a company during
+;;   a range of years.
+
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
    eg. 'Net Income' => #screener.calculations.core/net-income."
   [descriptor-kw]
   (let [descriptor-fn-name (name descriptor-kw)
-        descriptor-fn (resolve (symbol (str "screener.calculations.descriptors/" descriptor-fn-name)))]
+        descriptor-fn (resolve (symbol (str
+                                        "screener.calculations.descriptors/"
+                                        descriptor-fn-name)))]
     (if (nil? descriptor-fn)
       (throw (NullPointerException. (str "Function " descriptor-fn-name " does not exist.")))
       descriptor-fn)))
@@ -56,8 +62,9 @@
     (reduce (fn [accum next]
               (assoc accum
                      (:name next)
-                     (if (= :plain-number (:type next))
-                       (:value ((keyword (str ((:name next) descriptors/data-tags)
+                     (if (= :simple-number (:type next))
+                       (:value ((keyword (str ((:name next)
+                                               descriptors/simple-number-data-tags)
                                               "|"
                                               year))
                                 numbers))
@@ -117,9 +124,4 @@
                    (build-company-custom-profile descriptors ticker year)))
           {}
           tickers-list))
-
-;; (defn build-time-series-profile
-;;   ""
-;;   [descriptors ticker number-of-years]
-;;   ())
 

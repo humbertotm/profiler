@@ -1,7 +1,15 @@
 (ns screener.calculations.descriptors
   (:require [screener.calculations.operations :refer :all]))
 
-(def data-tags
+;; FUTURE TODO: we could possibly have everything in a single map. Data tags could be an
+;; additional key for new :simple-number type entries specifying how one is to find them in db
+;; or cache.
+;; Additionally, :type key could specify what operation is required to compute the
+;; descriptor, rendering functions to calculate every descriptor redundant.
+;; This map would then be a master repository of knowledge needed to compute whatever
+;; financial descriptor we might need.
+
+(def simple-number-data-tags
   "Returns a mapping of financial descriptor to tag employed to identify them (as per SEC
    datasets spec) in cache."
   {:current-assets "AssetsCurrent",
@@ -17,35 +25,33 @@
 
 (def args-spec
   "Defines a mapping of descriptor to list of arguments spec required to compute them. Args
-   :name should match a key in profile-descriptor-tags map if :type is :plain-number. If
-   :type is :computed, :plain-number arguments can be reached recursively."
-  {:tangible-assets '({:name :total-assets, :type :plain-number},
-                      {:name :goodwill, :type :plain-number}),
-   :free-cash-flow '({:name :net-income, :type :plain-number},
-                     {:name :depreciation, :type :plain-number},
-                     {:name :capital-expenditures, :type :plain-number}),
-   :working-capital '({:name :current-assets, :type :plain-number},
-                      {:name :current-liabilities, :type :plain-number}),
-   :current-assets-to-current-liabilities '({:name :current-assets, :type :plain-number},
-                                            {:name :current-liabilities, :type :plain-number}),
-   :accounts-payable-to-current-assets '({:name :accounts-payable, :type :plain-number},
-                                         {:name :current-assets, :type :plain-number}),
-   :current-assets-to-total-liabilities '({:name :current-assets, :type :plain-number},
-                                          {:name :total-liabilities, :type :plain-number}),
+   :name should match a key in profile-descriptor-tags map if :type is :simple-number. If
+   :type is :computed, :simple-number arguments can be reached recursively."
+  {:tangible-assets '({:name :total-assets, :type :simple-number},
+                      {:name :goodwill, :type :simple-number}),
+   :free-cash-flow '({:name :net-income, :type :simple-number},
+                     {:name :depreciation, :type :simple-number},
+                     {:name :capital-expenditures, :type :simple-number}),
+   :working-capital '({:name :current-assets, :type :simple-number},
+                      {:name :current-liabilities, :type :simple-number}),
+   :current-assets-to-current-liabilities '({:name :current-assets, :type :simple-number},
+                                            {:name :current-liabilities, :type :simple-number}),
+   :accounts-payable-to-current-assets '({:name :accounts-payable, :type :simple-number},
+                                         {:name :current-assets, :type :simple-number}),
+   :current-assets-to-total-liabilities '({:name :current-assets, :type :simple-number},
+                                          {:name :total-liabilities, :type :simple-number}),
    :total-tangible-assets-to-total-liabilities '({:name :tangible-assets, :type :computed},
-                                                 {:name :total-liabilities, :type :plain-number}),
-   :goodwill-to-total-assets '({:name :goodwill, :type :plain-number},
-                               {:name :total-assets, :type :plain-number}),
-   :net-income '({:name :net-income, :type :plain-number}),
-   :return-on-equity '({:name :net-income, :type :plain-number},
-                       {:name :total-equity, :type :plain-number}),
-   :return-on-working-capital '({:name :net-income, :type :plain-number},
+                                                 {:name :total-liabilities, :type :simple-number}),
+   :goodwill-to-total-assets '({:name :goodwill, :type :simple-number},
+                               {:name :total-assets, :type :simple-number}),
+   :net-income '({:name :net-income, :type :simple-number}),
+   :return-on-equity '({:name :net-income, :type :simple-number},
+                       {:name :total-equity, :type :simple-number}),
+   :return-on-working-capital '({:name :net-income, :type :simple-number},
                                 {:name :working-capital, :type :computed})
    })
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
-;; TODO: this calculations can be incorporated in the map above as an additional key
-;; specifying how the descriptor is to be computed off some basic operation.
 
 (defn tangible-assets
   "Total assets - goodwill"
