@@ -1,7 +1,7 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
             [cache.core :as cache]
-            [screener.calculations.core :as calcs]
+            [screener.calculations.descriptors :as descriptors]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
@@ -11,7 +11,7 @@
    eg. 'Net Income' => #screener.calculations.core/net-income."
   [descriptor-kw]
   (let [descriptor-fn-name (name descriptor-kw)
-        descriptor-fn (resolve (symbol (str "screener.calculations.core/" descriptor-fn-name)))]
+        descriptor-fn (resolve (symbol (str "screener.calculations.descriptors/" descriptor-fn-name)))]
     (if (nil? descriptor-fn)
       (throw (NullPointerException. (str "Function " descriptor-fn-name " does not exist.")))
       descriptor-fn)))
@@ -57,13 +57,13 @@
               (assoc accum
                      (:name next)
                      (if (= :plain-number (:type next))
-                       (:value ((keyword (str ((:name next) calcs/profile-descriptor-tags)
+                       (:value ((keyword (str ((:name next) descriptors/data-tags)
                                               "|"
                                               year))
                                 numbers))
                       (calculate (:name next) adsh year))))
             {}
-            (descriptor-kw calcs/descriptor-args-spec))))
+            (descriptor-kw descriptors/args-spec))))
 
 (defn build-profile-map
   "Builds a profile map from provided list of descriptors for submission corresponding to

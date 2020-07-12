@@ -23,7 +23,7 @@
 
 (deftest test-get-descriptor-function
   (testing "returns a symbol representing a descriptor function"
-    (is (= #'screener.calculations.core/net-income
+    (is (= #'screener.calculations.descriptors/net-income
            (get-descriptor-function :net-income))))
   (testing "throws a NullPointerException when it can't be resolved to a function"
     (is (thrown? java.lang.NullPointerException

@@ -1,20 +1,7 @@
-(ns screener.calculations.core
-  (:require [screener.data.tickers :as tickers]
-            [screener.data.num :as num]
-            [screener.data.sub :as sub]))
+(ns screener.calculations.descriptors
+  (:require [screener.calculations.operations :refer :all]))
 
-(defn ratio
-  "A simple ratio calculation that does some minimal validation on inputs. Returns a nil
-   value if ratio cannot be calculated.
-   Formats return value to display two decimal places."
-  [divisor dividend]
-  (if (or (nil? divisor)
-          (or (nil? dividend)
-              (zero? dividend)))
-    nil
-    (with-precision 3 (/ (bigdec divisor) (bigdec dividend)))))
-
-(def profile-descriptor-tags
+(def data-tags
   "Returns a mapping of financial descriptor to tag employed to identify them (as per SEC
    datasets spec) in cache."
   {:current-assets "AssetsCurrent",
@@ -28,7 +15,7 @@
    :net-income "NetIncomeLoss",
    :total-equity "StockholdersEquity"})
 
-(def descriptor-args-spec
+(def args-spec
   "Defines a mapping of descriptor to list of arguments spec required to compute them. Args
    :name should match a key in profile-descriptor-tags map if :type is :plain-number. If
    :type is :computed, :plain-number arguments can be reached recursively."
