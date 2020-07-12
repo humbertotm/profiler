@@ -44,15 +44,3 @@
                               (keyword (string/lower-case ticker))
                               retrieve-mapping))
 
-;; TODO: will get back to it later as there is no simple way to handle the
-;; WHERE ticker IN ('A', 'B') part of the query.
-;; Will have to settle with single record queries for the time being.
-;; (defn cache-ticker-list
-;;   ""
-;;   [tickers]
-;;   (let [list-of-tickers (reduce #()
-;;                                 '()
-;;                                 tickers)
-;;         query-string (str "SELECT * FROM :table WHERE ticker IN " list-of-tickers)]
-;;     (dbops/query query-string table-name)))
-

@@ -1,6 +1,6 @@
-(ns screener.calculations.core-test
+(ns screener.calculations.operations-test
   (:require [clojure.test :refer :all]
-            [screener.calculations.core :refer :all]))
+            [screener.calculations.operations :refer :all]))
 
 (deftest test-ratio
   (testing "returns bigdec with 3 digit precision"

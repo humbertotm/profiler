@@ -1,17 +1,23 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
             [cache.core :as cache]
-            [screener.calculations.core :as calcs]
+            [screener.calculations.descriptors :as descriptors]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
+
+;; TODOS:
+;; - Time series profiler: return an ordered list of profiling maps for a company during
+;;   a range of years.
 
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
    eg. 'Net Income' => #screener.calculations.core/net-income."
   [descriptor-kw]
   (let [descriptor-fn-name (name descriptor-kw)
-        descriptor-fn (resolve (symbol (str "screener.calculations.core/" descriptor-fn-name)))]
+        descriptor-fn (resolve (symbol (str
+                                        "screener.calculations.descriptors/"
+                                        descriptor-fn-name)))]
     (if (nil? descriptor-fn)
       (throw (NullPointerException. (str "Function " descriptor-fn-name " does not exist.")))
       descriptor-fn)))
@@ -56,14 +62,15 @@
     (reduce (fn [accum next]
               (assoc accum
                      (:name next)
-                     (if (= :plain-number (:type next))
-                       (:value ((keyword (str ((:name next) calcs/profile-descriptor-tags)
+                     (if (= :simple-number (:type next))
+                       (:value ((keyword (str ((:name next)
+                                               descriptors/simple-number-data-tags)
                                               "|"
                                               year))
                                 numbers))
                       (calculate (:name next) adsh year))))
             {}
-            (descriptor-kw calcs/descriptor-args-spec))))
+            (descriptor-kw descriptors/args-spec))))
 
 (defn build-profile-map
   "Builds a profile map from provided list of descriptors for submission corresponding to
@@ -117,9 +124,4 @@
                    (build-company-custom-profile descriptors ticker year)))
           {}
           tickers-list))
-
-;; (defn build-time-series-profile
-;;   ""
-;;   [descriptors ticker number-of-years]
-;;   ())
 
