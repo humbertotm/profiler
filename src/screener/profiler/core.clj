@@ -68,7 +68,7 @@
                                               "|"
                                               year))
                                 numbers))
-                      (calculate (:name next) adsh year))))
+                       (calculate (:name next) adsh year))))
             {}
             (descriptor-kw descriptors/args-spec))))
 
@@ -124,4 +124,15 @@
                    (build-company-custom-profile descriptors ticker year)))
           {}
           tickers-list))
+
+(defn company-time-series-profile
+  ""
+  [ticker descriptors years]
+  (reduce (fn
+            [accum-map year]
+            (assoc accum-map
+                   (keyword year)
+                   (build-company-custom-profile descriptors ticker year)))
+          {}
+          years))
 

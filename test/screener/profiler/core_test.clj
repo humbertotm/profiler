@@ -163,3 +163,27 @@
                     '("Tangible Assets", "Does not exist")
                     "2019"))))))
 
+(deftest test-company-time-series-profile
+  (testing "returns profiling map for every year requested"
+    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+                  (let [numbers (atom adp-numbers)]
+                    (fn [_] (last (ffirst (swap-vals! numbers rest)))))
+                  screener.data.tickers/retrieve-mapping
+                  (fn [_] {:ticker "adp", :cik "8680" }),
+                  screener.data.sub/retrieve-form-from-db
+                  (let [subs (atom ["0000002178-19-000077"
+                                    "0000002178-19-000078"
+                                    "0000002178-19-000079"
+                                    "0000002178-19-000080"
+                                    "0000002178-19-000081"])]
+                    (fn [_] (ffirst (swap-vals! subs rest))))]
+      (is (= {:2010 {:TangibleAssets 3.655E7, :CurrentAssetsToCurrentLiabilities 1.62M},
+              :2011 {:TangibleAssets 3.475E7, :CurrentAssetsToCurrentLiabilities 1.64M},
+              :2012 {:TangibleAssets 3.52E7, :CurrentAssetsToCurrentLiabilities 1.63M},
+              :2013 {:TangibleAssets 3.565E7, :CurrentAssetsToCurrentLiabilities 1.63M},
+              :2014 {:TangibleAssets 3.61E7, :CurrentAssetsToCurrentLiabilities 1.63M}}
+             (company-time-series-profile
+              "adp"
+              '("Tangible Assets", "Current assets to current liabilities")
+              '("2010", "2011", "2012", "2013", "2014")))))))
+
