@@ -187,7 +187,9 @@
               '("Tangible Assets", "Current assets to current liabilities")
               '("2010", "2011", "2012", "2013", "2014"))))))
   (testing "returns empty map when company is not found"
-    (with-redefs [screener.data.tickers/retrieve-mapping (fn [_] nil)]
+    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] (list))
+                  screener.data.tickers/retrieve-mapping (fn [_] nil)
+                  screener.data.sub/retrieve-form-from-db (fn [_] nil)]
       (is (= {:2010 {}
               :2011 {}
               :2012 {}
@@ -197,7 +199,7 @@
               "xxx"
               '("Tangible Assets", "Current assets to current liabilities")
               '("2010", "2011", "2012", "2013", "2014"))))))
-    (testing "returns empty map when company is not found"
+    (testing "returns nil for descriptors that cannot be calculated"
       (with-redefs [screener.data.num/retrieve-numbers-for-submission
                     (let [numbers (atom adp-numbers)]
                       (fn [_] (last (ffirst (swap-vals! numbers rest)))))
