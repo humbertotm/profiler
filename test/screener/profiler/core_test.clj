@@ -42,7 +42,7 @@
     (is (= :working-capital (descriptor-to-keyword "workING Capital")))))
 
 (deftest test-build-args-map
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] build-args-test-numbers)]
+  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns simple arguments map"
       (is (= {:total-assets 45000000.0000M, :goodwill 8450000.0000M}
              (build-args-map :tangible-assets "someadsh" "2019"))))
@@ -54,7 +54,7 @@
              (build-args-map :caca "someadsh" "2019"))))))
 
 (deftest test-calculate
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] build-args-test-numbers)]
+  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns expected computed value for simple descriptor"
       (is (= 745000000.0000M
              (calculate :net-income "someadsh" "2019"))))
@@ -66,7 +66,7 @@
                    (calculate :does-not-exist "someads" "2019"))))))
 
 (deftest test-build-profile-map
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] build-args-test-numbers)]
+  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns nicely constructed map with specified descriptors"
       (is (= {:NetIncome 745000000.0000M, :CurrentAssetsToCurrentLiabilities 1.62M}
              (build-profile-map
@@ -84,7 +84,7 @@
                    (build-profile-map '("not exists") "someadsh" "2019"))))))
 
 (deftest test-build-company-custom-profile
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] build-args-test-numbers)
+  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)
                 screener.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
                 screener.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
@@ -109,7 +109,7 @@
 (deftest test-profile-list-of-companies
   (testing "Returns empty map for companies in list not found"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission
-                  (let [numbers (atom (list build-args-test-numbers
+                  (let [numbers (atom (list adp-10k-2019-numbers
                                             '()))]
                     (fn [_] (ffirst (swap-vals! numbers rest))))
                   screener.data.tickers/retrieve-mapping
@@ -127,8 +127,8 @@
               "2019")))))
   (testing "Returns expected profiling maps for each company in list"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission
-                  (let [numbers (atom (list build-args-test-numbers
-                                            build-args-test-numbers-1))]
+                  (let [numbers (atom (list adp-10k-2019-numbers
+                                            avt-10k-2019-numbers))]
                     (fn [_] (ffirst (swap-vals! numbers rest))))
                   screener.data.tickers/retrieve-mapping
                   (let [mappings (atom (list {:ticker "adp", :cik "8670" }
@@ -147,8 +147,8 @@
               "2019")))))
   (testing "Throws a NullPointerException when a descriptor is not recognized"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission
-                  (let [numbers (atom (list build-args-test-numbers
-                                            build-args-test-numbers-1))]
+                  (let [numbers (atom (list adp-10k-2019-numbers
+                                            avt-10k-2019-numbers))]
                     (fn [_] (ffirst (swap-vals! numbers rest))))
                   screener.data.tickers/retrieve-mapping
                   (let [mappings (atom (list {:ticker "goog", :cik "8680" }

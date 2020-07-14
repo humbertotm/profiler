@@ -31,7 +31,7 @@
          :version "us-gaap/2019",
          :qtrs 0}))
 
-(def build-args-test-numbers
+(def adp-10k-2019-numbers
   (list {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
          :value 745000000.0000M,
          :adsh "0000002178-19-000087",
@@ -83,7 +83,7 @@
          :version "us-gaap/2019",
          :qtrs 0}))
 
-(def build-args-test-numbers-1
+(def avt-10k-2019-numbers
   (list {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
          :value 750000000.0000M,
          :adsh "0000002178-19-000088",
