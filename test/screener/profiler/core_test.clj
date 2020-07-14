@@ -185,5 +185,56 @@
              (company-time-series-profile
               "adp"
               '("Tangible Assets", "Current assets to current liabilities")
-              '("2010", "2011", "2012", "2013", "2014")))))))
+              '("2010", "2011", "2012", "2013", "2014"))))))
+  (testing "returns empty map when company is not found"
+    (with-redefs [screener.data.tickers/retrieve-mapping (fn [_] nil)]
+      (is (= {:2010 {}
+              :2011 {}
+              :2012 {}
+              :2013 {}
+              :2014 {}}
+             (company-time-series-profile
+              "xxx"
+              '("Tangible Assets", "Current assets to current liabilities")
+              '("2010", "2011", "2012", "2013", "2014"))))))
+    (testing "returns empty map when company is not found"
+      (with-redefs [screener.data.num/retrieve-numbers-for-submission
+                    (let [numbers (atom adp-numbers)]
+                      (fn [_] (last (ffirst (swap-vals! numbers rest)))))
+                    screener.data.tickers/retrieve-mapping
+                    (fn [_] {:ticker "adp", :cik "8680" }),
+                    screener.data.sub/retrieve-form-from-db
+                    (let [subs (atom ["0000002178-19-000077"
+                                      "0000002178-19-000078"
+                                      "0000002178-19-000079"
+                                      "0000002178-19-000080"
+                                      "0000002178-19-000081"])]
+                      (fn [_] (ffirst (swap-vals! subs rest))))]
+        (is (= {:2010 {:TangibleAssets 3.655E7, :FreeCashFlow nil},
+                :2011 {:TangibleAssets 3.475E7, :FreeCashFlow nil},
+                :2012 {:TangibleAssets 3.52E7, :FreeCashFlow nil},
+                :2013 {:TangibleAssets 3.565E7, :FreeCashFlow nil},
+                :2014 {:TangibleAssets 3.61E7, :FreeCashFlow nil}}
+               (company-time-series-profile
+                "adp"
+                '("Tangible Assets", "Free cash flow")
+                '("2010", "2011", "2012", "2013", "2014"))))))
+  (testing "throws NullPointerexception when a descriptor is not recognized"
+    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+                  (let [numbers (atom adp-numbers)]
+                    (fn [_] (last (ffirst (swap-vals! numbers rest)))))
+                  screener.data.tickers/retrieve-mapping
+                  (fn [_] {:ticker "adp", :cik "8680" }),
+                  screener.data.sub/retrieve-form-from-db
+                  (let [subs (atom ["0000002178-19-000077"
+                                    "0000002178-19-000078"
+                                    "0000002178-19-000079"
+                                    "0000002178-19-000080"
+                                    "0000002178-19-000081"])]
+                    (fn [_] (ffirst (swap-vals! subs rest))))]
+      (is (thrown? java.lang.NullPointerException
+                   (company-time-series-profile
+                    "adp"
+                    '("Tangible Assets", "Does not exist")
+                    '("2010", "2011", "2012", "2013", "2014")))))))
 
