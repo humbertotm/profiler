@@ -1,6 +1,7 @@
 (ns etl.records.presentation
   (:require [etl.records.utils.value-setters :refer :all]
-            [etl.records.utils.validations :refer :all]))
+            [etl.records.utils.validations :refer :all]
+            [clojure.spec.alpha :as s]))
 
 (defrecord Presentation
     [adsh

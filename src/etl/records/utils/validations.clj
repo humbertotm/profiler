@@ -1,6 +1,7 @@
 (ns etl.records.utils.validations
   (:require [java-time :as jtime]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.spec.alpha :as s]))
 
 ;; Field validations
 
@@ -136,7 +137,7 @@
 
 ;; Record validations
 
-(s/def :unq/number
+(s/def :unq/num
   (s/keys :req-un [::adsh ::tag ::version ::ddate ::qtrs ::uom]
           :opt-un [::coreg ::value ::footnote]))
 

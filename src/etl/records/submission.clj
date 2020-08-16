@@ -1,6 +1,7 @@
 (ns etl.records.submission
   (:require [etl.records.utils.validations :refer :all]
-            [etl.records.utils.value-setters :refer :all]))
+            [etl.records.utils.value-setters :refer :all]
+            [clojure.spec.alpha :as s]))
 
 (defrecord Submission
     [adsh

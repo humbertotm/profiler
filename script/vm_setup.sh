@@ -50,6 +50,19 @@ sudo mv lein /usr/local/bin/lein
 # Making it executable
 sudo chmod a+x /usr/local/bin/lein
 
+# Python Installation (3.8.5)
+# - Python 3.8.5
+# - Virtual Env
+sudo apt-get install python3 python3-dev python3-venv
+
+# DON'T INSTALL PIP. IT DOES NOT PLAY WELL WITH DEBIAN. INSTALL IT FROM WITHIN YOUR VENV.
+# http://thefourtheye.in/2014/12/30/Python-venv-problem-with-ensurepip-in-Ubuntu/
+# See https://askubuntu.com/questions/879437/ensurepip-is-disabled-in-debian-ubuntu-for-the-system-python
+
+# Set python version to downloaded version
+# This is flaky. Might need to find out the downloaded version first.
+echo "alias python='/usr/bin/python3.5'" >> ~/.bashrc
+
 # Install PostgreSQL (9.5)
 # TODO: Upgrade to 10 or 11
 # Installing newer versions will require a bit more research, ran into some trouble
@@ -81,6 +94,8 @@ sudo -u postgres createdb -O screeneruser screener_test
 # **********
 # To allow project local db connection fix local pg_hba.conf authentication method
 # peer => md5
+# Restart after making changes to pg_hba.conf
+# sudo service postgresql restart
 
 echo "Done! You're good to go!"
 
