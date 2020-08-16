@@ -101,3 +101,80 @@ CREATE TABLE presentations (
        FOREIGN KEY (tag, version) REFERENCES tags (tag, version)
 );
 
+-- TEMPORARY TABLES FOR DATA UPLOAD
+
+CREATE TABLE submissions_tmp (
+       adsh varchar(20),
+       cik  varchar(10),
+       name varchar(150),
+       sic varchar(4),
+       countryba varchar(2),
+       stprba varchar(2),
+       cityba varchar(30),
+       zipba varchar(10),
+       bas1 varchar(40),
+       bas2 varchar(40),
+       baph varchar(20),
+       countryma varchar(2),
+       stprma varchar(2),
+       cityma varchar(30),
+       zipma varchar(10),
+       mas1 varchar(40),
+       mas2 varchar(40),
+       countryinc varchar(3),
+       stprinc varchar(2),
+       ein varchar(10),
+       former varchar(150),
+       changed date,		-- Date format not specified, assuming it is a std one
+       afs varchar(5),
+       wksi boolean,
+       fye varchar(4),	-- mmdd date => Will have to store as varchar
+       form varchar(10),
+       period date,	-- yymmdd => Tested
+       fy varchar(4),	-- yyyy => Will have to store as varchar
+       fp varchar(2),
+       filed date,	-- yymmdd => Tested
+       accepted timestamp, -- yyyy-mm-dd hh:mm:ss => Tested
+       prevrpt boolean,
+       detail boolean,
+       instance varchar(32),
+       nciks varchar(4),
+       aciks varchar(120)
+);
+
+CREATE TABLE tags_tmp (
+       tag varchar(256),
+       version varchar(20),
+       custom boolean,
+       abstract boolean,
+       datatype varchar(20),
+       iord varchar(1),
+       crdr varchar(1),
+       tlabel varchar(512),
+       doc text
+);
+
+CREATE TABLE numbers_tmp (
+       adsh varchar(20),
+       tag varchar(256),
+       version varchar(20),
+       coreg varchar(256),
+       ddate date,	-- yyyymmdd => Tested
+       qtrs integer,
+       uom varchar(20),
+       value numeric(32, 4),
+       footnote text
+);
+
+CREATE TABLE presentations_tmp (
+       adsh varchar(20) NOT NULL,
+       report varchar(6) NOT NULL,
+       line integer NOT NULL,
+       stmt varchar(2) NOT NULL,
+       inpth boolean NOT NULL,
+       rfile varchar(1) NOT NULL,
+       tag varchar(256) NOT NULL,
+       version varchar(20) NOT NULL,
+       plabel varchar(512) NOT NULL
+);
+

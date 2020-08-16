@@ -4,8 +4,10 @@
             [clojure.java.io :as io]
             [etl.records.core :as records :refer :all]
             [etl.utils.string :refer :all]
-            [screener.models.tables :as tables :refer :all]
-            [db.operations :as db-ops]))
+            [db.operations :as db-ops])
+  (:import [java.util.zip ZipEntry ZipOutputStream ZipInputStream]
+           java.io.File
+           java.lang.System))
 
 (defn get-type-from-file-name
   "Infers data type from file name in file-path and returns it as a symbol"
@@ -43,12 +45,28 @@
   "Creates list of Records of type record-type from a list of data-maps"
   [record-type data-maps]
   (map #(try (records/create-record record-type %)
-             (catch Exception e
-               (do (println (str "Error in " record-type %))
-                   (println e)
+             (catch AssertionError e
+               (do (println (str "Error: " e))
                    (list :validation-error %))))
        data-maps))
 
+(defn print-maps
+  [data-maps]
+  (loop [dmaps data-maps]
+    (if (first dmaps)
+      (do (println (first dmaps))
+          (recur (rest dmaps)))
+      (print "Done\n"))))
+
+(defn print-records
+  [data-records]
+  (loop [drecs data-records]
+    (if (first drecs)
+      (do (println (first drecs))
+          (recur (rest drecs)))
+      (print "Done\n"))))
+
+;; This whole process has been replaced by that in screener-content python repo.
 ;; Main ETL method
 (defn etl
   "Extracts data from csv data source in specified path, transforms it into adhoc records
@@ -59,5 +77,21 @@
       (try (->> (csv/read-csv reader :separator \tab :quote \')
                 (csv-data->maps)
                 (maps->Records data-type)
-                (write-to-table (pluralize data-type)))))))
+                (write-to-table ((keyword data-type) records/record-table)))))))
+
+;; TODO: NEED TO TRY THIS OUT AND DEBUG
+;; (defn unzip-file
+;;   ""
+;;   [input output]
+;;   (with-open [stream (-> input io/input-stream ZipInputStream.)]
+;;     (loop [entry (.getNextEntry stream)]
+;;       (if entry
+;;         (let [base-path (str (System/getProperty "user.dir") File/separatorChar "data")
+;;               file-name (.getName entry)
+;;               save-path (str base-path File/separatorChar file-name)
+;;               output-file (File. save-path)]
+;;           (if (.isDirectory entry)
+;;             (if-not (.exists output-file)
+;;               (.mkdirs output-file)))
+;;           (recur (.getNextEntry stream)))))))
 

@@ -1,6 +1,7 @@
 (ns etl.records.tag
   (:require [etl.records.utils.validations :refer :all]
-            [etl.records.utils.value-setters :refer :all]))
+            [etl.records.utils.value-setters :refer :all]
+            [clojure.spec.alpha :as s]))
 
 (defrecord Tag
   [tag
