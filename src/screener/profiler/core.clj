@@ -73,7 +73,9 @@
                              fallback-fn (:fallback ((:name next)
                                                       descriptors/src-number-data-tags))]
                          (if (nil? src-value)
-                           (calculate fallback-fn adsh year)
+                           (if (nil? fallback-fn)
+                             nil
+                             (calculate fallback-fn adsh year))
                            src-value))
                        (calculate (:name next) adsh year))))
             {}

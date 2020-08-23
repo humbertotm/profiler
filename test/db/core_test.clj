@@ -7,7 +7,7 @@
     (is (= spec
            {:classname "org.postgresql.Driver"
             :subprotocol "postgresql"
-            :subname "//localhost:5432/screener_test"
+            :subname "//localhost:5432/screener_dev"
             :user "screeneruser"
             :password "screeneruser"}))))
 
