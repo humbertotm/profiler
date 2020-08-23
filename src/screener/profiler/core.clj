@@ -63,11 +63,18 @@
               (assoc accum
                      (:name next)
                      (if (= :simple-number (:type next))
-                       (:value ((keyword (str ((:name next)
-                                               descriptors/simple-number-data-tags)
-                                              "|"
-                                              year))
-                                numbers))
+                       (let [src-value (:value ((keyword
+                                                 (str
+                                                  (:tag ((:name next)
+                                                         descriptors/src-number-data-tags))
+                                                  "|"
+                                                  year))
+                                                numbers))
+                             fallback-fn (:fallback ((:name next)
+                                                      descriptors/src-number-data-tags))]
+                         (if (nil? src-value)
+                           (calculate fallback-fn adsh year)
+                           src-value))
                        (calculate (:name next) adsh year))))
             {}
             (descriptor-kw descriptors/args-spec))))

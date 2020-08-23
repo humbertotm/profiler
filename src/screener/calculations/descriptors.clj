@@ -9,19 +9,19 @@
 ;; This map would then be a master repository of knowledge needed to compute whatever
 ;; financial descriptor we might need.
 
-(def simple-number-data-tags
+(def src-number-data-tags
   "Returns a mapping of financial descriptor to tag employed to identify them (as per SEC
    datasets spec) in cache."
-  {:current-assets "AssetsCurrent",
-   :current-liabilities "LiabilitiesCurrent",
-   :accounts-payable "AccountsPayableCurrent",
-   :total-liabilities "Liabilities",
-   :total-assets "Assets",
-   :goodwill "Goodwill",
-   :depreciation "DepreciationDepletionAndAmortization",
-   :capital-expenditures "CapitalExpenditures",
-   :net-income "NetIncomeLoss",
-   :total-equity "StockholdersEquity"})
+  {:current-assets {:tag "AssetsCurrent"},
+   :current-liabilities {:tag "LiabilitiesCurrent"},
+   :accounts-payable {:tag "AccountsPayableCurrent"},
+   :total-liabilities {:tag "Liabilities", :fallback :calculated-total-liabilities},
+   :total-assets {:tag "Assets", :fallback :calculated-total-assets},
+   :goodwill {:tag "Goodwill"},
+   :depreciation {:tag "DepreciationDepletionAndAmortization"},
+   :capital-expenditures {:tag "CapitalExpenditures"},
+   :net-income {:tag "NetIncomeLoss"},
+   :total-equity {:tag "StockholdersEquity", :fallback :calculated-total-equity}})
 
 (def args-spec
   "Defines a mapping of descriptor to list of arguments spec required to compute them. Args
@@ -48,8 +48,9 @@
    :return-on-equity '({:name :net-income, :type :simple-number},
                        {:name :total-equity, :type :simple-number}),
    :return-on-working-capital '({:name :net-income, :type :simple-number},
-                                {:name :working-capital, :type :computed})
-   })
+                                {:name :working-capital, :type :computed}),
+   :calculated-total-liabilities '({:name :total-equity, :type :simple-number},
+                                   {:name :total-assets, :type :simple-number})})
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
 
@@ -118,4 +119,19 @@
   "Net income / working capital"
   [{:keys [net-income working-capital]}]
   (ratio net-income working-capital))
+
+(defn calculated-total-liabilities
+  ""
+  [{:keys [total-equity total-assets]}]
+  (- total-assets total-equity))
+
+(defn calculated-total-assets
+  ""
+  [{:keys [total-equity total-liabilities]}]
+  (+ total-equity total-liabilities))
+
+(defn calculayed-total-equity
+  ""
+  [{:keys [total-assets total-liabilities]}]
+  (- total-assets total-liabilities))
 
