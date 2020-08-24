@@ -10,6 +10,7 @@
                  [org.clojure/data.csv "0.1.4"]
                  [clojure.java-time "0.3.2"]
                  [org.clojure/core.cache "0.8.1"]
+                 [org.clojure/core.async "1.3.610"]
                  [org.clojure/tools.trace "0.7.10"]
                  [environ "1.1.0"]]
   :plugins [[lein-environ "1.1.0"]] ; Don't know if this is the right place to keep plugins

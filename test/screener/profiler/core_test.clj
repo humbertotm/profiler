@@ -241,3 +241,5 @@
                     '("Tangible Assets", "Does not exist")
                     '("2010", "2011", "2012", "2013", "2014")))))))
 
+;; TODO: test the case where the fallback must be used to calculate some number.
+
