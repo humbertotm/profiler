@@ -6,10 +6,6 @@
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
 
-;; TODOS:
-;; - Time series profiler: return an ordered list of profiling maps for a company during
-;;   a range of years.
-
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
    eg. 'Net Income' => #screener.calculations.core/net-income."
@@ -63,11 +59,20 @@
               (assoc accum
                      (:name next)
                      (if (= :simple-number (:type next))
-                       (:value ((keyword (str ((:name next)
-                                               descriptors/simple-number-data-tags)
-                                              "|"
-                                              year))
-                                numbers))
+                       (let [src-value (:value ((keyword
+                                                 (str
+                                                  (:tag ((:name next)
+                                                         descriptors/src-number-data-tags))
+                                                  "|"
+                                                  year))
+                                                numbers))
+                             fallback-fn (:fallback ((:name next)
+                                                      descriptors/src-number-data-tags))]
+                         (if (nil? src-value)
+                           (if (nil? fallback-fn)
+                             nil
+                             (calculate fallback-fn adsh year))
+                           src-value))
                        (calculate (:name next) adsh year))))
             {}
             (descriptor-kw descriptors/args-spec))))
