@@ -1,32 +1,27 @@
 (ns screener.profiler.asyntest
-  (:require [clojure.core.async :as async :refer [>! >!! <! <!! thread]]))
+  (:require [clojure.core.async :as async :refer [>! >!! <! <!! thread]]
+            [screener.data.tickers :as tickers]))
 
-(def test-atom (atom []))
+(def tickers-atom (atom []))
 
-;; TODO: this seems to be working for my purposes. Test this by retrievnig data from tickers
-;; table and writing to test atom.
-(defn threaded-writing
-  ""
+(def tickers-list (list "a" "aa" "aaau" "aaba" "aacg" "aach" "aacqu" "aagh" "aaidx" "aal" "aamc"))
+
+
+(defn threaded-ticker-retrieval
+  "Threaded retrieval of ticker records from db. Order of final writing to target atom
+  is not guaranteed but that is not a problem. It works."
   []
-  (let [test-vector [1 2 3 4 5 6 7 8 9 10]
-        batch-size 2]
-    (loop [partitioned-seq (partition batch-size batch-size nil test-vector)]
+  (let [batch-size 2]
+    (loop [partitioned-seq (partition batch-size batch-size nil tickers-list)]
       (when (not (empty? (first partitioned-seq)))
         (do (println "starting batch looping...")
             (loop [batch-seq (first partitioned-seq)]
               (when (not (nil? (first batch-seq)))
-                (thread (Thread/sleep (* 1000 (- 10 (first batch-seq))))
-                        (println (str "writing " (first batch-seq) " to test-atom"))
-                        (swap! test-atom conj (first batch-seq)))
+                (thread (println (str "will write " (first batch-seq) " after sleep"))
+                        (Thread/sleep 1000)
+                        (println (str "writing " (first batch-seq) " to tickers-atom"))
+                        (swap! tickers-atom conj
+                               (tickers/fetch-ticker-cik-mapping (first batch-seq))))
                 (recur (rest batch-seq)))))
         (recur (rest partitioned-seq))))))
-
-(defn simple-loop
-  ""
-  []
-  (let [test-vector [1 2 3 4 5 6]]
-    (loop [i 0]
-      (when (not (nil? (first (subvec test-vector i (count test-vector)))))
-        (println (first (subvec test-vector i (count test-vector))))
-        (recur (inc i))))))
 
