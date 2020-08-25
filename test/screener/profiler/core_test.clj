@@ -21,7 +21,6 @@
 (use-fixtures :once initialize-caches)
 (use-fixtures :each reset-caches)
 
-;; TODO: fix this broken tests
 (deftest test-get-descriptor-function
   (testing "returns a symbol representing a descriptor function"
     (is (= #'screener.calculations.descriptors/net-income
