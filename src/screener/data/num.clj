@@ -64,6 +64,12 @@
           {}
           numbers))
 
+(defn retrieve-mapped-submission-numbers
+  ""
+  [adsh]
+  (->> (retrieve-numbers-for-submission adsh)
+       (map-numbers-to-submission)))
+
 (defn fetch-numbers-for-submission
   "Fetches all number records for a particular adsh from cache. Retrieves from
    database as fallback."

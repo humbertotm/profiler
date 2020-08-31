@@ -1,10 +1,18 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
             [cache.core :as cache]
+            [clojure.core.async :as async :refer [thread]]
             [screener.calculations.descriptors :as descriptors]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
+
+(def profiles-cache-threshold-value 100)
+
+(defn initialize-profiles-cache
+  ""
+  []
+  (cache/create-fifo-cache profiles-cache {} profiles-cache-threshold-value))
 
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
@@ -54,7 +62,7 @@
   "Builds the argument map required for a specific descriptor calculating function as
    defined by screener.calculations.core/descriptor-args-spec map."
   [descriptor-kw adsh year]
-  (let [numbers (num/fetch-numbers-for-submission adsh)]
+  (let [numbers (num/retrieve-mapped-submission-numbers adsh)]
     (reduce (fn [accum next]
               (assoc accum
                      (:name next)
@@ -96,8 +104,8 @@
   "Builds a mapping of financial descriptors to values for specified company (ticker)
    and year."
   [descriptors ticker year]
-  (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
-        adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
+  (let [cik (:cik (tickers/retrieve-mapping ticker))
+        adsh (sub/retrieve-form-adsh-from-db cik "10-K" year)]
     (if (not (nil? adsh))
       (build-profile-map descriptors adsh year)
       {})))
@@ -144,4 +152,30 @@
                    (build-company-custom-profile descriptors ticker year)))
           {}
           years))
+
+;; Make it write to a cache the following structure:
+;; {:ticker0 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
+;;            :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
+;;            :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}},
+;;  :ticker1 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
+;;            :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
+;;            :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}}
+;; TODO: debug. Blowing up. Still requiring some of the older caches to be initialized.
+(defn threaded-time-series-profiling
+  "Builds a map for a list of companies where keys are tickers and values are a
+   profile map containing the specified descriptors for the specified year."
+  [tickers-list descriptors years]
+  (let [max-threads 5]
+    (loop [partitioned-tickers-list (partition max-threads max-threads nil tickers-list)]
+      (when (not (empty? (first partitioned-tickers-list)))
+        (loop [tickers-batch (first partitioned-tickers-list)]
+          (when (not (nil? (first tickers-batch)))
+            (let [ticker (first tickers-batch)]
+              (thread
+                (cache/fetch-cacheable-data
+                 profiles-cache
+                 (keyword ticker)
+                 (fn [key] (company-time-series-profile ticker descriptors years))))
+              (recur (rest tickers-batch)))))
+        (recur (rest partitioned-tickers-list))))))
 
