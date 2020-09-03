@@ -8,8 +8,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "NetIncome",
+         :tag "NetIncomeLoss",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -38,8 +37,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "NetIncomeLoss",
+         :tag "NetIncomeLoss",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -48,8 +46,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "Assets",
+         :tag "Assets",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -58,8 +55,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "Goodwill",
+         :tag "Goodwill",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -68,8 +64,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "AssetsCurrent",
+         :tag "AssetsCurrent",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -78,8 +73,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "LiabilitiesCurrent",
+         :tag "LiabilitiesCurrent",
          :version "us-gaap/2019",
          :qtrs 0}))
 
@@ -90,8 +84,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "NetIncomeLoss",
+         :tag "NetIncomeLoss",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -100,8 +93,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "Assets",
+         :tag "Assets",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -110,8 +102,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "Goodwill",
+         :tag "Goodwill",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -120,8 +111,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "AssetsCurrent",
+         :tag "AssetsCurrent",
          :version "us-gaap/2019",
          :qtrs 0},
         {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
@@ -130,8 +120,7 @@
          :footnote nil,
          :uom "USD",
          :coreg nil,
-         :tag
-         "LiabilitiesCurrent",
+         :tag "LiabilitiesCurrent",
          :version "us-gaap/2019",
          :qtrs 0}))
 
@@ -144,8 +133,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "NetIncomeLoss",
+                :tag "NetIncomeLoss",
                 :version "us-gaap/2010",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20100630" "yyyyMMdd"),
@@ -154,8 +142,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Assets",
+                :tag "Assets",
                 :version "us-gaap/2010",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20100630" "yyyyMMdd"),
@@ -164,8 +151,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Goodwill",
+                :tag "Goodwill",
                 :version "us-gaap/2010",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20100630" "yyyyMMdd"),
@@ -174,8 +160,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "AssetsCurrent",
+                :tag "AssetsCurrent",
                 :version "us-gaap/2010",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20100630" "yyyyMMdd"),
@@ -184,8 +169,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "LiabilitiesCurrent",
+                :tag "LiabilitiesCurrent",
                 :version "us-gaap/2010",
                 :qtrs 0})]
         [:2011
@@ -195,8 +179,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "NetIncomeLoss",
+                :tag "NetIncomeLoss",
                 :version "us-gaap/2011",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20110630" "yyyyMMdd"),
@@ -205,8 +188,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Assets",
+                :tag "Assets",
                 :version "us-gaap/2011",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20110630" "yyyyMMdd"),
@@ -215,8 +197,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Goodwill",
+                :tag "Goodwill",
                 :version "us-gaap/2011",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20110630" "yyyyMMdd"),
@@ -225,8 +206,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "AssetsCurrent",
+                :tag "AssetsCurrent",
                 :version "us-gaap/2011",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20110630" "yyyyMMdd"),
@@ -235,8 +215,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "LiabilitiesCurrent",
+                :tag "LiabilitiesCurrent",
                 :version "us-gaap/2011",
                 :qtrs 0})]
         [:2012
@@ -246,8 +225,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "NetIncomeLoss",
+                :tag "NetIncomeLoss",
                 :version "us-gaap/2012",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20120630" "yyyyMMdd"),
@@ -256,8 +234,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Assets",
+                :tag "Assets",
                 :version "us-gaap/2012",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20120630" "yyyyMMdd"),
@@ -276,8 +253,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "AssetsCurrent",
+                :tag "AssetsCurrent",
                 :version "us-gaap/2012",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20120630" "yyyyMMdd"),
@@ -286,8 +262,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "LiabilitiesCurrent",
+                :tag "LiabilitiesCurrent",
                 :version "us-gaap/2012",
                 :qtrs 0})]
         [:2013
@@ -297,8 +272,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "NetIncomeLoss",
+                :tag "NetIncomeLoss",
                 :version "us-gaap/2013",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20130630" "yyyyMMdd"),
@@ -307,8 +281,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Assets",
+                :tag "Assets",
                 :version "us-gaap/2013",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20130630" "yyyyMMdd"),
@@ -317,8 +290,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Goodwill",
+                :tag "Goodwill",
                 :version "us-gaap/2013",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20130630" "yyyyMMdd"),
@@ -327,8 +299,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "AssetsCurrent",
+                :tag "AssetsCurrent",
                 :version "us-gaap/2013",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20130630" "yyyyMMdd"),
@@ -337,8 +308,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "LiabilitiesCurrent",
+                :tag "LiabilitiesCurrent",
                 :version "us-gaap/2013",
                 :qtrs 0})]
         [:2014
@@ -348,8 +318,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "NetIncomeLoss",
+                :tag "NetIncomeLoss",
                 :version "us-gaap/2014",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20140630" "yyyyMMdd"),
@@ -358,8 +327,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Assets",
+                :tag "Assets",
                 :version "us-gaap/2014",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20140630" "yyyyMMdd"),
@@ -368,8 +336,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "Goodwill",
+                :tag "Goodwill",
                 :version "us-gaap/2014",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20140630" "yyyyMMdd"),
@@ -378,8 +345,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "AssetsCurrent",
+                :tag "AssetsCurrent",
                 :version "us-gaap/2014",
                 :qtrs 0}
                {:ddate ((date-or-nil) "20140630" "yyyyMMdd"),
@@ -388,8 +354,7 @@
                 :footnote nil,
                 :uom "USD",
                 :coreg nil,
-                :tag
-                "LiabilitiesCurrent",
+                :tag "LiabilitiesCurrent",
                 :version "us-gaap/2014",
                 :qtrs 0})]
         [:2015 (list)]

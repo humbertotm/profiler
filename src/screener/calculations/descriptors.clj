@@ -123,15 +123,24 @@
 (defn calculated-total-liabilities
   ""
   [{:keys [total-equity total-assets]}]
-  (- total-assets total-equity))
+  (if (or (nil? total-equity)
+          (nil? total-assets))
+    nil
+    (- total-assets total-equity)))
 
 (defn calculated-total-assets
   ""
   [{:keys [total-equity total-liabilities]}]
-  (+ total-equity total-liabilities))
+  (if (or (nil? total-equity)
+          (total-liabilities))
+    nil
+    (+ total-equity total-liabilities)))
 
-(defn calculayed-total-equity
+(defn calculated-total-equity
   ""
   [{:keys [total-assets total-liabilities]}]
-  (- total-assets total-liabilities))
+  (if (or (nil? total-assets)
+          (nil? total-liabilities))
+    nil
+    (- total-assets total-liabilities)))
 

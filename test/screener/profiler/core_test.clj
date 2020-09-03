@@ -53,6 +53,7 @@
       (is (= {}
              (build-args-map :caca "someadsh" "2019"))))))
 
+;; TODO: test fallback scenario
 (deftest test-calculate
   (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns expected computed value for simple descriptor"
@@ -169,7 +170,7 @@
                   (let [numbers (atom adp-numbers)]
                     (fn [_] (last (ffirst (swap-vals! numbers rest)))))
                   screener.data.tickers/retrieve-mapping
-                  (fn [_] {:ticker "adp", :cik "8680" }),
+                  (fn [_] {:ticker "adp", :cik "8680" })
                   screener.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000077"
                                     "0000002178-19-000078"
@@ -239,6 +240,4 @@
                     "adp"
                     '("Tangible Assets", "Does not exist")
                     '("2010", "2011", "2012", "2013", "2014")))))))
-
-;; TODO: test the case where the fallback must be used to calculate some number.
 

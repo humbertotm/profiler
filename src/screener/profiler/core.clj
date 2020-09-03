@@ -62,7 +62,7 @@
   "Builds the argument map required for a specific descriptor calculating function as
    defined by screener.calculations.core/descriptor-args-spec map."
   [descriptor-kw adsh year]
-  (let [numbers (num/retrieve-mapped-submission-numbers adsh)]
+  (let [numbers (num/fetch-numbers-for-submission adsh)]
     (reduce (fn [accum next]
               (assoc accum
                      (:name next)
@@ -75,12 +75,11 @@
                                                   year))
                                                 numbers))
                              fallback-fn (:fallback ((:name next)
-                                                      descriptors/src-number-data-tags))]
-                         (if (nil? src-value)
-                           (if (nil? fallback-fn)
-                             nil
-                             (calculate fallback-fn adsh year))
-                           src-value))
+                                                     descriptors/src-number-data-tags))]
+                         (cond
+                           (not (nil? src-value)) src-value
+                           (not (nil? fallback-fn)) (calculate fallback-fn adsh year)
+                           :else nil))
                        (calculate (:name next) adsh year))))
             {}
             (descriptor-kw descriptors/args-spec))))
@@ -104,8 +103,8 @@
   "Builds a mapping of financial descriptors to values for specified company (ticker)
    and year."
   [descriptors ticker year]
-  (let [cik (:cik (tickers/retrieve-mapping ticker))
-        adsh (sub/retrieve-form-adsh-from-db cik "10-K" year)]
+  (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
+        adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
     (if (not (nil? adsh))
       (build-profile-map descriptors adsh year)
       {})))
