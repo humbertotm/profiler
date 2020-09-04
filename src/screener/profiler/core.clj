@@ -58,6 +58,26 @@
   [descriptor-kw adsh year]
   `((~get-descriptor-function ~descriptor-kw) (build-args-map ~descriptor-kw ~adsh ~year)))
 
+(defn recursion-safe-computation?
+  ""
+  [fallback-fn-kw adsh year]
+  (let [fallback-args (fallback-fn-kw descriptors/args-spec)
+        sub-numbers (num/fetch-numbers-for-submission adsh)
+        args-key-list (reduce (fn [accum next]
+                                (conj accum
+                                      (keyword (str
+                                                (:tag ((:name next)
+                                                       descriptors/src-number-data-tags))
+                                                "|"
+                                                year))))
+                              '()
+                              fallback-args)]
+    (reduce (fn [accum next]
+              (and accum
+                   (contains? sub-numbers next)))
+            true
+            args-key-list)))
+
 (defn build-args-map
   "Builds the argument map required for a specific descriptor calculating function as
    defined by screener.calculations.core/descriptor-args-spec map."
@@ -78,7 +98,10 @@
                                                      descriptors/src-number-data-tags))]
                          (cond
                            (not (nil? src-value)) src-value
-                           (not (nil? fallback-fn)) (calculate fallback-fn adsh year)
+                           (not (nil? fallback-fn)) (if (recursion-safe-computation?
+                                                         fallback-fn adsh year)
+                                                      (calculate fallback-fn adsh year)
+                                                      nil)
                            :else nil))
                        (calculate (:name next) adsh year))))
             {}
@@ -159,7 +182,7 @@
 ;;  :ticker1 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
 ;;            :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
 ;;            :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}}
-;; TODO: debug. Blowing up. Still requiring some of the older caches to be initialized.
+;; TODO: DO THIS BY BATCHES. DO NOT PROCEED UNTIL WHOLE BATCH HAS BEEN PROCESSED.
 (defn threaded-time-series-profiling
   "Builds a map for a list of companies where keys are tickers and values are a
    profile map containing the specified descriptors for the specified year."

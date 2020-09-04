@@ -374,3 +374,42 @@
                        [:2018 (list)]
                        [:2019 (list)]))
 
+;; Deliberately this does not add up to test fallback calculations
+(def assets-calc-numbers
+  (list {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 100000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag "Assets",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 50000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag "StockholdersEquity",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 40000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag "Liabilities",
+         :version "us-gaap/2019",
+         :qtrs 0},
+        {:ddate ((date-or-nil) "20190630" "yyyyMMdd"),
+         :value 10000000.0000M,
+         :adsh "0000002178-19-000087",
+         :footnote nil,
+         :uom "USD",
+         :coreg nil,
+         :tag "Goodwill",
+         :version "us-gaap/2019",
+         :qtrs 0}))
+
