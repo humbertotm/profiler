@@ -50,7 +50,11 @@
    :return-on-working-capital '({:name :net-income, :type :simple-number},
                                 {:name :working-capital, :type :computed}),
    :calculated-total-liabilities '({:name :total-equity, :type :simple-number},
-                                   {:name :total-assets, :type :simple-number})})
+                                   {:name :total-assets, :type :simple-number})
+   :calculated-total-assets '({:name :total-equity, :type :simple-number},
+                              {:name :total-liabilities, :type :simple-number})
+   :calculated-total-equity '({:name :total-assets, :type :simple-number},
+                              {:name :total-liabilities, :type :simple-number})})
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
 
@@ -121,17 +125,29 @@
   (ratio net-income working-capital))
 
 (defn calculated-total-liabilities
-  ""
+  "Calculates total liabilities when value is not present among submission numbers.
+  Total assets - Total equity"
   [{:keys [total-equity total-assets]}]
-  (- total-assets total-equity))
+  (if (or (nil? total-equity)
+          (nil? total-assets))
+    nil
+    (- total-assets total-equity)))
 
 (defn calculated-total-assets
-  ""
+  "Calculates total assets when value is not present among submission numbers.
+  Total equity - Total liabilities"
   [{:keys [total-equity total-liabilities]}]
-  (+ total-equity total-liabilities))
+  (if (or (nil? total-equity)
+          (nil? total-liabilities))
+    nil
+    (+ total-equity total-liabilities)))
 
-(defn calculayed-total-equity
-  ""
+(defn calculated-total-equity
+  "Calculates total equity when value is not present among submission numbers.
+  Total assets - Total liabilities"
   [{:keys [total-assets total-liabilities]}]
-  (- total-assets total-liabilities))
+  (if (or (nil? total-assets)
+          (nil? total-liabilities))
+    nil
+    (- total-assets total-liabilities)))
 

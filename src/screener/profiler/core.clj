@@ -1,10 +1,25 @@
 (ns screener.profiler.core
   (:require [clojure.string :as string]
             [cache.core :as cache]
+            [clojure.core.async :as async :refer [thread]]
             [screener.calculations.descriptors :as descriptors]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
+
+(def profiles-cache-threshold-value 100)
+
+(defn initialize-profiles-cache
+  "Initializes cache where computed time series profiles for companies will be stored
+  with the following structure:
+  {:ticker0 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
+           :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
+           :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}},
+  :ticker1 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
+           :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
+           :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}}"
+  []
+  (cache/create-fifo-cache profiles-cache {} profiles-cache-threshold-value))
 
 (defn get-descriptor-function
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
@@ -50,6 +65,31 @@
   [descriptor-kw adsh year]
   `((~get-descriptor-function ~descriptor-kw) (build-args-map ~descriptor-kw ~adsh ~year)))
 
+;; TODO: extract how cache key for number is constructed to a function for
+;; recursion-safe-computation? and build-args-map.
+(defn recursion-safe-computation?
+  "Checks that a fallback function is safe to compute by checking that all required args
+  for computation are present in submission numbers.
+  Assumes that fallback function arguments are simple numbers. Should this change, this
+  failsafe mechanism will have to be adjusted."
+  [fallback-fn-kw adsh year]
+  (let [fallback-args (fallback-fn-kw descriptors/args-spec)
+        sub-numbers (num/fetch-numbers-for-submission adsh)
+        args-key-list (reduce (fn [accum next]
+                                (conj accum
+                                      (keyword (str
+                                                (:tag ((:name next)
+                                                       descriptors/src-number-data-tags))
+                                                "|"
+                                                year))))
+                              '()
+                              fallback-args)]
+    (reduce (fn [accum next]
+              (and accum
+                   (contains? sub-numbers next)))
+            true
+            args-key-list)))
+
 (defn build-args-map
   "Builds the argument map required for a specific descriptor calculating function as
    defined by screener.calculations.core/descriptor-args-spec map."
@@ -67,12 +107,14 @@
                                                   year))
                                                 numbers))
                              fallback-fn (:fallback ((:name next)
-                                                      descriptors/src-number-data-tags))]
-                         (if (nil? src-value)
-                           (if (nil? fallback-fn)
-                             nil
-                             (calculate fallback-fn adsh year))
-                           src-value))
+                                                     descriptors/src-number-data-tags))]
+                         (cond
+                           (not (nil? src-value)) src-value
+                           (not (nil? fallback-fn)) (if (recursion-safe-computation?
+                                                         fallback-fn adsh year)
+                                                      (calculate fallback-fn adsh year)
+                                                      nil)
+                           :else nil))
                        (calculate (:name next) adsh year))))
             {}
             (descriptor-kw descriptors/args-spec))))
@@ -144,4 +186,23 @@
                    (build-company-custom-profile descriptors ticker year)))
           {}
           years))
+
+;; TODO: DO THIS BY BATCHES. DO NOT PROCEED UNTIL WHOLE BATCH HAS BEEN PROCESSED.
+(defn threaded-time-series-profiling
+  "Builds a map for a list of companies where keys are tickers and values are a
+   profile map containing the specified descriptors for the specified year."
+  [tickers-list descriptors years]
+  (let [max-threads 5]
+    (loop [partitioned-tickers-list (partition max-threads max-threads nil tickers-list)]
+      (when (not (empty? (first partitioned-tickers-list)))
+        (loop [tickers-batch (first partitioned-tickers-list)]
+          (when (not (nil? (first tickers-batch)))
+            (let [ticker (first tickers-batch)]
+              (thread
+                (cache/fetch-cacheable-data
+                 profiles-cache
+                 (keyword ticker)
+                 (fn [key] (company-time-series-profile ticker descriptors years))))
+              (recur (rest tickers-batch)))))
+        (recur (rest partitioned-tickers-list))))))
 

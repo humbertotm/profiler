@@ -66,6 +66,12 @@
         year (nth descriptors 2)]
     (:adsh (first (dbops/query query-string table-name cik form year)))))
 
+(defn retrieve-form-adsh-from-db
+  "Returns adsh for submission for provided cik, form and year."
+  [cik form year]
+  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"]
+    (:adsh (first (dbops/query query-string table-name cik form year)))))
+
 (defn fetch-form-adsh-for-cik-year
   "Returns adsh string value for submissions corresponding to specified cik, form and year.
    Looks up in cache as a first resource, falls back to database."

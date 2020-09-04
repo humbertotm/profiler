@@ -29,7 +29,7 @@
 
 (deftest test-map-numbers-to-submission
   (testing "returns a map of numbers keyed with the corresponding adsh"
-    (is (= {:NetIncome|2019 (nth sub-adams-10k-2019-nums 0),
+    (is (= {:NetIncomeLoss|2019 (nth sub-adams-10k-2019-nums 0),
             :AccountsReceivableNetCurrent|2019 (nth sub-adams-10k-2019-nums 1),
             :AccruedLiabilitiesCurrent|2019 (nth sub-adams-10k-2019-nums 2)}
            (map-numbers-to-submission sub-adams-10k-2019-nums)))))
