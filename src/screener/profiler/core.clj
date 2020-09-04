@@ -10,7 +10,14 @@
 (def profiles-cache-threshold-value 100)
 
 (defn initialize-profiles-cache
-  ""
+  "Initializes cache where computed time series profiles for companies will be stored
+  with the following structure:
+  {:ticker0 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
+           :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
+           :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}},
+  :ticker1 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
+           :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
+           :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}}"
   []
   (cache/create-fifo-cache profiles-cache {} profiles-cache-threshold-value))
 
@@ -58,8 +65,13 @@
   [descriptor-kw adsh year]
   `((~get-descriptor-function ~descriptor-kw) (build-args-map ~descriptor-kw ~adsh ~year)))
 
+;; TODO: extract how cache key for number is constructed to a function for
+;; recursion-safe-computation? and build-args-map.
 (defn recursion-safe-computation?
-  ""
+  "Checks that a fallback function is safe to compute by checking that all required args
+  for computation are present in submission numbers.
+  Assumes that fallback function arguments are simple numbers. Should this change, this
+  failsafe mechanism will have to be adjusted."
   [fallback-fn-kw adsh year]
   (let [fallback-args (fallback-fn-kw descriptors/args-spec)
         sub-numbers (num/fetch-numbers-for-submission adsh)
@@ -175,13 +187,6 @@
           {}
           years))
 
-;; Make it write to a cache the following structure:
-;; {:ticker0 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
-;;            :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
-;;            :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}},
-;;  :ticker1 {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
-;;            :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
-;;            :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}}
 ;; TODO: DO THIS BY BATCHES. DO NOT PROCEED UNTIL WHOLE BATCH HAS BEEN PROCESSED.
 (defn threaded-time-series-profiling
   "Builds a map for a list of companies where keys are tickers and values are a

@@ -125,7 +125,8 @@
   (ratio net-income working-capital))
 
 (defn calculated-total-liabilities
-  ""
+  "Calculates total liabilities when value is not present among submission numbers.
+  Total assets - Total equity"
   [{:keys [total-equity total-assets]}]
   (if (or (nil? total-equity)
           (nil? total-assets))
@@ -133,7 +134,8 @@
     (- total-assets total-equity)))
 
 (defn calculated-total-assets
-  ""
+  "Calculates total assets when value is not present among submission numbers.
+  Total equity - Total liabilities"
   [{:keys [total-equity total-liabilities]}]
   (if (or (nil? total-equity)
           (nil? total-liabilities))
@@ -141,7 +143,8 @@
     (+ total-equity total-liabilities)))
 
 (defn calculated-total-equity
-  ""
+  "Calculates total equity when value is not present among submission numbers.
+  Total assets - Total liabilities"
   [{:keys [total-assets total-liabilities]}]
   (if (or (nil? total-assets)
           (nil? total-liabilities))

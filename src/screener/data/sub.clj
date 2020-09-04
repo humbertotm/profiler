@@ -67,7 +67,7 @@
     (:adsh (first (dbops/query query-string table-name cik form year)))))
 
 (defn retrieve-form-adsh-from-db
-  ""
+  "Returns adsh for submission for provided cik, form and year."
   [cik form year]
   (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"]
     (:adsh (first (dbops/query query-string table-name cik form year)))))

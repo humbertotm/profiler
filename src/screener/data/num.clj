@@ -44,9 +44,6 @@
   (let [query-string "SELECT * FROM :table WHERE adsh = ? AND tag = ? AND version = ?"]
     (dbops/query query-string table-name adsh tag version)))
 
-;; TODO: define a predetermined list of tags for specific purposes (balance sheet, cash flow
-;; statement, income statement) to be more selective when caching numbers for specific use
-;; cases.
 (defn retrieve-numbers-for-submission
   "Retrieves all number records associated to a particular adsh (submission)."
   [adsh]
@@ -63,12 +60,6 @@
                    val))
           {}
           numbers))
-
-(defn retrieve-mapped-submission-numbers
-  ""
-  [adsh]
-  (->> (retrieve-numbers-for-submission adsh)
-       (map-numbers-to-submission)))
 
 (defn fetch-numbers-for-submission
   "Fetches all number records for a particular adsh from cache. Retrieves from

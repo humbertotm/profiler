@@ -46,15 +46,3 @@
       (is (= 3 (count (get-in @numbers-cache [:0000002178-19-000087]))))
       (is (= 3 (count (fetch-numbers-for-submission "0000002178-19-000087")))))))
 
-(deftest test-retrieve-mapped-submission-numbers
-  (testing "retrieves data from db"
-    (with-redefs [retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 5 (count (retrieve-mapped-submission-numbers "0000002178-19-000087"))))
-      (is (= '(:NetIncomeLoss|2019
-               :Assets|2019
-               :Goodwill|2019
-               :AssetsCurrent|2019
-               :LiabilitiesCurrent|2019)
-             (keys (retrieve-mapped-submission-numbers "0000002178-19-000087")))))))
-
-
