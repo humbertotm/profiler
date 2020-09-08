@@ -7,6 +7,8 @@
             [screener.data.sub :as sub]
             [screener.data.num :as num]))
 
+(import java.util.concurrent.CountDownLatch)
+
 (def profiles-cache-threshold-value 100)
 
 (defn initialize-profiles-cache
@@ -187,22 +189,26 @@
           {}
           years))
 
-;; TODO: DO THIS BY BATCHES. DO NOT PROCEED UNTIL WHOLE BATCH HAS BEEN PROCESSED.
-(defn threaded-time-series-profiling
+(defn threaded-profiling
   "Builds a map for a list of companies where keys are tickers and values are a
    profile map containing the specified descriptors for the specified year."
   [tickers-list descriptors years]
   (let [max-threads 5]
     (loop [partitioned-tickers-list (partition max-threads max-threads nil tickers-list)]
       (when (not (empty? (first partitioned-tickers-list)))
-        (loop [tickers-batch (first partitioned-tickers-list)]
-          (when (not (nil? (first tickers-batch)))
-            (let [ticker (first tickers-batch)]
-              (thread
-                (cache/fetch-cacheable-data
-                 profiles-cache
-                 (keyword ticker)
-                 (fn [key] (company-time-series-profile ticker descriptors years))))
-              (recur (rest tickers-batch)))))
+        (let [n (if (= max-threads (count (first partitioned-tickers-list)))
+                  max-threads
+                  (count (first partitioned-tickers-list)))
+              latch (java.util.concurrent.CountDownLatch. n)]
+          (loop [tickers-batch (first partitioned-tickers-list)]
+            (when (not (nil? (first tickers-batch)))
+              (let [ticker (first tickers-batch)]
+                (thread (cache/fetch-cacheable-data profiles-cache
+                                                    (keyword ticker)
+                                                    (fn [key] (company-time-series-profile
+                                                               ticker descriptors years)))
+                        (.countDown latch))
+                (recur (rest tickers-batch)))))
+          (.await latch))
         (recur (rest partitioned-tickers-list))))))
 

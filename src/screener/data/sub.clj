@@ -3,7 +3,9 @@
             [cache.core :as cache]
             [db.operations :as dbops]))
 
-(def submissions-cache-threshold-value 40)
+(def submissions-cache-threshold-value
+  "Matches pooled data connection max size"
+  5)
 
 (def table-name "submissions")
 

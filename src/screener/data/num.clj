@@ -3,7 +3,9 @@
             [db.operations :as dbops]
             [screener.utils.date :refer :all]))
 
-(def numbers-cache-threshold-value 100)
+(def numbers-cache-threshold-value
+  "Matches the max db connection pool size"
+  5)
 
 (def table-name "numbers")
 
