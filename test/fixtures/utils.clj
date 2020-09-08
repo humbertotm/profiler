@@ -1,4 +1,4 @@
-(ns etl.records.utils.value-setters
+(ns fixtures.utils
   (:require [java-time :as jtime]))
 
 (defn string-or-nil
@@ -32,4 +32,3 @@
   #(if (not (empty? %))
      (if (= (read-string %) 1) true false)
      nil))
-
