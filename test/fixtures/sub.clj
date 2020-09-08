@@ -1,5 +1,5 @@
 (ns fixtures.sub
-  (:require [etl.records.utils.value-setters :refer :all]))
+  (:require [fixtures.utils :refer :all]))
 
 (def sub-adams-10q {:nciks "1",
                     :fye "1231",
