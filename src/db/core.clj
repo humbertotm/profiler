@@ -2,6 +2,8 @@
   (:import (com.mchange.v2.c3p0 ComboPooledDataSource))
   (:require [environ.core :refer [env]]))
 
+(def max-pool-size 5)
+
 (def spec
   "Returns a spec map for db connection"
   {:classname "org.postgresql.Driver"
@@ -18,6 +20,7 @@
                (.setJdbcUrl (str "jdbc:" (:subprotocol spec) ":" (:subname spec)))
                (.setUser (:user spec))
                (.setPassword (:password spec))
+               (.setMaxPoolSize max-pool-size)
                ;; expire excess connections after 30 minutes of inactivity:
                (.setMaxIdleTimeExcessConnections (* 30 60))
                ;; expire connections after 3 hours of inactivity:

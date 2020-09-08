@@ -3,7 +3,9 @@
             [cache.core :as cache]
             [db.operations :as dbops]))
 
-(def cik-tickers-cache-threshold 20)
+(def cik-tickers-cache-threshold
+  "Matches db pooled data connections max size"
+  5)
 
 (def table-name "tickers")
 
