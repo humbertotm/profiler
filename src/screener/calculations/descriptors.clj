@@ -21,7 +21,22 @@
    :depreciation {:tag "DepreciationDepletionAndAmortization"},
    :capital-expenditures {:tag "CapitalExpenditures"},
    :net-income {:tag "NetIncomeLoss"},
-   :total-equity {:tag "StockholdersEquity", :fallback :calculated-total-equity}})
+   :total-equity {:tag "StockholdersEquity", :fallback :calculated-total-equity}
+   :common-stock-outstanding {:tag "EntityCommonStockSharesOutstanding"}
+   :stock-options-exercised {:tag "StockIssuedDuringPeriodSharesStockOptionsExercised"}
+   :stock-options-granted {:tag "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriod"}
+   :stock-repurchase-payment {:tag "PaymentsForRepurchaseOfCommonStock"}
+   :total-sales {:tag "SalesRevenueGoodsNet"}
+   :long-term-debt {:tag "LongTermDebt"}
+   :long-term-debt-current {:tag "LongTermDebtCurrent"}
+   :long-term-debt-maturity-1yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"}      ; Same as above
+   :long-term-debt-maturity-2yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo"}
+   :long-term-debt-maturity-3yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree"}
+   :long-term-debt-maturity-4yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour"}
+   :long-term-debt-maturity-5yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive"}
+   :inventory {:tag "InventoryNet"}
+   :dividend-payment {:tag "PaymentsOfDividends"}
+   :dividends-per-share-paid {:tag "CommonStockDividendsPerShareCashPaid"}})
 
 (def args-spec
   "Defines a mapping of descriptor to list of arguments spec required to compute them. Args
