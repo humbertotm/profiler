@@ -21,8 +21,25 @@
    :depreciation {:tag "DepreciationDepletionAndAmortization"},
    :capital-expenditures {:tag "CapitalExpenditures"},
    :net-income {:tag "NetIncomeLoss"},
-   :total-equity {:tag "StockholdersEquity", :fallback :calculated-total-equity}})
+   :total-equity {:tag "StockholdersEquity", :fallback :calculated-total-equity}
+   :common-stock-outstanding {:tag "EntityCommonStockSharesOutstanding"}
+   :stock-options-exercised {:tag "StockIssuedDuringPeriodSharesStockOptionsExercised"}
+   :stock-options-granted {:tag "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriod"}
+   :stock-repurchase-payment {:tag "PaymentsForRepurchaseOfCommonStock"}
+   :total-sales {:tag "SalesRevenueGoodsNet"}
+   :long-term-debt {:tag "LongTermDebt"}
+   :long-term-debt-current {:tag "LongTermDebtCurrent"}
+   :long-term-debt-maturity-1yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"}      ; Same as above
+   :long-term-debt-maturity-2yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo"}
+   :long-term-debt-maturity-3yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree"}
+   :long-term-debt-maturity-4yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour"}
+   :long-term-debt-maturity-5yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive"}
+   :inventory {:tag "InventoryNet"}
+   :dividend-payment {:tag "PaymentsOfDividends"} ; Can have a fallback
+   :dividends-per-share-paid {:tag "CommonStockDividendsPerShareCashPaid"}
+   :operating-income {:tag "OperatingIncomeLoss"}})
 
+;; Redefine the name for this map. This is our knowledge repository
 (def args-spec
   "Defines a mapping of descriptor to list of arguments spec required to compute them. Args
    :name should match a key in profile-descriptor-tags map if :type is :simple-number. If
@@ -54,7 +71,21 @@
    :calculated-total-assets '({:name :total-equity, :type :simple-number},
                               {:name :total-liabilities, :type :simple-number})
    :calculated-total-equity '({:name :total-assets, :type :simple-number},
-                              {:name :total-liabilities, :type :simple-number})})
+                              {:name :total-liabilities, :type :simple-number})
+   :debt-to-equity-ratio '({:name :total-liabilities, :type :simple-number},
+                           {:name :total-equity, :type :simple-number})
+   :debt-to-net-equity-ratio '({:name :total-liabilities, :type :simple-number},
+                               {:name :total-equity, :type :simple-number}
+                               {:name :goodwill, :type :simple-number})        ; Not considering goodwill
+   :diluted-eps '({:name :net-income, :type :simple-number},
+                  {:name :common-stock-outstanding, :type :simple-number},
+                  {:name :stock-options-granted, :type :simple-number})
+   :dividends-paid-to-net-income-ratio '({:name :net-income, :type :simple-number},
+                                         {:name :dividend-payment, :type :simple-number})
+   :net-profit-margin '({:name :total-sales, :type :simple-number},
+                        {:name :net-income, :type :net-income})
+   :operational-profit-margin '({:name :total-sales, :type :simple-number},
+                                {:name :operating-income, :type :simple-number})})
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
 

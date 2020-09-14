@@ -9,6 +9,7 @@
 
 (import java.util.concurrent.CountDownLatch)
 
+;; TODO: revisit this cache. I don't think it will be needed at all.
 (def profiles-cache-threshold-value 100)
 
 (defn initialize-profiles-cache
