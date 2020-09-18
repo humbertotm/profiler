@@ -5,23 +5,27 @@
             :url "https://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/java.jdbc "0.7.10"]
-                 [org.postgresql/postgresql "42.2.8"]
-                 [com.mchange/c3p0 "0.9.5.4"]
-                 [org.clojure/data.csv "0.1.4"]
-                 [clojure.java-time "0.3.2"]
+                 [org.clojure/data.json "1.0.0"]
                  [org.clojure/core.cache "0.8.1"]
                  [org.clojure/core.async "1.3.610"]
                  [org.clojure/tools.trace "0.7.10"]
-                 [environ "1.1.0"]]
-  :plugins [[lein-environ "1.1.0"]] ; Don't know if this is the right place to keep plugins
+                 [org.clojure/data.csv "0.1.4"]
+                 [org.postgresql/postgresql "42.2.8"]
+                 [com.mchange/c3p0 "0.9.5.4"]
+                 [com.novemberain/monger "3.1.0"]
+                 [clojure.java-time "0.3.2"]
+                 [environ "1.2.0"]]
+  :plugins [[lein-environ "1.2.0"]]
   :main ^:skip-aot screener.core
   :target-path "target/%s"
   :test-paths ["test"]
   :profiles {:uberjar {:aot :all}
              :user {:plugins [[cider/cider-nrepl "0.24.0"]]} ; Place somewhere else
-             :dev {:env {:db-subname "//localhost:5432/screener_dev"
-                         :db-user "screeneruser"
-                         :db-password "screeneruser"}}
-             :test {:env {:db-subname "//localhost:5432/screener_test"
-                          :db-user "screeneruser"
-                          :db-password "screeneruser"}}})
+             :dev [:project/dev :profiles/dev]
+             :test [:project/test :profiles/test]
+             :profiles/dev {}
+             :profiles/test {}
+             :project/dev {:source-paths ["src" "tool-src"]
+                           :dependencies [[midje "1.6.3"]]
+                           :plugins [[lein-auto "0.1.3"]]}
+             :project/test {}})
