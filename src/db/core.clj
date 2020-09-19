@@ -1,6 +1,6 @@
 (ns db.core
-  (:import (com.mchange.v2.c3p0 ComboPooledDataSource))
-  (:require [environ.core :refer [env]]))
+  (:require [environ.core :refer [env]])
+  (:import [com.mchange.v2.c3p0 ComboPooledDataSource]))
 
 (def max-pool-size 5)
 
