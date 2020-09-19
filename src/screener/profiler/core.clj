@@ -196,10 +196,10 @@
   [ticker descriptors year]
   (->> (build-company-custom-profile descriptors ticker year)
        (assoc {:ticker ticker, :year year} :profile ,,,)
-       (json/write-str ,,,)
-       (json/read-str ,,,)
        (mdbops/insert-doc "profiles" ,,,)))
 
+;; Fix that json serializing/deserializing shit. Use java.lang.Double instead of BigDecimal
+;; Take another look at calculations.operations/ratio and fix that shit to spit out doubles
 (defn parallel-profiling
   "Builds a map for a list of companies where keys are tickers and values are a
    profile map containing the specified descriptors for the specified year."
@@ -216,8 +216,6 @@
               (let [ticker (first tickers-batch)]
                 (thread (->> (company-time-series-profile ticker descriptors years)
                              (assoc {:ticker ticker} :profile ,,,)
-                             (json/write-str ,,,) ; In order to avoid conflicts with BigDec
-                             (json/read-str ,,,)  ; Need to find a better way to deal with it
                              (mdbops/insert-doc "profiles" ,,,))
                         (.countDown latch))
                 (recur (rest tickers-batch)))))
