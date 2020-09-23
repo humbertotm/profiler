@@ -44,10 +44,10 @@
 (deftest test-build-args-map
   (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns simple arguments map"
-      (is (= {:total-assets 45000000.0000M, :goodwill 8450000.0000M}
+      (is (= {:total-assets 4.5E7, :goodwill 8450000.0}
              (build-args-map :tangible-assets "someadsh" "2019"))))
     (testing "returns recursively constructed arguments map"
-      (is (= {:net-income 745000000.0000M, :working-capital 4.0E8}
+      (is (= {:net-income 7.45E8, :working-capital 4.0E8}
              (build-args-map :return-on-working-capital "someadsh" "2019"))))
     (testing "returns empty map for not found descriptor"
       (is (= {}
@@ -56,15 +56,15 @@
 (deftest test-calculate
   (testing "returns expected computed value for :simple-number type descriptor"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 745000000.0000M
+      (is (= 7.45E8
              (calculate :net-income "someadsh0" "2019")))))
   (testing "returns expected computed value for :simple-number type descriptor"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 745000000.0000M
+      (is (= 7.45E8
              (calculate :net-income "someadsh1" "2019")))))
   (testing "returns expected computed value for complex descriptor"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 1.86M
+      (is (= 1.8625
              (calculate :return-on-working-capital "someadsh2" "2019")))))
   (testing "throws a NullPointerException when descriptor is not recognized"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
@@ -93,7 +93,7 @@
 (deftest test-build-profile-map
   (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns nicely constructed map with specified descriptors"
-      (is (= {:NetIncome 745000000.0000M, :CurrentAssetsToCurrentLiabilities 1.62M}
+      (is (= {:NetIncome 7.45E8, :CurrentAssetsToCurrentLiabilities 1.62015503875969}
              (build-profile-map
               '("Net Income", "Current Assets to Current Liabilities")
               "someadsh"
@@ -113,7 +113,7 @@
                 screener.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
                 screener.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
-      (is (= {:NetIncome 745000000.0000M, :CurrentAssetsToCurrentLiabilities 1.62M}
+      (is (= {:NetIncome 7.45E8, :CurrentAssetsToCurrentLiabilities 1.62015503875969}
              (build-company-custom-profile
               '("Net Income", "Current Assets to Current Liabilities")
               "someadsh"
@@ -144,7 +144,7 @@
                   (let [subs (atom ["0000002178-19-000087" nil])]
                     (fn [_] (ffirst (swap-vals! subs rest))))]
       (is (= {:fb {:TangibleAssets 3.655E7,
-                   :CurrentAssetsToCurrentLiabilities 1.62M},
+                   :CurrentAssetsToCurrentLiabilities 1.62015503875969},
               :xxx {}}
              (profile-list-of-companies
               '("fb", "xxx")
@@ -163,9 +163,9 @@
                   (let [subs (atom ["0000002178-19-000089" "0000002222-19-000090"])]
                     (fn [_] (ffirst (swap-vals! subs rest))))]
       (is (= {:adp {:TangibleAssets 3.655E7,
-                    :CurrentAssetsToCurrentLiabilities 1.62M},
+                    :CurrentAssetsToCurrentLiabilities 1.62015503875969},
               :avt {:TangibleAssets 2.51E7,
-                    :CurrentAssetsToCurrentLiabilities 1.63M}}
+                    :CurrentAssetsToCurrentLiabilities 1.6280864197530864}}
              (profile-list-of-companies
               '("adp", "avt")
               '("Tangible Assets", "Current assets to current liabilities")
@@ -202,11 +202,11 @@
                                     "0000002178-19-000080"
                                     "0000002178-19-000081"])]
                     (fn [_] (ffirst (swap-vals! subs rest))))]
-      (is (= {:2010 {:TangibleAssets 3.655E7, :CurrentAssetsToCurrentLiabilities 1.62M},
-              :2011 {:TangibleAssets 3.475E7, :CurrentAssetsToCurrentLiabilities 1.64M},
-              :2012 {:TangibleAssets 3.52E7, :CurrentAssetsToCurrentLiabilities 1.63M},
-              :2013 {:TangibleAssets 3.565E7, :CurrentAssetsToCurrentLiabilities 1.63M},
-              :2014 {:TangibleAssets 3.61E7, :CurrentAssetsToCurrentLiabilities 1.63M}}
+      (is (= {:2010 {:TangibleAssets 3.655E7, :CurrentAssetsToCurrentLiabilities 1.62015503875969},
+              :2011 {:TangibleAssets 3.475E7, :CurrentAssetsToCurrentLiabilities 1.64},
+              :2012 {:TangibleAssets 3.52E7, :CurrentAssetsToCurrentLiabilities 1.6349206349206349},
+              :2013 {:TangibleAssets 3.565E7, :CurrentAssetsToCurrentLiabilities 1.6299212598425197},
+              :2014 {:TangibleAssets 3.61E7, :CurrentAssetsToCurrentLiabilities 1.625}}
              (company-time-series-profile
               "adp"
               '("Tangible Assets", "Current assets to current liabilities")

@@ -12,5 +12,5 @@
           (or (nil? dividend)
               (zero? dividend)))
     nil
-    (with-precision 3 (/ (bigdec divisor) (bigdec dividend)))))
+    (/ (double divisor) (double dividend))))
 

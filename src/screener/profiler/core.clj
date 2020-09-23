@@ -1,13 +1,14 @@
 (ns screener.profiler.core
+  (:import [java.util.concurrent CountDownLatch])
   (:require [clojure.string :as string]
+            [clojure.data.json :as json]
             [cache.core :as cache]
             [clojure.core.async :as async :refer [thread]]
             [screener.calculations.descriptors :as descriptors]
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
-            [screener.data.num :as num]))
-
-(import java.util.concurrent.CountDownLatch)
+            [screener.data.num :as num]
+            [mongodb.operations :as mdbops]))
 
 ;; TODO: revisit this cache. I don't think it will be needed at all.
 (def profiles-cache-threshold-value 100)
@@ -190,7 +191,16 @@
           {}
           years))
 
-(defn threaded-profiling
+;; Test purposes
+(defn write-to-mongodb
+  [ticker descriptors year]
+  (->> (build-company-custom-profile descriptors ticker year)
+       (assoc {:ticker ticker, :year year} :profile ,,,)
+       (mdbops/insert-doc "profiles" ,,,)))
+
+;; Fix that json serializing/deserializing shit. Use java.lang.Double instead of BigDecimal
+;; Take another look at calculations.operations/ratio and fix that shit to spit out doubles
+(defn parallel-profiling
   "Builds a map for a list of companies where keys are tickers and values are a
    profile map containing the specified descriptors for the specified year."
   [tickers-list descriptors years]
@@ -200,14 +210,13 @@
         (let [n (if (= max-threads (count (first partitioned-tickers-list)))
                   max-threads
                   (count (first partitioned-tickers-list)))
-              latch (java.util.concurrent.CountDownLatch. n)]
+              latch (CountDownLatch. n)]
           (loop [tickers-batch (first partitioned-tickers-list)]
             (when (not (nil? (first tickers-batch)))
               (let [ticker (first tickers-batch)]
-                (thread (cache/fetch-cacheable-data profiles-cache
-                                                    (keyword ticker)
-                                                    (fn [key] (company-time-series-profile
-                                                               ticker descriptors years)))
+                (thread (->> (company-time-series-profile ticker descriptors years)
+                             (assoc {:ticker ticker} :profile ,,,)
+                             (mdbops/insert-doc "profiles" ,,,))
                         (.countDown latch))
                 (recur (rest tickers-batch)))))
           (.await latch))

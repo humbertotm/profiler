@@ -4,7 +4,7 @@
 
 (deftest test-ratio
   (testing "returns bigdec with 3 digit precision"
-    (is (= (bigdec 3.10)
+    (is (= (double (/ 1550650 500050))
            (ratio 1550650 500050))))
   (testing "returns nil if divisor is nil"
     (is (nil? (ratio nil 1.55))))

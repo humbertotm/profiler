@@ -95,7 +95,7 @@
   (if (or (nil? total-assets)
           (nil? goodwill))
     nil
-    (- (float total-assets) (float goodwill))))
+    (- (double total-assets) (double goodwill))))
 
 (defn free-cash-flow
   "Net income - depreciation + capital expenditures"
@@ -104,8 +104,8 @@
           (nil? depreciation-and-amortization)
           (nil? capital-expenditures))
     nil
-    (+ (- (float net-income) (float depreciation-and-amortization))
-       (float capital-expenditures))))
+    (+ (- (double net-income) (double depreciation-and-amortization))
+       (double capital-expenditures))))
 
 (defn working-capital
   "Current assets - current liabilities"
@@ -113,7 +113,7 @@
   (if (or (nil? current-assets)
           (nil? current-liabilities))
     nil
-    (- (float current-assets) (float current-liabilities))))
+    (- (double current-assets) (double current-liabilities))))
 
 (defn current-assets-to-current-liabilities
   "Current assets / current liabilities"
@@ -143,7 +143,9 @@
 (defn net-income
   "Net income"
   [{:keys [net-income]}]
-  net-income)
+  (if (nil? net-income)
+    nil
+    (double net-income)))
 
 (defn return-on-equity
   "Net income / total equity"
@@ -162,7 +164,7 @@
   (if (or (nil? total-equity)
           (nil? total-assets))
     nil
-    (- total-assets total-equity)))
+    (double (- total-assets total-equity))))
 
 (defn calculated-total-assets
   "Calculates total assets when value is not present among submission numbers.
@@ -171,7 +173,7 @@
   (if (or (nil? total-equity)
           (nil? total-liabilities))
     nil
-    (+ total-equity total-liabilities)))
+    (double (+ total-equity total-liabilities))))
 
 (defn calculated-total-equity
   "Calculates total equity when value is not present among submission numbers.
@@ -180,5 +182,5 @@
   (if (or (nil? total-assets)
           (nil? total-liabilities))
     nil
-    (- total-assets total-liabilities)))
+    (double (- total-assets total-liabilities))))
 
