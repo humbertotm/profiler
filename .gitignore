@@ -5,9 +5,6 @@
 # Ignore leiningen dirs
 target/
 
-# Ignore profile settings (sensitive data)
-profiles.clj
-
 # Ignore leiningen files
 .lein-repl-history
 .lein-failures
