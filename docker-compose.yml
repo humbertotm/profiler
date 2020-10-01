@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   lein-app:
+    container_name: screener-lein
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,6 +15,7 @@ services:
       - mongo-db
 
   postgres-db:
+    container_name: screener-pgdb
     image: postgres:latest
     ports:
       - "5432:5432"
@@ -23,10 +25,20 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - "/Users/htellechea/p_projects/screener/db/create_tables.sql:/usr/local/etc/create_tables.sql"
-      - "/Users/htellechea/p_projects/screener/docker_init/postgres:/docker-entrypoint-initdb.d"
+      - type: volume
+        source: postgres-data
+        target: /var/lib/postgresql/data
+        volume:
+          nocopy: true
+      - type: bind
+        source: /Users/htellechea/p_projects/screener/db/create_tables.sql
+        target: /usr/local/etc/create_tables.sql
+      - type: bind
+        source: /Users/htellechea/p_projects/screener/docker_init/postgres
+        target: /docker-entrypoint-initdb.d
 
   mongo-db:
+    container_name: screener-mongodb
     image: mongo:latest
     ports:
       - "27017:27017"
@@ -37,8 +49,14 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongoadmin
       MONGO_INITDB_DATABASE: admin
     volumes:
-      - "/Users/htellechea/p_projects/screener/docker-init/mongo:/docker-entrypoint-initdb.d"
+      - type: bind
+        source: /Users/htellechea/p_projects/screener/docker-init/mongo
+        target: /docker-entrypoint-initdb.d
 
 networks:
   screener:
+    driver: bridge
+
+volumes:
+  postgres-data:
   

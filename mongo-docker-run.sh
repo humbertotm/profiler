@@ -17,9 +17,8 @@ docker run -d -p 36096:36096 \
 
 # Start postgresql instance
 docker run -d -p 5432:5432 \
-       -v /Users/htellechea/p_projects/screener/db/create_tables.sql:/usr/local/etc/create_tables.sql \
-       -v /Users/htellechea/p_projects/screener/docker_init/postgres:/docker-entrypoint-initdb.d \
-       --name screener-postgres \
+       -v screener_postgres-data:/var/lib/postgresql/data \
+       --name test-vol-postgres \
        -e POSTGRES_USER=postgres \
        -e POSTGRES_PASSWORD=postgres \
        postgres:latest
