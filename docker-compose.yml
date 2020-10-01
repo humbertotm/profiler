@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  lein-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "36096:36096"
+    networks:
+      - screener
+    depends_on:
+      - postgres-db
+      - mongo-db
+
+  postgres-db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    networks:
+      - screener
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - "/Users/htellechea/p_projects/screener/db/create_tables.sql:/usr/local/etc/create_tables.sql"
+      - "/Users/htellechea/p_projects/screener/docker_init/postgres:/docker-entrypoint-initdb.d"
+
+  mongo-db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - screener
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+      MONGO_INITDB_DATABASE: admin
+    volumes:
+      - "/Users/htellechea/p_projects/screener/docker-init/mongo:/docker-entrypoint-initdb.d"
+
+networks:
+  screener:
+  
