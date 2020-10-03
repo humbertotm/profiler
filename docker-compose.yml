@@ -26,16 +26,10 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - type: volume
-        source: postgres-data
+        source: screener-postgres-data
         target: /var/lib/postgresql/data
         volume:
           nocopy: true
-      - type: bind
-        source: /Users/htellechea/p_projects/screener/db/create_tables.sql
-        target: /usr/local/etc/create_tables.sql
-      - type: bind
-        source: /Users/htellechea/p_projects/screener/docker_init/postgres
-        target: /docker-entrypoint-initdb.d
 
   mongo-db:
     container_name: screener-mongodb
@@ -49,14 +43,21 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongoadmin
       MONGO_INITDB_DATABASE: admin
     volumes:
+      - type: volume
+        source: screener-mongo-data
+        target: /data/db
       - type: bind
-        source: /Users/htellechea/p_projects/screener/docker-init/mongo
+        source: /Users/htellechea/p_projects/screener-db-init/mongo
         target: /docker-entrypoint-initdb.d
 
 networks:
   screener:
     driver: bridge
 
+# Assumes these volumes have been previously created 
 volumes:
-  postgres-data:
+  screener-postgres-data:
+    external: true
+  screener-mongo-data:
+    external: true
   
