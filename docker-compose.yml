@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  lein-app:
+    container_name: screener-lein
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "36096:36096"
+    networks:
+      - screener
+    depends_on:
+      - postgres-db
+      - mongo-db
+
+  postgres-db:
+    container_name: screener-pgdb
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    networks:
+      - screener
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - type: volume
+        source: screener-postgres-data
+        target: /var/lib/postgresql/data
+        volume:
+          nocopy: true
+
+  mongo-db:
+    container_name: screener-mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - screener
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+      MONGO_INITDB_DATABASE: admin
+    volumes:
+      - type: volume
+        source: screener-mongo-data
+        target: /data/db
+      - type: bind
+        source: /Users/htellechea/p_projects/screener-db-init/mongo
+        target: /docker-entrypoint-initdb.d
+
+networks:
+  screener:
+    driver: bridge
+
+# Assumes these volumes have been previously created 
+volumes:
+  screener-postgres-data:
+    external: true
+  screener-mongo-data:
+    external: true
+  

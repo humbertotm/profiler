@@ -1,0 +1,16 @@
+.github/
+.git/
+.gitignore
+.lein-envi
+.lein-failures
+.lein-repl-history
+.vagrant
+docker-mongo-init.js
+mongo-docker-run.sh
+script/
+tag_samples/
+target/
+tool-src/
+ubuntu-xenial-16.04-cloudimg-console.log
+vagrantfile
+
