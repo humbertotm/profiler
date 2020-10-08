@@ -8,6 +8,7 @@
             [screener.data.tickers :as tickers]
             [screener.data.sub :as sub]
             [screener.data.num :as num]
+            [screener.utils.async :as uasync]
             [mongodb.operations :as mdbops]))
 
 ;; TODO: revisit this cache. I don't think it will be needed at all.
@@ -198,27 +199,15 @@
        (assoc {:ticker ticker, :year year} :profile ,,,)
        (mdbops/insert-doc "profiles" ,,,)))
 
-;; Fix that json serializing/deserializing shit. Use java.lang.Double instead of BigDecimal
-;; Take another look at calculations.operations/ratio and fix that shit to spit out doubles
-(defn parallel-profiling
-  "Builds a map for a list of companies where keys are tickers and values are a
-   profile map containing the specified descriptors for the specified year."
-  [tickers-list descriptors years]
-  (let [max-threads 5]
-    (loop [partitioned-tickers-list (partition max-threads max-threads nil tickers-list)]
-      (when (not (empty? (first partitioned-tickers-list)))
-        (let [n (if (= max-threads (count (first partitioned-tickers-list)))
-                  max-threads
-                  (count (first partitioned-tickers-list)))
-              latch (CountDownLatch. n)]
-          (loop [tickers-batch (first partitioned-tickers-list)]
-            (when (not (nil? (first tickers-batch)))
-              (let [ticker (first tickers-batch)]
-                (thread (->> (company-time-series-profile ticker descriptors years)
-                             (assoc {:ticker ticker} :profile ,,,)
-                             (mdbops/insert-doc "profiles" ,,,))
-                        (.countDown latch))
-                (recur (rest tickers-batch)))))
-          (.await latch))
-        (recur (rest partitioned-tickers-list))))))
+(defn profile-companies
+  "Profiles companies associated to provided list of tickers. Profile is constructed
+  according to list of descriptors provided for the range of years specified.
+  Output is written to document based database."
+  [tickers descriptors years]
+  (uasync/n-threads-exec
+   tickers
+   5
+   (fn [e] (->> (company-time-series-profile e descriptors years)
+                (assoc {:ticker e} :profile ,,,)
+                (println ,,,)))))
 
