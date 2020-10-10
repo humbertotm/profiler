@@ -38,17 +38,6 @@
       (throw (NullPointerException. (str "Function " descriptor-fn-name " does not exist.")))
       descriptor-fn)))
 
-;; (defn get-descriptor-key
-;;   "Returns a keyword from a name-string to be employed as key in built profile map.
-;;    eg. 'Net Income' => :NetIncome."
-;;   [name-string]
-;;   (let [split-name (string/split name-string #" ")]
-;;     (keyword (reduce (fn
-;;                        [accum-str next-str]
-;;                        (str accum-str (string/capitalize next-str)))
-;;                      ""
-;;                      split-name))))
-
 (defn get-descriptor-key
   "Returns a keyword from a name-string to be employed as key in built profile map.
    eg. 'Net Income' => :net_income for eventual JSON doc storage"
