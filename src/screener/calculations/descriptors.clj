@@ -37,7 +37,8 @@
    :inventory {:tag "InventoryNet"}
    :dividend-payment {:tag "PaymentsOfDividends"} ; Can have a fallback
    :dividends-per-share-paid {:tag "CommonStockDividendsPerShareCashPaid"}
-   :operating-income {:tag "OperatingIncomeLoss"}})
+   :operating-income {:tag "OperatingIncomeLoss"}
+   :research-and-development-expense {:tag "ResearchAndDevelopmentExpense"}})
 
 ;; Redefine the name for this map. This is our knowledge repository
 (def args-spec
@@ -85,7 +86,10 @@
    :net-profit-margin '({:name :total-sales, :type :simple-number},
                         {:name :net-income, :type :net-income})
    :operational-profit-margin '({:name :total-sales, :type :simple-number},
-                                {:name :operating-income, :type :simple-number})})
+                                {:name :operating-income, :type :simple-number})
+   :research-and-development-expense '({:name :research-and-development-expense, :type :simple-number})
+   :research-expense-to-revenue '({:name :total-sales, :type :simple-number},
+                                  {:name :research-and-development-expense, :type :simple-number})})
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
 
@@ -183,4 +187,16 @@
           (nil? total-liabilities))
     nil
     (double (- total-assets total-liabilities))))
+
+(defn research-and-development-expense
+  "Research and Development Expense"
+  [{:keys [research-and-development-expense]}]
+  (if (nil? research-and-development-expense)
+    nil
+    (double research-and-development-expense)))
+
+(defn research-expense-to-revenue
+  "R&D expense / total revenue"
+  [{:keys [research-and-development-expense total-sales]}]
+  (ratio research-and-development-expense total-sales))
 
