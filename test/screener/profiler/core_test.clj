@@ -31,9 +31,9 @@
 
 (deftest test-get-descriptor-key
   (testing "returns an appropriate keyword for a string"
-    (is (= :NetIncome (get-descriptor-key "Net Income"))))
+    (is (= :net_income (get-descriptor-key "Net Income"))))
   (testing "does not care about input case"
-    (is (= :CurrentAssets (get-descriptor-key "cuRrEnT AsSetS")))))
+    (is (= :current_assets (get-descriptor-key "cuRrEnT AsSetS")))))
 
 (deftest test-descriptor-to-keyword
   (testing "returns an appropriate keyword fot a descriptor string"
@@ -93,13 +93,13 @@
 (deftest test-build-profile-map
   (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns nicely constructed map with specified descriptors"
-      (is (= {:NetIncome 7.45E8, :CurrentAssetsToCurrentLiabilities 1.62015503875969}
+      (is (= {:net_income 7.45E8, :current_assets_to_current_liabilities 1.62015503875969}
              (build-profile-map
               '("Net Income", "Current Assets to Current Liabilities")
               "someadsh"
               "2019"))))
     (testing "returns nil values for descriptors that cannot be calculated"
-      (is (= {:TangibleAssets 3.655E7, :FreeCashFlow nil}
+      (is (= {:tangible_assets 3.655E7, :free_cash_flow nil}
              (build-profile-map
               '("tangible assets", "free cash flow")
               "someadsh"
@@ -113,13 +113,13 @@
                 screener.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
                 screener.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
-      (is (= {:NetIncome 7.45E8, :CurrentAssetsToCurrentLiabilities 1.62015503875969}
+      (is (= {:net_income 7.45E8, :current_assets_to_current_liabilities 1.62015503875969}
              (build-company-custom-profile
               '("Net Income", "Current Assets to Current Liabilities")
               "someadsh"
               "2019"))))
     (testing "returns nil values for descriptors that cannot be calculated"
-      (is (= {:TangibleAssets 3.655E7, :FreeCashFlow nil}
+      (is (= {:tangible_assets 3.655E7, :free_cash_flow nil}
              (build-company-custom-profile
               '("Tangible Assets", "Free cash flow")
               "someadsh"
@@ -143,8 +143,8 @@
                   screener.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000087" nil])]
                     (fn [_] (ffirst (swap-vals! subs rest))))]
-      (is (= {:fb {:TangibleAssets 3.655E7,
-                   :CurrentAssetsToCurrentLiabilities 1.62015503875969},
+      (is (= {:fb {:tangible_assets 3.655E7,
+                   :current_assets_to_current_liabilities 1.62015503875969},
               :xxx {}}
              (profile-list-of-companies
               '("fb", "xxx")
@@ -162,10 +162,10 @@
                   screener.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000089" "0000002222-19-000090"])]
                     (fn [_] (ffirst (swap-vals! subs rest))))]
-      (is (= {:adp {:TangibleAssets 3.655E7,
-                    :CurrentAssetsToCurrentLiabilities 1.62015503875969},
-              :avt {:TangibleAssets 2.51E7,
-                    :CurrentAssetsToCurrentLiabilities 1.6280864197530864}}
+      (is (= {:adp {:tangible_assets 3.655E7,
+                    :current_assets_to_current_liabilities 1.62015503875969},
+              :avt {:tangible_assets 2.51E7,
+                    :current_assets_to_current_liabilities 1.6280864197530864}}
              (profile-list-of-companies
               '("adp", "avt")
               '("Tangible Assets", "Current assets to current liabilities")
@@ -202,11 +202,11 @@
                                     "0000002178-19-000080"
                                     "0000002178-19-000081"])]
                     (fn [_] (ffirst (swap-vals! subs rest))))]
-      (is (= {:2010 {:TangibleAssets 3.655E7, :CurrentAssetsToCurrentLiabilities 1.62015503875969},
-              :2011 {:TangibleAssets 3.475E7, :CurrentAssetsToCurrentLiabilities 1.64},
-              :2012 {:TangibleAssets 3.52E7, :CurrentAssetsToCurrentLiabilities 1.6349206349206349},
-              :2013 {:TangibleAssets 3.565E7, :CurrentAssetsToCurrentLiabilities 1.6299212598425197},
-              :2014 {:TangibleAssets 3.61E7, :CurrentAssetsToCurrentLiabilities 1.625}}
+      (is (= {:2010 {:tangible_assets 3.655E7, :current_assets_to_current_liabilities 1.62015503875969},
+              :2011 {:tangible_assets 3.475E7, :current_assets_to_current_liabilities 1.64},
+              :2012 {:tangible_assets 3.52E7, :current_assets_to_current_liabilities 1.6349206349206349},
+              :2013 {:tangible_assets 3.565E7, :current_assets_to_current_liabilities 1.6299212598425197},
+              :2014 {:tangible_assets 3.61E7, :current_assets_to_current_liabilities 1.625}}
              (company-time-series-profile
               "adp"
               '("Tangible Assets", "Current assets to current liabilities")
@@ -237,11 +237,11 @@
                                       "0000002178-19-000080"
                                       "0000002178-19-000081"])]
                       (fn [_] (ffirst (swap-vals! subs rest))))]
-        (is (= {:2010 {:TangibleAssets 3.655E7, :FreeCashFlow nil},
-                :2011 {:TangibleAssets 3.475E7, :FreeCashFlow nil},
-                :2012 {:TangibleAssets 3.52E7, :FreeCashFlow nil},
-                :2013 {:TangibleAssets 3.565E7, :FreeCashFlow nil},
-                :2014 {:TangibleAssets 3.61E7, :FreeCashFlow nil}}
+        (is (= {:2010 {:tangible_assets 3.655E7, :free_cash_flow nil},
+                :2011 {:tangible_assets 3.475E7, :free_cash_flow nil},
+                :2012 {:tangible_assets 3.52E7, :free_cash_flow nil},
+                :2013 {:tangible_assets 3.565E7, :free_cash_flow nil},
+                :2014 {:tangible_assets 3.61E7, :free_cash_flow nil}}
                (company-time-series-profile
                 "adp"
                 '("Tangible Assets", "Free cash flow")

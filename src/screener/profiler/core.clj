@@ -40,12 +40,14 @@
 
 (defn get-descriptor-key
   "Returns a keyword from a name-string to be employed as key in built profile map.
-   eg. 'Net Income' => :NetIncome."
+   eg. 'Net Income' => :net_income for eventual JSON doc storage"
   [name-string]
   (let [split-name (string/split name-string #" ")]
     (keyword (reduce (fn
                        [accum-str next-str]
-                       (str accum-str (string/capitalize next-str)))
+                       (if (not (empty? accum-str))
+                         (str accum-str "_" (string/lower-case next-str))
+                         (string/lower-case next-str)))
                      ""
                      split-name))))
 
@@ -192,12 +194,18 @@
           {}
           years))
 
-;; Test purposes
-(defn write-to-mongodb
-  [ticker descriptors year]
-  (->> (build-company-custom-profile descriptors ticker year)
-       (assoc {:ticker ticker, :year year} :profile ,,,)
-       (mdbops/insert-doc "profiles" ,,,)))
+(defn write-yearly-profiles
+  ""
+  [ticker full-profile]
+  (let [kv-list (into (list) full-profile)]
+    (uasync/n-threads-exec
+     kv-list
+     5
+     (fn [e] (->> (assoc {:ticker ticker,
+                          :year (Integer/parseInt (name (first e)))}
+                         :profile
+                         (last e))
+                  (mdbops/insert-doc "profiles" ,,,))))))
 
 (defn profile-companies
   "Profiles companies associated to provided list of tickers. Profile is constructed
@@ -208,6 +216,5 @@
    tickers
    5
    (fn [e] (->> (company-time-series-profile e descriptors years)
-                (assoc {:ticker e} :profile ,,,)
-                (println ,,,)))))
+                (write-yearly-profiles e ,,,)))))
 
