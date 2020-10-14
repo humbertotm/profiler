@@ -9,6 +9,8 @@
 ;; This map would then be a master repository of knowledge needed to compute whatever
 ;; financial descriptor we might need.
 
+;; TODO: it is time to think of a more effective way to increase this should it be needed.
+
 (def src-number-data-tags
   "Returns a mapping of financial descriptor to tag employed to identify them (as per SEC
    datasets spec) in cache."
@@ -26,7 +28,7 @@
    :stock-options-exercised {:tag "StockIssuedDuringPeriodSharesStockOptionsExercised"}
    :stock-options-granted {:tag "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriod"}
    :stock-repurchase-payment {:tag "PaymentsForRepurchaseOfCommonStock"}
-   :total-sales {:tag "SalesRevenueGoodsNet"}
+   :total-sales {:tag "SalesRevenueNet"}
    :long-term-debt {:tag "LongTermDebt"}
    :long-term-debt-current {:tag "LongTermDebtCurrent"}
    :long-term-debt-maturity-1yr {:tag "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"}      ; Same as above
@@ -90,6 +92,136 @@
    :research-and-development-expense '({:name :research-and-development-expense, :type :simple-number})
    :research-expense-to-revenue '({:name :total-sales, :type :simple-number},
                                   {:name :research-and-development-expense, :type :simple-number})})
+
+;; TODO: refactor mechanism to calculate values based off this map.
+;; Find better place for the calculation mechanism stuff.
+(def descriptor-spec
+  ""
+  {:tangible-assets {:computation-fn :addition,
+                     :args '({:name :total-assets, :sign :positive, :computed false},
+                             {:name :goodwill, :sign :negative, :computed false})},
+   :free-cash-flow {:computation-fn :addition,
+                    :args '({:name :net-income, :sign :positive, :computed false},
+                            {:name :depreciation, :sign :positive, :computed false},
+                            {:name :capital-expenditures, :sign :negative, :computed false})},
+   :working-capital {:computation-fn :addition,
+                     :args '({:name :current-assets, :sign :positive, :computed false},
+                             {:name :current-liabilities, :sign :negative, :computed false})},
+   :current-assets-to-current-liabilities {:computation-fn :ratio,
+                                           :args {:antecedent {:name :current-assets,
+                                                               :sign :positive,
+                                                               :computed false},
+                                                  :consequent {:name :current-liabilities,
+                                                               :sign :positive,
+                                                               :computed false}}}
+   :accounts-payable-to-current-assets {:computation-fn :ratio,
+                                        :args {:antecedent {:name :accounts-payable,
+                                                            :sign :positive,
+                                                            :computed false},
+                                               :consequent {:name :current-assets,
+                                                            :sign :positive,
+                                                            :computed false}}}
+   :current-assets-to-total-liabilities {:computation-fn :ratio,
+                                         :args {:antecedent {:name :current-assets,
+                                                             :sign :positive,
+                                                             :computed false},
+                                                :consequent {:name :total-liabilities,
+                                                             :sign :positive,
+                                                             :computed false}}}
+   :total-tangible-assets-to-total-liabilities {:computation-fn :ratio,
+                                                :args {:antecedent {:name :tangible-assets,
+                                                                    :sign :positive,
+                                                                    :computed true},
+                                                       :consequent {:name :total-liabilities,
+                                                                    :sign :positive,
+                                                                    :computed false}}}
+   :goodwill-to-total-assets {:computation-fn :ratio,
+                              :args {:antecedent {:name :goodwill,
+                                                  :sign :positive,
+                                                  :computed false},
+                                     :consequent {:name :total-assets,
+                                                  :sign :positive,
+                                                  :computed false}}}
+   :net-income {:computation-fn :simple-number, :args {:name :net-income}},
+   :return-on-equity {:computation-fn :ratio,
+                      :args {:antecedent {:name :net-income,
+                                          :sign :positive,
+                                          :computed false},
+                             :consequent {:name :total-equity,
+                                          :sign :positive,
+                                          :computed false}}}
+   :return-on-working-capital {:computation-fn :ratio,
+                               :args {:antecedent {:name :net-income,
+                                                   :sign :positive,
+                                                   :computed false},
+                                      :consequent {:name :working-capital,
+                                                   :sign :positive,
+                                                   :computed true}}}
+   :debt-to-equity {:computation-fn :ratio,
+                    :args {:antecedent {:name :total-liabilities,
+                                        :sign :positive,
+                                        :computed false},
+                           :consequent {:name :total-equity,
+                                        :sign :positive,
+                                        :computed false}}}
+   :net-equity {:computation-fn :addition,
+                :args '({:name :total-equity, :sign :positive, :computed false},
+                        {:name :goodwill, :sign :negative, :computed false})}
+   :debt-to-net-equity {:computation-fn :ratio,
+                        :args {:antecedent {:name :total-liabilities,
+                                            :sign :positive,
+                                            :computed false},
+                               :consequent {:name :net-equity,
+                                            :sign :positive,
+                                            :computed true}}}
+   :comprehensive-stocks-outstanding {:computation-fn :addition,
+                                      :args '({:name :common-stock-outstanding, :sign :positive, :computed false},
+                                              {:name :stock-options-granted, :sign :positive, :computed false})}
+   :eps {:computation-fn :ratio,
+                 :args {:antecedent {:name :net-income,
+                                     :sign :positive,
+                                     :computed false},
+                        :consequent {:name :common-stock-outstanding,
+                                     :sign :positive,
+                                     :computed true}}}
+   :diluted-eps {:computation-fn :ratio,
+                 :args {:antecedent {:name :net-income,
+                                     :sign :positive,
+                                     :computed false},
+                        :consequent {:name :comprehensive-stocks-outstanding,
+                                     :sign :positive,
+                                     :computed true}}}
+   :dividends-paid-to-net-income {:computation-fn :ratio,
+                                  :args {:antecedent {:name :dividend-payment,
+                                                      :sign :positive,
+                                                      :computed false},
+                                         :consequent {:name :net-income,
+                                                      :sign :positive,
+                                                      :computed false}}}
+   :net-profit-margin {:computation-fn :ratio,
+                       :args {:antecedent {:name :total-sales,
+                                           :sign :positive,
+                                           :computed false},
+                              :consequent {:name :net-income,
+                                           :sign :positive,
+                                           :computed false}}}
+   :operational-profit-margin {:computation-fn :ratio,
+                               :args {:antecedent {:name :operating-income,
+                                                   :sign :positive,
+                                                   :computed false},
+                                      :consequent {:name :total-sales,
+                                                   :sign :positive,
+                                                   :computed false}}}
+   :research-and-development-expense {:computation-fn :simple-number,
+                                      :args {:name :research-and-development-expense}}
+   :research-expense-to-revenue {:computation-fn :ratio,
+                                 :args {:antecedent {:name :research-and-development-expense,
+                                                     :sign :positive,
+                                                     :computed false},
+                                        :consequent {:name :total-sales,
+                                                     :sign :positive,
+                                                     :computed false}}}})
+
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
 
