@@ -108,6 +108,7 @@
              year))
            numbers)))
 
+;; Leaving this here in case fallback calculation functions are needed
 ;; (defn recursion-safe-computation?
 ;;   "Checks that a fallback function is safe to compute by checking that all required args
 ;;   for computation are present in submission numbers.
