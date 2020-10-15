@@ -1,5 +1,4 @@
-(ns screener.calculations.descriptors
-  (:require [screener.calculations.operations :refer :all]))
+(ns screener.calculations.descriptors)
 
 ;; FUTURE TODO: we could possibly have everything in a single map. Data tags could be an
 ;; additional key for new :simple-number type entries specifying how one is to find them in db
@@ -97,7 +96,28 @@
 ;; Find better place for the calculation mechanism stuff.
 (def descriptor-spec
   ""
-  {:tangible-assets {:computation-fn :addition,
+  {:current-assets {:computation-fn :simple-number, :args {:tag "AssetsCurrent"}},
+   :current-liabilities {:computation-fn :simple-number, :args {:tag "LiabilitiesCurrent"}},
+   :accounts-payable {:computation-fn :simple-number, :args {:tag "AccountsPayableCurrent"}},
+   :total-liabilities {:computation-fn :simple-number, :args {:tag "Liabilities"}},
+   :total-assets {:computation-fn :simple-number, :args {:tag "Assets"}},
+   :goodwill {:computation-fn :simple-number, :args {:tag "Goodwill"}},
+   :depreciation {:computation-fn :simple-number, :args {:tag "DepreciationDepletionAndAmortization"}},
+   :capital-expenditures {:computation-fn :simple-number, :args {:tag "CapitalExpenditures"}},
+   :net-income {:computation-fn :simple-number, :args {:tag "NetIncomeLoss"}},
+   :total-equity {:computation-fn :simple-number, :args {:tag "StockholdersEquity",} :fallback :calculated-total-equity},
+   :common-stock-outstanding {:computation-fn :simple-number, :args {:tag "EntityCommonStockSharesOutstanding"}},
+   :stock-options-exercised {:computation-fn :simple-number, :args {:tag "StockIssuedDuringPeriodSharesStockOptionsExercised"}},
+   :stock-options-granted {:computation-fn :simple-number, :args {:tag "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriod"}},
+   :stock-repurchase-payment {:computation-fn :simple-number, :args {:tag "PaymentsForRepurchaseOfCommonStock"}},
+   :total-sales {:computation-fn :simple-number, :args {:tag "SalesRevenueNet"}},
+   :long-term-debt {:computation-fn :simple-number, :args {:tag "LongTermDebt"}},
+   :inventory {:computation-fn :simple-number, :args {:tag "InventoryNet"}},
+   :dividend-payment {:computation-fn :simple-number, :args {:tag "PaymentsOfDividends"}},
+   :dividends-per-share-paid {:computation-fn :simple-number, :args {:tag "CommonStockDividendsPerShareCashPaid"}},
+   :operating-income {:computation-fn :simple-number, :args {:tag "OperatingIncomeLoss"}},
+   :research-and-development-expense {:computation-fn :simple-number, :args {:tag "ResearchAndDevelopmentExpense"}},
+   :tangible-assets {:computation-fn :addition,
                      :args '({:name :total-assets, :sign :positive, :computed false},
                              {:name :goodwill, :sign :negative, :computed false})},
    :free-cash-flow {:computation-fn :addition,
@@ -142,7 +162,6 @@
                                      :consequent {:name :total-assets,
                                                   :sign :positive,
                                                   :computed false}}}
-   :net-income {:computation-fn :simple-number, :args {:name :net-income}},
    :return-on-equity {:computation-fn :ratio,
                       :args {:antecedent {:name :net-income,
                                           :sign :positive,
@@ -211,9 +230,7 @@
                                                    :computed false},
                                       :consequent {:name :total-sales,
                                                    :sign :positive,
-                                                   :computed false}}}
-   :research-and-development-expense {:computation-fn :simple-number,
-                                      :args {:name :research-and-development-expense}}
+                                                   :computed false}}},
    :research-expense-to-revenue {:computation-fn :ratio,
                                  :args {:antecedent {:name :research-and-development-expense,
                                                      :sign :positive,
@@ -225,110 +242,110 @@
 
 ;; ---- PROFILE DESCRIPTOR CALCULATORS ----
 
-(defn tangible-assets
-  "Total assets - goodwill"
-  [{:keys [total-assets goodwill]}]
-  (if (or (nil? total-assets)
-          (nil? goodwill))
-    nil
-    (- (double total-assets) (double goodwill))))
+;; (defn tangible-assets
+;;   "Total assets - goodwill"
+;;   [{:keys [total-assets goodwill]}]
+;;   (if (or (nil? total-assets)
+;;           (nil? goodwill))
+;;     nil
+;;     (- (double total-assets) (double goodwill))))
 
-(defn free-cash-flow
-  "Net income - depreciation + capital expenditures"
-  [{:keys [net-income depreciation-and-amortization capital-expenditures]}]
-  (if (or (nil? net-income)
-          (nil? depreciation-and-amortization)
-          (nil? capital-expenditures))
-    nil
-    (+ (- (double net-income) (double depreciation-and-amortization))
-       (double capital-expenditures))))
+;; (defn free-cash-flow
+;;   "Net income - depreciation + capital expenditures"
+;;   [{:keys [net-income depreciation-and-amortization capital-expenditures]}]
+;;   (if (or (nil? net-income)
+;;           (nil? depreciation-and-amortization)
+;;           (nil? capital-expenditures))
+;;     nil
+;;     (+ (- (double net-income) (double depreciation-and-amortization))
+;;        (double capital-expenditures))))
 
-(defn working-capital
-  "Current assets - current liabilities"
-  [{:keys [current-assets current-liabilities]}]
-  (if (or (nil? current-assets)
-          (nil? current-liabilities))
-    nil
-    (- (double current-assets) (double current-liabilities))))
+;; (defn working-capital
+;;   "Current assets - current liabilities"
+;;   [{:keys [current-assets current-liabilities]}]
+;;   (if (or (nil? current-assets)
+;;           (nil? current-liabilities))
+;;     nil
+;;     (- (double current-assets) (double current-liabilities))))
 
-(defn current-assets-to-current-liabilities
-  "Current assets / current liabilities"
-  [{:keys [current-assets current-liabilities]}]
-  (ratio current-assets current-liabilities))
+;; (defn current-assets-to-current-liabilities
+;;   "Current assets / current liabilities"
+;;   [{:keys [current-assets current-liabilities]}]
+;;   (ratio current-assets current-liabilities))
 
-(defn accounts-payable-to-current-assets
-  "Accounts payable / current assets"
-  [{:keys [accounts-payable current-assets]}]
-  (ratio accounts-payable current-assets))
+;; (defn accounts-payable-to-current-assets
+;;   "Accounts payable / current assets"
+;;   [{:keys [accounts-payable current-assets]}]
+;;   (ratio accounts-payable current-assets))
 
-(defn current-assets-to-total-liabilities
-  "Current assets / total liabilities"
-  [{:keys [current-assets total-liabilities]}]
-  (ratio current-assets total-liabilities))
+;; (defn current-assets-to-total-liabilities
+;;   "Current assets / total liabilities"
+;;   [{:keys [current-assets total-liabilities]}]
+;;   (ratio current-assets total-liabilities))
 
-(defn total-tangible-assets-to-total-liabilities
-  "tangible assets / total liabilities"
-  [{:keys [tangible-assets total-liabilities]}]
-  (ratio tangible-assets total-liabilities))
+;; (defn total-tangible-assets-to-total-liabilities
+;;   "tangible assets / total liabilities"
+;;   [{:keys [tangible-assets total-liabilities]}]
+;;   (ratio tangible-assets total-liabilities))
 
-(defn goodwill-to-total-assets
-  "goodwill / total assets"
-  [{:keys [goodwill total-assets]}]
-  (ratio goodwill total-assets))
+;; (defn goodwill-to-total-assets
+;;   "goodwill / total assets"
+;;   [{:keys [goodwill total-assets]}]
+;;   (ratio goodwill total-assets))
 
-(defn net-income
-  "Net income"
-  [{:keys [net-income]}]
-  (if (nil? net-income)
-    nil
-    (double net-income)))
+;; (defn net-income
+;;   "Net income"
+;;   [{:keys [net-income]}]
+;;   (if (nil? net-income)
+;;     nil
+;;     (double net-income)))
 
-(defn return-on-equity
-  "Net income / total equity"
-  [{:keys [net-income total-equity]}]
-  (ratio net-income total-equity))
+;; (defn return-on-equity
+;;   "Net income / total equity"
+;;   [{:keys [net-income total-equity]}]
+;;   (ratio net-income total-equity))
 
-(defn return-on-working-capital
-  "Net income / working capital"
-  [{:keys [net-income working-capital]}]
-  (ratio net-income working-capital))
+;; (defn return-on-working-capital
+;;   "Net income / working capital"
+;;   [{:keys [net-income working-capital]}]
+;;   (ratio net-income working-capital))
 
-(defn calculated-total-liabilities
-  "Calculates total liabilities when value is not present among submission numbers.
-  Total assets - Total equity"
-  [{:keys [total-equity total-assets]}]
-  (if (or (nil? total-equity)
-          (nil? total-assets))
-    nil
-    (double (- total-assets total-equity))))
+;; (defn calculated-total-liabilities
+;;   "Calculates total liabilities when value is not present among submission numbers.
+;;   Total assets - Total equity"
+;;   [{:keys [total-equity total-assets]}]
+;;   (if (or (nil? total-equity)
+;;           (nil? total-assets))
+;;     nil
+;;     (double (- total-assets total-equity))))
 
-(defn calculated-total-assets
-  "Calculates total assets when value is not present among submission numbers.
-  Total equity - Total liabilities"
-  [{:keys [total-equity total-liabilities]}]
-  (if (or (nil? total-equity)
-          (nil? total-liabilities))
-    nil
-    (double (+ total-equity total-liabilities))))
+;; (defn calculated-total-assets
+;;   "Calculates total assets when value is not present among submission numbers.
+;;   Total equity - Total liabilities"
+;;   [{:keys [total-equity total-liabilities]}]
+;;   (if (or (nil? total-equity)
+;;           (nil? total-liabilities))
+;;     nil
+;;     (double (+ total-equity total-liabilities))))
 
-(defn calculated-total-equity
-  "Calculates total equity when value is not present among submission numbers.
-  Total assets - Total liabilities"
-  [{:keys [total-assets total-liabilities]}]
-  (if (or (nil? total-assets)
-          (nil? total-liabilities))
-    nil
-    (double (- total-assets total-liabilities))))
+;; (defn calculated-total-equity
+;;   "Calculates total equity when value is not present among submission numbers.
+;;   Total assets - Total liabilities"
+;;   [{:keys [total-assets total-liabilities]}]
+;;   (if (or (nil? total-assets)
+;;           (nil? total-liabilities))
+;;     nil
+;;     (double (- total-assets total-liabilities))))
 
-(defn research-and-development-expense
-  "Research and Development Expense"
-  [{:keys [research-and-development-expense]}]
-  (if (nil? research-and-development-expense)
-    nil
-    (double research-and-development-expense)))
+;; (defn research-and-development-expense
+;;   "Research and Development Expense"
+;;   [{:keys [research-and-development-expense]}]
+;;   (if (nil? research-and-development-expense)
+;;     nil
+;;     (double research-and-development-expense)))
 
-(defn research-expense-to-revenue
-  "R&D expense / total revenue"
-  [{:keys [research-and-development-expense total-sales]}]
-  (ratio research-and-development-expense total-sales))
+;; (defn research-expense-to-revenue
+;;   "R&D expense / total revenue"
+;;   [{:keys [research-and-development-expense total-sales]}]
+;;   (ratio research-and-development-expense total-sales))
 

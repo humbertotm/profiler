@@ -10,6 +10,5 @@
   (do (tickers/initialize-tickers-cache)
       (sub/initialize-submissions-index-cache)
       (sub/initialize-submissions-cache)
-      (num/initialize-numbers-cache)
-      (profiler/initialize-profiles-cache)))
+      (num/initialize-numbers-cache)))
 

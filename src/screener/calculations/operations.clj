@@ -1,6 +1,7 @@
 (ns screener.calculations.operations
   (:require [screener.calculations.descriptors :as descriptors]))
 
+;; Declaring these two beforehand as there's a mutually recursive relation between them
 (declare build-descriptor-args)
 (declare calculate)
 
@@ -102,9 +103,7 @@
   [{:keys [args-spec adsh year numbers]}]
   (:value ((keyword
             (str
-             (:tag
-              ((:name args-spec)
-               descriptors/src-number-data-tags))
+             (:tag args-spec)
              "|"
              year))
            numbers)))

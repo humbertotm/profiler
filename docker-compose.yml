@@ -10,6 +10,10 @@ services:
       - "36096:36096"
     networks:
       - screener
+    volumes:
+      - type: bind
+        source: .
+        target: /usr/src/app
     depends_on:
       - postgres-db
       - mongo-db
