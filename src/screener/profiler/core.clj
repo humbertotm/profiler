@@ -41,7 +41,7 @@
         adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
     (if (not (nil? adsh))
       (build-profile-map
-       (keys descriptors/descriptor-spec)
+       (descriptors/get-available-descriptors)
        adsh
        year))))
 

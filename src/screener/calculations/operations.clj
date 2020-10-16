@@ -10,11 +10,9 @@
    eg. 'Net Income' => #screener.calculations.core/net-income."
   [descriptor-kw]
   (let [computation-fn (:computation-fn (descriptor-kw descriptors/descriptor-spec))]
-    (if (not (nil? computation-fn))
-      (resolve (symbol (str
-                        "screener.calculations.operations/"
-                        (name computation-fn))))
-      (resolve (symbol "screener.calculations.operations/simple-number")))))
+    (resolve (symbol (str
+                      "screener.calculations.operations/"
+                      (name computation-fn))))))
 
 (defmacro calculate
   ""
@@ -28,15 +26,11 @@
   (let [descriptor-spec (descriptor-kw descriptors/descriptor-spec)
         computation-fn (:computation-fn descriptor-spec)
         fn-args (:args descriptor-spec)]
-    (if (not (nil? computation-fn))
-      ((resolve (symbol
-                 (str "screener.calculations.operations/build-"
-                      (name computation-fn)
-                      "-args")))
-       {:args-spec fn-args, :adsh adsh, :year year, :numbers numbers})
-      (let [tag (:tag (descriptor-kw descriptors/src-number-data-tags))]
-        (:value ((keyword (str tag "|" year)) numbers))))))
-
+    ((resolve (symbol
+              (str "screener.calculations.operations/build-"
+                   (name computation-fn)
+                   "-args")))
+    {:args-spec fn-args, :adsh adsh, :year year, :numbers numbers})))
 
 ;; BASIC CALCULATIONS EMPLOYED IN PROFILE DESCRIPTORS
 ;; AND ITS CORRESPONDING ARGUMENT BUILDING FUNCTION
@@ -71,11 +65,11 @@
   [summands-list]
   (if (some nil? summands-list)
     nil
-    (reduce (fn
-              [accum next]
-              (+ accum next))
-            0
-            summands-list)))
+    (double (reduce (fn
+                      [accum next]
+                      (+ accum next))
+                    0
+                    summands-list))))
 
 (defn build-addition-args
   ""
@@ -86,8 +80,8 @@
                   val (calculate (:name next) adsh year numbers)]
               (cond
                 (nil? val) nil
-                (= :positive sign) (cons val accum)
-                :else (cons (* -1 val) accum))))
+                (= :positive sign) (cons (double val) accum)
+                :else (cons (double (* -1 val)) accum))))
           '()
           args-spec))
 

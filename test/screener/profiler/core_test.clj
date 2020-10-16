@@ -21,92 +21,60 @@
 (use-fixtures :once initialize-caches)
 (use-fixtures :each reset-caches)
 
-(deftest test-get-descriptor-function
-  (testing "returns a symbol representing a descriptor function"
-    (is (= #'screener.calculations.descriptors/net-income
-           (get-descriptor-function :net-income))))
-  (testing "throws a NullPointerException when it can't be resolved to a function"
-    (is (thrown? java.lang.NullPointerException
-                 (get-descriptor-function :does-not-exist)))))
-
-(deftest test-get-descriptor-key
-  (testing "returns an appropriate keyword for a string"
-    (is (= :net_income (get-descriptor-key "Net Income"))))
-  (testing "does not care about input case"
-    (is (= :current_assets (get-descriptor-key "cuRrEnT AsSetS")))))
-
-(deftest test-descriptor-to-keyword
-  (testing "returns an appropriate keyword fot a descriptor string"
-    (is (= :tangible-assets (descriptor-to-keyword "Tangible Assets"))))
-  (testing "does not care about input case"
-    (is (= :working-capital (descriptor-to-keyword "workING Capital")))))
-
-(deftest test-build-args-map
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
-    (testing "returns simple arguments map"
-      (is (= {:total-assets 4.5E7, :goodwill 8450000.0}
-             (build-args-map :tangible-assets "someadsh" "2019"))))
-    (testing "returns recursively constructed arguments map"
-      (is (= {:net-income 7.45E8, :working-capital 4.0E8}
-             (build-args-map :return-on-working-capital "someadsh" "2019"))))
-    (testing "returns empty map for not found descriptor"
-      (is (= {}
-             (build-args-map :caca "someadsh" "2019"))))))
-
-(deftest test-calculate
-  (testing "returns expected computed value for :simple-number type descriptor"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 7.45E8
-             (calculate :net-income "someadsh0" "2019")))))
-  (testing "returns expected computed value for :simple-number type descriptor"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 7.45E8
-             (calculate :net-income "someadsh1" "2019")))))
-  (testing "returns expected computed value for complex descriptor"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (= 1.8625
-             (calculate :return-on-working-capital "someadsh2" "2019")))))
-  (testing "throws a NullPointerException when descriptor is not recognized"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
-      (is (thrown? java.lang.NullPointerException
-             (calculate :bogus-descriptor "someadsh3" "2019")))))
-  (testing "returns expected value for :simple-number as is in src numbers"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] assets-calc-numbers)]
-      (is (= 9.0E7
-             (calculate :tangible-assets "someadsh4" "2019")))))
-  (testing "calculates descriptor value from fallback-fn when number not present"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission
-                  (fn [_] (remove #(= (:tag %) "Assets") assets-calc-numbers))]
-      (is (= 8.0E7
-             (calculate :tangible-assets "someadsh5" "2019")))))
-  (testing "returns nil when one or more args for fallback-fn are nil"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission
-                  (fn [_]
-                    (remove #(or (= (:tag %) "Assets")
-                                 (= (:tag %) "Liabilities"))
-                            assets-calc-numbers))]
-      (is (nil? (calculate :tangible-assets "someadsh6" "2019")))))
-  (testing "returns nil if no fallback function for value exists"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] assets-calc-numbers)]
-      (is (nil? (calculate :net-income "someadsh7" "2019"))))))
+;; (deftest test-calculate
+;;   (testing "returns expected computed value for :simple-number type descriptor"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
+;;       (is (= 7.45E8
+;;              (calculate :net-income "someadsh0" "2019")))))
+;;   (testing "returns expected computed value for :simple-number type descriptor"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
+;;       (is (= 7.45E8
+;;              (calculate :net-income "someadsh1" "2019")))))
+;;   (testing "returns expected computed value for complex descriptor"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
+;;       (is (= 1.8625
+;;              (calculate :return-on-working-capital "someadsh2" "2019")))))
+;;   (testing "throws a NullPointerException when descriptor is not recognized"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)]
+;;       (is (thrown? java.lang.NullPointerException
+;;              (calculate :bogus-descriptor "someadsh3" "2019")))))
+;;   (testing "returns expected value for :simple-number as is in src numbers"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] assets-calc-numbers)]
+;;       (is (= 9.0E7
+;;              (calculate :tangible-assets "someadsh4" "2019")))))
+;;   (testing "calculates descriptor value from fallback-fn when number not present"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission
+;;                   (fn [_] (remove #(= (:tag %) "Assets") assets-calc-numbers))]
+;;       (is (= 8.0E7
+;;              (calculate :tangible-assets "someadsh5" "2019")))))
+;;   (testing "returns nil when one or more args for fallback-fn are nil"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission
+;;                   (fn [_]
+;;                     (remove #(or (= (:tag %) "Assets")
+;;                                  (= (:tag %) "Liabilities"))
+;;                             assets-calc-numbers))]
+;;       (is (nil? (calculate :tangible-assets "someadsh6" "2019")))))
+;;   (testing "returns nil if no fallback function for value exists"
+;;     (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] assets-calc-numbers)]
+;;       (is (nil? (calculate :net-income "someadsh7" "2019"))))))
 
 (deftest test-build-profile-map
   (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns nicely constructed map with specified descriptors"
       (is (= {:net_income 7.45E8, :current_assets_to_current_liabilities 1.62015503875969}
              (build-profile-map
-              '("Net Income", "Current Assets to Current Liabilities")
+              '(:net-income, :current-assets-to-current-liabilities)
               "someadsh"
               "2019"))))
     (testing "returns nil values for descriptors that cannot be calculated"
       (is (= {:tangible_assets 3.655E7, :free_cash_flow nil}
              (build-profile-map
-              '("tangible assets", "free cash flow")
+              '(:tangible-assets, :free-cash-flow)
               "someadsh"
               "2019"))))
     (testing "throws NullPointerException when a descriptor is not recognized"
       (is (thrown? java.lang.NullPointerException
-                   (build-profile-map '("not exists") "someadsh" "2019"))))))
+                   (build-profile-map '(:not-exists) "someadsh" "2019"))))))
 
 (deftest test-build-company-custom-profile
   (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)
@@ -115,21 +83,24 @@
     (testing "Returns profile with requested descriptors for company"
       (is (= {:net_income 7.45E8, :current_assets_to_current_liabilities 1.62015503875969}
              (build-company-custom-profile
-              '("Net Income", "Current Assets to Current Liabilities")
+              '(:net-income, :current-assets-to-current-liabilities)
               "someadsh"
               "2019"))))
     (testing "returns nil values for descriptors that cannot be calculated"
       (is (= {:tangible_assets 3.655E7, :free_cash_flow nil}
              (build-company-custom-profile
-              '("Tangible Assets", "Free cash flow")
+              '(:tangible-assets, :free-cash-flow)
               "someadsh"
               "2019"))))
     (testing "throws a NullPointerException when a descriptor is not recognized"
       (is (thrown? java.lang.NullPointerException
                    (build-company-custom-profile
-                    '("Net Income", "Does not exist")
+                    '(:net-income, :does-not-exist)
                     "someasdhs"
                     "2019"))))))
+
+(deftest test-build-company-full-profile
+  ())
 
 (deftest test-profile-list-of-companies
   (testing "Returns empty map for companies in list not found"
@@ -188,7 +159,7 @@
                     '("Tangible Assets", "Does not exist")
                     "2019"))))))
 
-(deftest test-company-time-series-profile
+(deftest test-company-time-series-custom-profile
   (testing "returns profiling map for every year requested"
     (with-redefs [screener.data.num/retrieve-numbers-for-submission
                   (let [numbers (atom adp-numbers)]
@@ -264,4 +235,7 @@
                     "adp"
                     '("Tangible Assets", "Does not exist")
                     '("2010", "2011", "2012", "2013", "2014")))))))
+
+(deftest test-company-time-series-full-profile
+  ())
 

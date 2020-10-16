@@ -12,7 +12,7 @@
    :capital-expenditures {:computation-fn :simple-number, :args {:tag "CapitalExpenditures"}},
    :net-income {:computation-fn :simple-number, :args {:tag "NetIncomeLoss"}},
    :total-equity {:computation-fn :simple-number, :args {:tag "StockholdersEquity",} :fallback :calculated-total-equity},
-   :common-stock-outstanding {:computation-fn :simple-number, :args {:tag "EntityCommonStockSharesOutstanding"}},
+   :common-stock-outstanding {:computation-fn :simple-number, :args {:tag "CommonStockSharesOutstanding"}},
    :stock-options-exercised {:computation-fn :simple-number, :args {:tag "StockIssuedDuringPeriodSharesStockOptionsExercised"}},
    :stock-options-granted {:computation-fn :simple-number, :args {:tag "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriod"}},
    :stock-repurchase-payment {:computation-fn :simple-number, :args {:tag "PaymentsForRepurchaseOfCommonStock"}},
@@ -114,4 +114,8 @@
                                                      :sign :positive},
                                         :consequent {:name :total-sales,
                                                      :sign :positive}}}})
+(defn get-available-descriptors
+  ""
+  []
+  (keys descriptor-spec))
 
