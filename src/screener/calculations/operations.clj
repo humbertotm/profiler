@@ -79,7 +79,7 @@
             (let [sign (:sign next)
                   val (calculate (:name next) adsh year numbers)]
               (cond
-                (nil? val) nil
+                (nil? val) (cons nil accum)
                 (= :positive sign) (cons (double val) accum)
                 :else (cons (double (* -1 val)) accum))))
           '()

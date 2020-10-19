@@ -46,17 +46,17 @@
        year))))
 
 
-(defn profile-list-of-companies
-  "Builds a map for a list of companies where keys are tickers and values are a
-   profile map containing the specified descriptors for the specified year."
-  [tickers-list year]
-  (reduce (fn
-            [accum-map ticker]
-            (assoc accum-map
-                   (keyword ticker)
-                   (build-company-full-profile ticker year)))
-          {}
-          tickers-list))
+;; (defn profile-list-of-companies
+;;   "Builds a map for a list of companies where keys are tickers and values are a
+;;    profile map containing the specified descriptors for the specified year."
+;;   [tickers-list year]
+;;   (reduce (fn
+;;             [accum-map ticker]
+;;             (assoc accum-map
+;;                    (keyword ticker)
+;;                    (build-company-full-profile ticker year)))
+;;           {}
+;;           tickers-list))
 
 (defn company-time-series-custom-profile
   "Builds a time series of profiling maps for requested ticker and descriptor ranging the
