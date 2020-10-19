@@ -10,7 +10,9 @@
             [mongodb.operations :as mdbops]))
 
 (defn build-profile-map
-  ""
+  "Builds profile map for a specific company in a specific year.
+  {:descriptor_one 100.0,
+   :descriptor_two 100.0}"
   [descriptors adsh year]
   (reduce (fn
             [accum-map next-descriptor]
@@ -35,7 +37,8 @@
       {})))
 
 (defn build-company-full-profile
-  ""
+  "Builds a profile for a specific company employing the full breadth of available
+  descriptors"
   [ticker year]
   (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
         adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
@@ -44,19 +47,6 @@
        (descriptors/get-available-descriptors)
        adsh
        year))))
-
-
-;; (defn profile-list-of-companies
-;;   "Builds a map for a list of companies where keys are tickers and values are a
-;;    profile map containing the specified descriptors for the specified year."
-;;   [tickers-list year]
-;;   (reduce (fn
-;;             [accum-map ticker]
-;;             (assoc accum-map
-;;                    (keyword ticker)
-;;                    (build-company-full-profile ticker year)))
-;;           {}
-;;           tickers-list))
 
 (defn company-time-series-custom-profile
   "Builds a time series of profiling maps for requested ticker and descriptor ranging the
@@ -75,7 +65,7 @@
 
 (defn company-time-series-full-profile
   "Builds a time series of profiling maps for requested ticker and descriptor ranging the
-  specified years.
+  specified years and the full breadth of available descriptors.
   {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
    :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
    :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}"
@@ -89,7 +79,7 @@
           years))
 
 (defn write-yearly-profiles
-  ""
+  "Function employed to persist computed profile to mongodb"
   [ticker full-profile]
   (let [kv-list (into (list) full-profile)]
     (uasync/n-threads-exec

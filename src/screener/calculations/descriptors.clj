@@ -1,7 +1,7 @@
 (ns screener.calculations.descriptors)
 
 (def descriptor-spec
-  ""
+  "Defines the spec employed to calculate each of the required descriptors."
   {:current-assets {:computation-fn :simple-number, :args {:tag "AssetsCurrent"}},
    :current-liabilities {:computation-fn :simple-number, :args {:tag "LiabilitiesCurrent"}},
    :accounts-payable {:computation-fn :simple-number, :args {:tag "AccountsPayableCurrent"}},
@@ -115,7 +115,7 @@
                                         :consequent {:name :total-sales,
                                                      :sign :positive}}}})
 (defn get-available-descriptors
-  ""
+  "Returns the full list of descriptors accounted for in descriptor-spec"
   []
   (keys descriptor-spec))
 
