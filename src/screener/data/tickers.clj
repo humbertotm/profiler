@@ -1,7 +1,8 @@
 (ns screener.data.tickers
   (:require [clojure.string :as string]
             [cache.core :as cache]
-            [db.operations :as dbops]))
+            [db.operations :as dbops]
+            [clojure.tools.logging :as log]))
 
 (def cik-tickers-cache-threshold
   "Matches db pooled data connections max size"
@@ -42,6 +43,7 @@
   "Function employed to retrieve a ticker-cik mapping from the cache if present, database
    otherwise."
   [ticker]
+  (log/info "Fetching" ticker)
   (cache/fetch-cacheable-data cik-tickers-cache
                               (keyword (string/lower-case ticker))
                               retrieve-mapping))
