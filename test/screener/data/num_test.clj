@@ -17,11 +17,6 @@
 (use-fixtures :once initialize-test-cache)
 (use-fixtures :each reset-cache)
 
-(deftest test-create-num-cache-entry-key
-  (testing "cache key for sub is :adsh|tag|version|year"
-    (is (= (keyword "0000002178-19-000087|AccountsReceivableNetCurrent|us-gaap/2019|2019")
-           (create-num-cache-entry-key (nth sub-adams-10k-2019-nums 1))))))
-
 (deftest test-create-num-tag-yr-cache-entry-key
   (testing "cache key for sub is :tag|year"
     (is (= (keyword "AccountsReceivableNetCurrent|2019")

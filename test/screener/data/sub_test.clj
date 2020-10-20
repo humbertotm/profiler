@@ -4,20 +4,18 @@
             [helpers.core :refer :all]
             [fixtures.sub :refer :all]))
 
-(defn initialize-caches
+(defn initialize-cache
   [f]
   (initialize-submissions-index-cache)
-  (initialize-submissions-cache)
   (f))
 
-(defn reset-caches
+(defn reset-cache
   [f]
   (f)
-  (reset-test-cache submissions-cache)
   (reset-test-cache submissions-index-cache))
 
-(use-fixtures :once initialize-caches)
-(use-fixtures :each reset-caches)
+(use-fixtures :once initialize-cache)
+(use-fixtures :each reset-cache)
 
 (deftest test-create-sub-cache-entry-key
   (testing "cache key for sub is keyworded adsh"

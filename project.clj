@@ -14,6 +14,7 @@
                  [org.postgresql/postgresql "42.2.8"]
                  [com.mchange/c3p0 "0.9.5.4"]
                  [com.novemberain/monger "3.1.0"]
+                 [org.apache.logging.log4j/log4j-core "2.13.3"]
                  [clojure.java-time "0.3.2"]
                  [environ "1.2.0"]]
   :plugins [[lein-environ "1.2.0"]]

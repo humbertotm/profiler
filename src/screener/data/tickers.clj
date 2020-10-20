@@ -15,6 +15,7 @@
    {:lowercaseticker0 {:ticker 'ticker0', :cik 'somecik0'},
     :lowercaseticker1 {:ticker 'ticker1', :cik 'somecik1'}}"
   []
+  (log/info "Initializing cik-tickers-cache")
   (cache/create-fifo-cache cik-tickers-cache {} cik-tickers-cache-threshold))
 
 (defn reset-cik-tickers-cache
@@ -37,13 +38,13 @@
   "Data retrieval function to be passed for cache misses"
   [ticker]
   (let [query-string "SELECT * FROM :table WHERE ticker = ?"]
+    (log/info "Retrieving" ticker "from table" table-name)
     (first (dbops/query query-string table-name (string/lower-case (name ticker))))))
 
 (defn fetch-ticker-cik-mapping
   "Function employed to retrieve a ticker-cik mapping from the cache if present, database
    otherwise."
   [ticker]
-  (log/info "Fetching" ticker)
   (cache/fetch-cacheable-data cik-tickers-cache
                               (keyword (string/lower-case ticker))
                               retrieve-mapping))

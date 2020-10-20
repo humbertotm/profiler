@@ -7,7 +7,8 @@
             [screener.data.sub :as sub]
             [screener.data.num :as num]
             [screener.utils.async :as uasync]
-            [mongodb.operations :as mdbops]))
+            [mongodb.operations :as mdbops]
+            [clojure.tools.logging :as log]))
 
 (defn build-profile-map
   "Builds profile map for a specific company in a specific year.
@@ -82,14 +83,16 @@
   "Function employed to persist computed profile to mongodb"
   [ticker full-profile]
   (let [kv-list (into (list) full-profile)]
+    (log/info "Persisting profile for ticker" ticker)
     (uasync/n-threads-exec
      kv-list
      5
-     (fn [e] (->> (assoc {:ticker ticker,
-                          :year (Integer/parseInt (name (first e)))}
-                         :profile
-                         (last e))
-                  (mdbops/insert-doc "profiles" ,,,))))))
+     (fn [e]
+       (->> (assoc {:ticker ticker,
+                    :year (Integer/parseInt (name (first e)))}
+                   :profile
+                   (last e))
+            (mdbops/insert-doc "profiles" ,,,))))))
 
 (defn persist-companies-profiles
   "Profiles companies associated to provided list of tickers. Profile is constructed
@@ -99,6 +102,8 @@
   (uasync/n-threads-exec
    tickers
    5
-   (fn [e] (->> (company-time-series-full-profile e years)
-                (write-yearly-profiles e ,,,)))))
+   (fn [e]
+     (log/info "Computing profile for" e)
+     (->> (company-time-series-full-profile e years)
+          (write-yearly-profiles e ,,,)))))
 

@@ -1,28 +1,14 @@
 (ns screener.data.sub
   (:require [clojure.string :as string]
             [cache.core :as cache]
-            [db.operations :as dbops]))
+            [db.operations :as dbops]
+            [clojure.tools.logging :as log]))
 
 (def submissions-cache-threshold-value
   "Matches pooled data connection max size"
   5)
 
 (def table-name "submissions")
-
-(defn initialize-submissions-cache
-  "Initializes a cache for submissions with the following structure:
-   {:adsh0 {:adsh 'adsh0', :cik 'cik0, ...},
-    :adsh1 {:adsh 'adsh1', :cik 'cik1, ...}}
-  
-   The key for each entry is the associated keyworded adsh.
-   Threshold of 40 elements defined based on the fact that 10K reports will be the most
-   employed submissions and we only have available data for 10 years.
-   Additionally considering to use at most 4 parallel threads for processing.
-
-   TODO: DEFINE THRESHOLD BASED ON CONFIGURABLE DATA (max thread count, max submission
-   count per use case)"
-  []
-  (cache/create-fifo-cache submissions-cache {} submissions-cache-threshold-value))
 
 (defn initialize-submissions-index-cache
   "Initializes a cache that functions as an index for submissions with following structure:
@@ -34,6 +20,7 @@
    Only the adsh for the associated submission record is stored to be retrieved and used
    to retrieve the full record from the submissions cache."
   []
+  (log/info "Initializing submissions-index-cache")
   (cache/create-fifo-cache submissions-index-cache {} submissions-cache-threshold-value))
 
 (defn create-sub-cache-entry-key
@@ -51,27 +38,16 @@
         year (sub-map :fy)]
     (keyword (str cik "|" form "|" year))))
 
-(defn retrieve-subs-per-cik
-  "Returns a list of all the associated submission records for the specified cik."
-  [cik]
-  (let [query-string "SELECT * FROM :table WHERE cik = ?"]
-    (dbops/query query-string table-name cik)))
-
 (defn retrieve-form-from-db
   "Returns adsh string value of submission record described by the provided form-key.
   form-key contains cik, form and year data in the following structure cik|form|year."
   [form-key]
-  (let [descriptors (string/split (name form-key) #"\|") ;(cik form year), not lazy
+  (let [sub-details (string/split (name form-key) #"\|") ;(cik form year), not lazy
         query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"
-        cik (nth descriptors 0)
-        form (nth descriptors 1)
-        year (nth descriptors 2)]
-    (:adsh (first (dbops/query query-string table-name cik form year)))))
-
-(defn retrieve-form-adsh-from-db
-  "Returns adsh for submission for provided cik, form and year."
-  [cik form year]
-  (let [query-string "SELECT * FROM :table WHERE cik = ? AND form = ? AND fy = ?"]
+        cik (nth sub-details 0)
+        form (nth sub-details 1)
+        year (nth sub-details 2)]
+    (log/info "Retrieving adsh for cik" cik "form" form "year" year)
     (:adsh (first (dbops/query query-string table-name cik form year)))))
 
 (defn fetch-form-adsh-for-cik-year
@@ -79,6 +55,6 @@
    Looks up in cache as a first resource, falls back to database."
   [cik form year]
   (cache/fetch-cacheable-data submissions-index-cache
-                         (keyword (str cik "|" form "|" year))
-                         retrieve-form-from-db))
+                              (keyword (str cik "|" form "|" year))
+                              retrieve-form-from-db))
 
