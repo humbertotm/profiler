@@ -1,7 +1,8 @@
 (ns screener.data.tickers
   (:require [clojure.string :as string]
             [cache.core :as cache]
-            [db.operations :as dbops]))
+            [db.operations :as dbops]
+            [clojure.tools.logging :as log]))
 
 (def cik-tickers-cache-threshold
   "Matches db pooled data connections max size"
@@ -14,6 +15,7 @@
    {:lowercaseticker0 {:ticker 'ticker0', :cik 'somecik0'},
     :lowercaseticker1 {:ticker 'ticker1', :cik 'somecik1'}}"
   []
+  (log/info "Initializing cik-tickers-cache")
   (cache/create-fifo-cache cik-tickers-cache {} cik-tickers-cache-threshold))
 
 (defn reset-cik-tickers-cache
@@ -36,6 +38,7 @@
   "Data retrieval function to be passed for cache misses"
   [ticker]
   (let [query-string "SELECT * FROM :table WHERE ticker = ?"]
+    (log/info "Retrieving" ticker "from table" table-name)
     (first (dbops/query query-string table-name (string/lower-case (name ticker))))))
 
 (defn fetch-ticker-cik-mapping

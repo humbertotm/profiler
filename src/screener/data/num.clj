@@ -1,7 +1,8 @@
 (ns screener.data.num
   (:require [cache.core :as cache]
             [db.operations :as dbops]
-            [screener.utils.date :refer :all]))
+            [screener.utils.date :refer :all]
+            [clojure.tools.logging :as log]))
 
 (def numbers-cache-threshold-value
   "Matches the max db connection pool size"
@@ -18,17 +19,8 @@
    TODO: DETERMINE THE APPROPRIATE THRESHOLD VALUE FOR THIS CACHE. DETERMINE IF ANOTHER
          CACHING STRATEGY SUITS THIS USE CASE BETTER THAN FIFO."
   []
+  (log/info "Initializing numbers-cache")
   (cache/create-fifo-cache numbers-cache {} numbers-cache-threshold-value))
-
-(defn create-num-cache-entry-key
-  "Creates a keyword with the structure :adsh|tag|version|year to be employed as the
-   cache entry key for numbers-cache."
-  [num-map]
-  (let [adsh (num-map :adsh)
-        tag (num-map :tag)
-        version (num-map :version)
-        year (extract-year (num-map :ddate))]
-    (keyword (str adsh "|" tag "|" version "|" year))))
 
 (defn create-num-tag-yr-cache-entry-key
   "Creates a keyword with the structure :tag|year to be employed as to cached numbers
@@ -39,17 +31,11 @@
         year (extract-year (num :ddate))]
     (keyword (str tag "|" year))))
 
-(defn retrieve-num
-  "Retrieves numbers for a particular adsh, tag and version. Might find several number
-   records in the returned value since :ddate field is also required for uniqueness."
-  [adsh tag version]
-  (let [query-string "SELECT * FROM :table WHERE adsh = ? AND tag = ? AND version = ?"]
-    (dbops/query query-string table-name adsh tag version)))
-
 (defn retrieve-numbers-for-submission
   "Retrieves all number records associated to a particular adsh (submission)."
   [adsh]
   (let [query-string "SELECT * FROM :table WHERE adsh = ?"]
+    (log/info "Retrieving numbers for submissions with adsh" adsh)
     (dbops/query query-string table-name adsh)))
 
 (defn map-numbers-to-submission
