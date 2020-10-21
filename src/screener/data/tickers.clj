@@ -50,7 +50,7 @@
                               retrieve-mapping))
 
 (defn retrieve-ticker-for-cik
-  ""
+  "Retrieve the mapped ticker for provided cik"
   [cik]
   (let [query-string "SELECT * FROM :table WHERE cik = ?"]
     (log/info "Retrieving ticker for cik" cik)

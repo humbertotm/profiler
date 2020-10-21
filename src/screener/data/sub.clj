@@ -59,7 +59,7 @@
                               retrieve-form-from-db))
 
 (defn retrieve-10k-full-cik-list
-  ""
+  "Retrieve full list of distinct ciks available for 10-K form submissions"
   []
   (let [query-string "SELECT DISTINCT(cik) FROM :table WHERE form = ?"]
     (dbops/query query-string table-name "10-K")))

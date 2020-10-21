@@ -86,7 +86,7 @@
     (log/info "Persisting profile for cik" cik "ticker" ticker)
     (uasync/n-threads-exec
      kv-list
-     5
+     (Integer. (env :max-threads))
      (fn [e]
        (->> (assoc {:cik cik,
                     :ticker ticker,
@@ -102,7 +102,7 @@
   [cik-list years]
   (uasync/n-threads-exec
    cik-list
-   5
+   (Integer. (env :max-threads))
    (fn [e]
      (let [ticker (tickers/retrieve-ticker-for-cik e)]
        (log/info "Computing profile for cik" e "ticker" ticker)
@@ -110,7 +110,7 @@
             (write-yearly-profiles e ticker ,,,))))))
 
 (defn execute-full-profiling
-  ""
+  "Executes full profiling task for full list of available ciks"
   []
   (persist-companies-profiles
    (sub/retrieve-10k-full-cik-list)

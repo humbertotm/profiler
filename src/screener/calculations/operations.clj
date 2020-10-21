@@ -15,13 +15,16 @@
                       (name computation-fn))))))
 
 (defmacro calculate
-  ""
+  "Calculates value for provided descriptor-kw using provided numbers. adsh and year are
+   employed for looking up the pertinent values in provided numbers."
   [descriptor-kw adsh year numbers]
   `((~get-descriptor-computation-fn ~descriptor-kw)
     (build-descriptor-args ~descriptor-kw ~adsh ~year ~numbers)))
 
 (defn build-descriptor-args
-  ""
+  "Builds the corresponding data structure to be employed to calculate a value. See
+   screener.calculations.descriptors/descriptor-spec for available :computation-fn and
+   and the related args data structure."
   [descriptor-kw adsh year numbers]
   (let [descriptor-spec (descriptor-kw descriptors/descriptor-spec)
         computation-fn (:computation-fn descriptor-spec)
@@ -47,7 +50,9 @@
     (/ (double antecedent) (double consequent))))
 
 (defn build-ratio-args
-  ""
+  "Returns a map with the following structure to be employed in calculating a ratio:
+   {:antecedent 100.0
+    :consequent 200.0}"
   [{:keys [args-spec adsh year numbers]}]
   {:antecedent (calculate
                 (:name (:antecedent args-spec))
@@ -61,7 +66,8 @@
                 numbers)})
 
 (defn addition
-  ""
+  "Calculates the resulting value of adding the whole list of sumands provided. Returns nil
+   (non computable) if any of the elements in summands-list is nil."
   [summands-list]
   (if (some nil? summands-list)
     nil
@@ -72,7 +78,7 @@
                     summands-list))))
 
 (defn build-addition-args
-  ""
+  "Returns a list of values to be employed as summands in addition."
   [{:keys [args-spec adsh year numbers]}]
   (reduce (fn
             [accum next]
@@ -86,43 +92,21 @@
           args-spec))
 
 (defn simple-number
-  ""
+  "Returns the value provided as a double value. Returns nil for nil values."
   [val]
   (if (nil? val)
     nil
     (double val)))
 
 (defn build-simple-number-args
-  ""
-  [{:keys [args-spec adsh year numbers]}]
+  "Looks up for the appropriate value in numbers using provided year and extracted tag.
+   This is the base case for the mutual recursion between calculate and
+   build-descriptor-args."
+  [{:keys [args-spec year numbers]}]
   (:value ((keyword
             (str
              (:tag args-spec)
              "|"
              year))
            numbers)))
-
-;; Leaving this here in case fallback calculation functions are needed
-;; (defn recursion-safe-computation?
-;;   "Checks that a fallback function is safe to compute by checking that all required args
-;;   for computation are present in submission numbers.
-;;   Assumes that fallback function arguments are simple numbers. Should this change, this
-;;   failsafe mechanism will have to be adjusted."
-;;   [fallback-fn-kw adsh year]
-;;   (let [fallback-args (fallback-fn-kw descriptors/args-spec)
-;;         sub-numbers (num/fetch-numbers-for-submission adsh)
-;;         args-key-list (reduce (fn [accum next]
-;;                                 (conj accum
-;;                                       (keyword (str
-;;                                                 (:tag ((:name next)
-;;                                                        descriptors/src-number-data-tags))
-;;                                                 "|"
-;;                                                 year))))
-;;                               '()
-;;                               fallback-args)]
-;;     (reduce (fn [accum next]
-;;               (and accum
-;;                    (contains? sub-numbers next)))
-;;             true
-;;             args-key-list)))
 
