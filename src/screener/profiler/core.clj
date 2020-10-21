@@ -8,7 +8,8 @@
             [screener.data.num :as num]
             [screener.utils.async :as uasync]
             [mongodb.operations :as mdbops]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [environ.core :refer [env]]))
 
 (defn build-profile-map
   "Builds profile map for a specific company in a specific year.
@@ -40,9 +41,8 @@
 (defn build-company-full-profile
   "Builds a profile for a specific company employing the full breadth of available
   descriptors"
-  [ticker year]
-  (let [cik (:cik (tickers/fetch-ticker-cik-mapping ticker))
-        adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
+  [cik year]
+  (let [adsh (sub/fetch-form-adsh-for-cik-year cik "10-K" year)]
     (if (not (nil? adsh))
       (build-profile-map
        (descriptors/get-available-descriptors)
@@ -70,25 +70,26 @@
   {:2010 {:TangibleAssets 1000000, :ReturnOnEquity 0.09},
    :2011 {:TangibleAssets 990000, :ReturnOnEquity 0.08},
    :2012 {:TangibleAssets 1200000, :ReturnOnEquity 0.011}}"
-  [ticker years]
+  [cik years]
   (reduce (fn
             [accum-map year]
             (assoc accum-map
                    (keyword year)
-                   (build-company-full-profile ticker year)))
+                   (build-company-full-profile cik year)))
           {}
           years))
 
 (defn write-yearly-profiles
   "Function employed to persist computed profile to mongodb"
-  [ticker full-profile]
+  [cik ticker full-profile]
   (let [kv-list (into (list) full-profile)]
-    (log/info "Persisting profile for ticker" ticker)
+    (log/info "Persisting profile for cik" cik "ticker" ticker)
     (uasync/n-threads-exec
      kv-list
      5
      (fn [e]
-       (->> (assoc {:ticker ticker,
+       (->> (assoc {:cik cik,
+                    :ticker ticker,
                     :year (Integer/parseInt (name (first e)))}
                    :profile
                    (last e))
@@ -98,12 +99,20 @@
   "Profiles companies associated to provided list of tickers. Profile is constructed
   according to list of descriptors provided for the range of years specified.
   Output is written to document based database."
-  [tickers years]
+  [cik-list years]
   (uasync/n-threads-exec
-   tickers
+   cik-list
    5
    (fn [e]
-     (log/info "Computing profile for" e)
-     (->> (company-time-series-full-profile e years)
-          (write-yearly-profiles e ,,,)))))
+     (let [ticker (tickers/retrieve-ticker-for-cik e)]
+       (log/info "Computing profile for cik" e "ticker" ticker)
+       (->> (company-time-series-full-profile e years)
+            (write-yearly-profiles e ticker ,,,))))))
+
+(defn execute-full-profiling
+  ""
+  []
+  (persist-companies-profiles
+   (sub/retrieve-10k-full-cik-list)
+   (map #(str %) (range 2009 2020))))
 

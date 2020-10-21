@@ -1,9 +1,14 @@
-;; Don't know what the purpose of :gen-class is, but find out and remove if unnecessary
 (ns screener.core
-  (:gen-class))
+  (:gen-class)
+  (:require [screener.profiler.core :as profiler]
+            [screener.initialization.core :as init]
+            [clojure.tools.logging :as log]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Execute full profiling task"
   [& args]
-  (println "Hello, World!"))
+  (init/initialize-caches)
+  (log/info "Starting full profiling task")
+  (profiler/execute-full-profiling)
+  (log/info "Done!"))
 

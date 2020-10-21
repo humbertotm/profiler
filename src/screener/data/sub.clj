@@ -58,3 +58,9 @@
                               (keyword (str cik "|" form "|" year))
                               retrieve-form-from-db))
 
+(defn retrieve-10k-full-cik-list
+  ""
+  []
+  (let [query-string "SELECT DISTINCT(cik) FROM :table WHERE form = ?"]
+    (dbops/query query-string table-name "10-K")))
+

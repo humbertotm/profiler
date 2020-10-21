@@ -49,3 +49,10 @@
                               (keyword (string/lower-case ticker))
                               retrieve-mapping))
 
+(defn retrieve-ticker-for-cik
+  ""
+  [cik]
+  (let [query-string "SELECT * FROM :table WHERE cik = ?"]
+    (log/info "Retrieving ticker for cik" cik)
+    (:ticker (first (dbops/query query-string table-name cik)))))
+
