@@ -104,10 +104,11 @@
    cik-list
    (Integer. (env :max-threads))
    (fn [e]
-     (let [ticker (tickers/retrieve-ticker-for-cik e)]
-       (log/info "Computing profile for cik" e "ticker" ticker)
-       (->> (company-time-series-full-profile e years)
-            (write-yearly-profiles e ticker ,,,))))))
+     (let [cik (:cik e)
+           ticker (tickers/retrieve-ticker-for-cik cik)]
+       (log/info "Computing profile for cik" cik "ticker" ticker)
+       (->> (company-time-series-full-profile cik years)
+            (write-yearly-profiles cik ticker ,,,))))))
 
 (defn execute-full-profiling
   "Executes full profiling task for full list of available ciks"
