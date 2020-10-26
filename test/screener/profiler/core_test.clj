@@ -69,6 +69,7 @@
     (testing "Returns profile with requested descriptors for company"
       (is (= {:current_assets_to_current_liabilities 1.62015503875969,	  
 	      :accounts_payable nil,
+              :stock_split_ratio nil,
 	      :total_equity nil,
 	      :research_expense_to_revenue nil,
 	      :common_stock_outstanding nil,
