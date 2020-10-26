@@ -44,6 +44,8 @@
                       :args {:tag "OperatingIncomeLoss"}},
    :research-and-development-expense {:computation-fn :simple-number,
                                       :args {:tag "ResearchAndDevelopmentExpense"}},
+   :stock-split-ratio {:computation-fn :simple-number,
+                       :args {:tag "StockholdersEquityNoteStockSplitConversionRatio1"}},
    :tangible-assets {:computation-fn :addition,
                      :args '({:name :total-assets, :sign :positive},
                              {:name :goodwill, :sign :negative})},
