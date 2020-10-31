@@ -1,6 +1,6 @@
-(ns screener.calculations.operations-test
+(ns profiler.calculations.operations-test
   (:require [clojure.test :refer :all]
-            [screener.calculations.operations :refer :all]
+            [profiler.calculations.operations :refer :all]
             [fixtures.num :as num-fixtures]))
 
 (deftest test-calculate
@@ -53,14 +53,14 @@
                     test-numbers))))))
 
 (deftest test-get-descriptor-computation-fn
-  (testing "returns screener.calculations.operations/ratio"
-    (is (= #'screener.calculations.operations/ratio
+  (testing "returns profiler.calculations.operations/ratio"
+    (is (= #'profiler.calculations.operations/ratio
            (get-descriptor-computation-fn :current-assets-to-current-liabilities))))
-  (testing "returns screener.calculations.operations/addition"
-    (is (= #'screener.calculations.operations/addition
+  (testing "returns profiler.calculations.operations/addition"
+    (is (= #'profiler.calculations.operations/addition
            (get-descriptor-computation-fn :free-cash-flow))))
-  (testing "returns screener.calculations.operatioins/simple-number"
-    (is (= #'screener.calculations.operations/simple-number
+  (testing "returns profiler.calculations.operatioins/simple-number"
+    (is (= #'profiler.calculations.operations/simple-number
            (get-descriptor-computation-fn :net-income))))
   (testing "throws a NullPointerException when function is not recognized"
     (is (thrown? java.lang.NullPointerException

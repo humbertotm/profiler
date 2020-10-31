@@ -1,4 +1,4 @@
-(ns screener.utils.async
+(ns profiler.utils.async
   (:import [java.util.concurrent CountDownLatch])
   (:require [clojure.core.async :as async :refer [thread]]))
 

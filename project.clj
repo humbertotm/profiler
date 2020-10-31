@@ -1,5 +1,5 @@
-(defproject screener "0.1.0-SNAPSHOT"
-  :description "screener"
+(defproject profiler "0.1.0-SNAPSHOT"
+  :description "profiler"
   :url ""
   :license {:name "Eclipse Public License"
             :url "https://www.eclipse.org/legal/epl-v10.html"}
@@ -18,7 +18,7 @@
                  [clojure.java-time "0.3.2"]
                  [environ "1.2.0"]]
   :plugins [[lein-environ "1.2.0"]]
-  :main ^:skip-aot screener.core
+  :main ^:skip-aot profiler.core
   :target-path "target/%s"
   :test-paths ["test"]
   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]

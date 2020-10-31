@@ -1,7 +1,7 @@
-(ns screener.core
+(ns profiler.core
   (:gen-class)
-  (:require [screener.profiler.core :as profiler]
-            [screener.initialization.core :as init]
+  (:require [profiler.operations.core :as profiler]
+            [profiler.initialization.core :as init]
             [clojure.tools.logging :as log]))
 
 (defn -main

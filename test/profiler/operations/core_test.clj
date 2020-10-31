@@ -1,28 +1,28 @@
-(ns screener.profiler.core-test
+(ns profiler.operations.core-test
   (:require [clojure.test :refer :all]
-            [screener.profiler.core :refer :all]
+            [profiler.operations.core :refer :all]
             [helpers.core :refer :all]
             [fixtures.num :refer :all]))
 
 (defn initialize-caches
   [f]
-  (screener.data.sub/initialize-submissions-index-cache)
-  (screener.data.num/initialize-numbers-cache)
-  (screener.data.tickers/initialize-tickers-cache)
+  (profiler.data.sub/initialize-submissions-index-cache)
+  (profiler.data.num/initialize-numbers-cache)
+  (profiler.data.tickers/initialize-tickers-cache)
   (f))
 
 (defn reset-caches
   [f]
   (f)
-  (reset-test-cache screener.data.sub/submissions-index-cache)
-  (reset-test-cache screener.data.num/numbers-cache)
-  (reset-test-cache screener.data.tickers/cik-tickers-cache))
+  (reset-test-cache profiler.data.sub/submissions-index-cache)
+  (reset-test-cache profiler.data.num/numbers-cache)
+  (reset-test-cache profiler.data.tickers/cik-tickers-cache))
 
 (use-fixtures :once initialize-caches)
 (use-fixtures :each reset-caches)
 
 (deftest test-build-profile-map
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
+  (with-redefs [profiler.data.num/retrieve-numbers-for-submission (fn [adsh] adp-10k-2019-numbers)]
     (testing "returns nicely constructed map with specified descriptors"
       (is (= {:net_income 7.45E8, :current_assets_to_current_liabilities 1.62015503875969}
              (build-profile-map
@@ -40,9 +40,9 @@
                    (build-profile-map '(:not-exists) "someadsh" "2019"))))))
 
 (deftest test-build-company-custom-profile
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)
-                screener.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
-                screener.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
+  (with-redefs [profiler.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)
+                profiler.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
+                profiler.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
       (is (= {:net_income 7.45E8, :current_assets_to_current_liabilities 1.62015503875969}
              (build-company-custom-profile
@@ -63,9 +63,9 @@
                     "2019"))))))
 
 (deftest test-build-company-full-profile
-  (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)
-                screener.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
-                screener.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
+  (with-redefs [profiler.data.num/retrieve-numbers-for-submission (fn [_] adp-10k-2019-numbers)
+                profiler.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
+                profiler.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
       (is (= {:current_assets_to_current_liabilities 1.62015503875969,	  
 	      :accounts_payable nil,
@@ -115,12 +115,12 @@
 
 (deftest test-company-time-series-custom-profile
   (testing "returns profiling map for every year requested"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+    (with-redefs [profiler.data.num/retrieve-numbers-for-submission
                   (let [numbers (atom adp-numbers)]
                     (fn [_] (last (ffirst (swap-vals! numbers rest)))))
-                  screener.data.tickers/retrieve-mapping
+                  profiler.data.tickers/retrieve-mapping
                   (fn [_] {:ticker "adp", :cik "8680" })
-                  screener.data.sub/retrieve-form-from-db
+                  profiler.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000077"
                                     "0000002178-19-000078"
                                     "0000002178-19-000079"
@@ -137,9 +137,9 @@
               '(:tangible-assets, :current-assets-to-current-liabilities)
               '("2010", "2011", "2012", "2013", "2014"))))))
   (testing "returns empty map when company is not found"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission (fn [_] (list))
-                  screener.data.tickers/retrieve-mapping (fn [_] nil)
-                  screener.data.sub/retrieve-form-from-db (fn [_] nil)]
+    (with-redefs [profiler.data.num/retrieve-numbers-for-submission (fn [_] (list))
+                  profiler.data.tickers/retrieve-mapping (fn [_] nil)
+                  profiler.data.sub/retrieve-form-from-db (fn [_] nil)]
       (is (= {:2010 {}
               :2011 {}
               :2012 {}
@@ -150,12 +150,12 @@
               '(:tangible-assets, :current-assets-to-current-liabilities)
               '("2010", "2011", "2012", "2013", "2014"))))))
     (testing "returns nil for descriptors that cannot be calculated"
-      (with-redefs [screener.data.num/retrieve-numbers-for-submission
+      (with-redefs [profiler.data.num/retrieve-numbers-for-submission
                     (let [numbers (atom adp-numbers)]
                       (fn [_] (last (ffirst (swap-vals! numbers rest)))))
-                    screener.data.tickers/retrieve-mapping
+                    profiler.data.tickers/retrieve-mapping
                     (fn [_] {:ticker "adp", :cik "8680" }),
-                    screener.data.sub/retrieve-form-from-db
+                    profiler.data.sub/retrieve-form-from-db
                     (let [subs (atom ["0000002178-19-000077"
                                       "0000002178-19-000078"
                                       "0000002178-19-000079"
@@ -172,12 +172,12 @@
                 '(:tangible-assets, :free-cash-flow)
                 '("2010", "2011", "2012", "2013", "2014"))))))
   (testing "throws NullPointerexception when a descriptor is not recognized"
-    (with-redefs [screener.data.num/retrieve-numbers-for-submission
+    (with-redefs [profiler.data.num/retrieve-numbers-for-submission
                   (let [numbers (atom adp-numbers)]
                     (fn [_] (last (ffirst (swap-vals! numbers rest)))))
-                  screener.data.tickers/retrieve-mapping
+                  profiler.data.tickers/retrieve-mapping
                   (fn [_] {:ticker "adp", :cik "8680" }),
-                  screener.data.sub/retrieve-form-from-db
+                  profiler.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000077"
                                     "0000002178-19-000078"
                                     "0000002178-19-000079"
