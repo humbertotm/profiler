@@ -1,7 +1,7 @@
-(ns screener.initialization.core
-  (:require [screener.data.tickers :as tickers]
-            [screener.data.num :as num]
-            [screener.data.sub :as sub]
+(ns profiler.initialization.core
+  (:require [profiler.data.tickers :as tickers]
+            [profiler.data.num :as num]
+            [profiler.data.sub :as sub]
             [clojure.tools.logging :as log]))
 
 (defn initialize-caches

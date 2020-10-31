@@ -1,12 +1,12 @@
-(ns screener.operations.core
+(ns profiler.operations.core
   (:import [java.util.concurrent CountDownLatch])
   (:require [clojure.string :as string]
-            [screener.calculations.descriptors :as descriptors]
-            [screener.calculations.operations :as ops]
-            [screener.data.tickers :as tickers]
-            [screener.data.sub :as sub]
-            [screener.data.num :as num]
-            [screener.utils.async :as uasync]
+            [profiler.calculations.descriptors :as descriptors]
+            [profiler.calculations.operations :as ops]
+            [profiler.data.tickers :as tickers]
+            [profiler.data.sub :as sub]
+            [profiler.data.num :as num]
+            [profiler.utils.async :as uasync]
             [mongodb.operations :as mdbops]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]))

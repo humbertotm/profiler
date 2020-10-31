@@ -1,5 +1,5 @@
 (ns profiler.calculations.operations
-  (:require [screener.calculations.descriptors :as descriptors]))
+  (:require [profiler.calculations.descriptors :as descriptors]))
 
 ;; Declaring these two beforehand as there's a mutually recursive relation between them
 (declare build-descriptor-args)
@@ -7,11 +7,11 @@
 
 (defn get-descriptor-computation-fn
   "Determines the appropriate symbol for a descriptor function from a descriptor string.
-   eg. 'Net Income' => #screener.calculations.core/net-income."
+   eg. 'Net Income' => #profiler.calculations.core/net-income."
   [descriptor-kw]
   (let [computation-fn (:computation-fn (descriptor-kw descriptors/descriptor-spec))]
     (resolve (symbol (str
-                      "screener.calculations.operations/"
+                      "profiler.calculations.operations/"
                       (name computation-fn))))))
 
 (defmacro calculate
@@ -23,14 +23,14 @@
 
 (defn build-descriptor-args
   "Builds the corresponding data structure to be employed to calculate a value. See
-   screener.calculations.descriptors/descriptor-spec for available :computation-fn and
+   profiler.calculations.descriptors/descriptor-spec for available :computation-fn and
    and the related args data structure."
   [descriptor-kw adsh year numbers]
   (let [descriptor-spec (descriptor-kw descriptors/descriptor-spec)
         computation-fn (:computation-fn descriptor-spec)
         fn-args (:args descriptor-spec)]
     ((resolve (symbol
-              (str "screener.calculations.operations/build-"
+              (str "profiler.calculations.operations/build-"
                    (name computation-fn)
                    "-args")))
     {:args-spec fn-args, :adsh adsh, :year year, :numbers numbers})))

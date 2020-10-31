@@ -1,7 +1,7 @@
 (ns profiler.data.num
   (:require [cache.core :as cache]
             [db.operations :as dbops]
-            [screener.utils.date :refer :all]
+            [profiler.utils.date :refer :all]
             [clojure.tools.logging :as log]))
 
 (def numbers-cache-threshold-value

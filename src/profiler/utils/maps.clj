@@ -1,4 +1,4 @@
-(ns screener.utils.maps)
+(ns profiler.utils.maps)
 
 ;; This function is kept for visualization purposes when working in the repl. Not employed
 ;; in the profiling process

@@ -1,4 +1,4 @@
-(ns screener.utils.date
+(ns profiler.utils.date
   (:require [clojure.string :as str]))
 
 (defn extract-year
