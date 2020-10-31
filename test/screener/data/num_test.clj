@@ -1,6 +1,6 @@
-(ns screener.data.num-test
+(ns profiler.data.num-test
   (:require [clojure.test :refer :all]
-            [screener.data.num :refer :all]
+            [profiler.data.num :refer :all]
             [helpers.core :refer :all]
             [fixtures.num :refer :all]))
 

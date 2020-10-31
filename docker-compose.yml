@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   lein-app:
-    container_name: screener-lein
+    container_name: profiler-lein
     build:
       context: .
       dockerfile: Dockerfile
@@ -19,7 +19,7 @@ services:
       - mongo-db
 
   postgres-db:
-    container_name: screener-pgdb
+    container_name: profiler-pgdb
     image: postgres:latest
     ports:
       - "5432:5432"

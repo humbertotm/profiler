@@ -1,6 +1,6 @@
-(ns screener.data.tickers-test
+(ns profiler.data.tickers-test
   (:require [clojure.test :refer :all]
-            [screener.data.tickers :refer :all]
+            [profiler.data.tickers :refer :all]
             [helpers.core :refer :all]
             [fixtures.tickers :refer :all]))
 

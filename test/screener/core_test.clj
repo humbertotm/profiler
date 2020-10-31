@@ -1,6 +1,6 @@
-(ns screener.core-test
+(ns profiler.core-test
   (:require [clojure.test :refer :all]
-            [screener.core :refer :all]))
+            [profiler.core :refer :all]))
  
 (deftest a-test
   (testing "FIXME, I fail."

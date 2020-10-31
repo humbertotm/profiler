@@ -1,5 +1,5 @@
 {:dev {:env {:max-threads 5
-             :db-subname "//screener-pgdb:5432/screener_dev"
+             :db-subname "//profiler-pgdb:5432/screener_dev"
              :db-user "screeneruser"
              :db-password "screeneruser"
              :mongo-host-ipaddr "screener-mongodb"

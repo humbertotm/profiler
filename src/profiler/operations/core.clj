@@ -1,4 +1,4 @@
-(ns screener.profiler.core
+(ns screener.operations.core
   (:import [java.util.concurrent CountDownLatch])
   (:require [clojure.string :as string]
             [screener.calculations.descriptors :as descriptors]
