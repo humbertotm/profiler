@@ -50,9 +50,6 @@ services:
       - type: volume
         source: screener-mongo-data
         target: /data/db
-      - type: bind
-        source: /Users/htellechea/p_projects/screener-db-init/mongo
-        target: /docker-entrypoint-initdb.d
 
 networks:
   screener:
