@@ -123,7 +123,33 @@ In this case, the `build-multiplication-args` function is the same as for additi
 
 ## How the Calculation Works
 
-In `operations.clj`, the `calculate` macro is the key to understanding how each descriptor is computed.
+In `operations.clj`, the `calculate` macro is the key to understanding how each descriptor is computed. It is mutually recursive with the `build-descriptor-args` function as will be explained next.
 
-<!-- TODO: fill this out -->
+The `calculate` macro receives a `descriptor-kw` argument that states which element from the `descriptor-spec` map is being calculated; it corresponds to a key in this map.
+It will retrieve the `:computation-fn` and the `:args` data from the value associated to such key and it will proceed first by resolving the symbol for the computation function and second, by building the arguments that will be passed on to this function.
+
+The `build-descriptor-args` function does not make any assumptions on the arguments being simple values than can be easily retrieved from a collection of `num` values. If necessary, it will recursively calculate them. The base case for these mutually recursive functions is the `simple-number` function where a value is retrieved from the provided collection of `num` values.
+
+Lets have a closer look through a simple example, the `:return-on-working-capital` ratio.
+This descriptor is declared as follows in the `descriptor-spec` map:
+```Clojure
+:return-on-working-capital {:computation-fn :ratio,
+                            :args {:antecedent {:name :net-income,
+                                                :sign :positive},
+                            :consequent {:name :working-capital,
+                                         :sign :positive}}}
+```
+It clearly states that it is to be computed as a `ratio`, where the `antecedent` is the `:net-income` descriptor with a `postive` sign and the `consequent` is the `:working-capital` with a `positive` sign.
+
+The fun part comes when building the arguments to be passed to the `ratio` function. Calculating the value for `:net-income` is straightforward as it is a `:simple-number` and the value for it will be retrieved from the collection of numbers provided.
+Calculating `:working-capital` will require a recursive calculation. `:working-capital` is not a simple number itself but an `addition` of several other descriptors. Its declaration in `descriptor-spec` is as follows:
+```Clojure
+:working-capital {:computation-fn :addition,
+                  :args '({:name :current-assets, :sign :positive},
+                          {:name :current-liabilities, :sign :negative})}
+```
+
+`:working-capital` will be calculated as an `addition`. In this case, both involved summands are calculated as `:simple-number`. Once those values have been retrieved, the `addition` for `:working-capital` can be resolved, and finally the `:return-on-working-capital` ratio can be resolved as well.
+
+Having gone through the calculation process, it is clear why no circular declarations for descriptors are allowed. Introducing one will cause the program execution to enter into an infinitely recursive loop.
 
