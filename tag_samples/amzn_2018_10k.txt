@@ -187,3 +187,29 @@ WeightedAverageNumberOfDilutedSharesOutstanding
 WeightedAverageNumberOfSharesOutstandingBasic
 (186 rows)
 
+Stock Split related tags
+- StockSplit
+- StockSplitRatio
+- ReverseStockSplit
+-
+
+SELECT * FROM
+(SELECT s.adsh, s.form, s.fy, n.value, n.version FROM numbers n 
+INNER JOIN submissions s ON n.adsh = s.adsh
+WHERE n.tag = 'StockholdersEquityNoteStockSplitConversionRatio'
+AND s.cik = '1318605'
+ORDER BY s.fy DESC) as numsubjoin
+LIMIT 10;
+
+# This one seems to be the winner so far (accounts for forward and revese stop splits)
+StockholdersEquityNoteStockSplitConversionRatio1
+
+StockIssuedDuringPeriodSharesStockSplits
+StockIssuedDuringPeriodSharesReverseStockSplits
+
+ AdjustmentsToAdditionalPaidInCapitalStockSplit                                                                                                    | us-gaap/2019
+ StockholdersEquityNoteStockSplit                                                                                                                  | us-gaap/2012
+ StockholdersEquityNoteStockSplitConversionRatio1                                                                                                  | us-gaap/2013
+ StockholdersEquityReverseStockSplit                                                                                                               | us-gaap/2017
+ StockIssuedDuringPeriodSharesReverseStockSplits                                                                                                   | us-gaap/2009
+ StockIssuedDuringPeriodSharesStockSplits                                                                                                          | us-gaap/2013
