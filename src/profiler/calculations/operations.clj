@@ -103,10 +103,11 @@
    This is the base case for the mutual recursion between calculate and
    build-descriptor-args."
   [{:keys [args-spec year numbers]}]
-  (:value ((keyword
-            (str
-             (:tag args-spec)
-             "|"
-             year))
-           numbers)))
+  (let [first-choice-keyword (keyword (str (:tag args-spec) "|" year))
+        alt-keyword (keyword (str (:alt args-spec) "|" year))
+        first-choice-value (:value (first-choice-keyword numbers))
+        alt-choice-value (:value (alt-keyword numbers))]
+    (if (not (nil? first-choice-value))
+      first-choice-value
+      alt-choice-value)))
 

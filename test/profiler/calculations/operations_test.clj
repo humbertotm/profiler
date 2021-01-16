@@ -180,7 +180,8 @@
                  :Goodwill|2019 {:value 20.0}
                  :StockholdersEquity|2019 {:value 40.0}
                  :NetIncomeLoss|2019 {:value 10.0}
-                 :Assets|2019 {:value 130.0}}]
+                 :Assets|2019 {:value 130.0}
+                 :CostOfGoodsAndServicesSold|2019 {:value 100.0}}]
     (testing "returns value for present number record"
       (is (= 130.0
              (build-simple-number-args
@@ -192,6 +193,20 @@
       (is (nil?
            (build-simple-number-args
             {:args-spec {:tag "NonExistentTag"}
+             :adsh "someadsh"
+             :year "2019"
+             :numbers test-numbers}))))
+    (testing "returns value of alternative tag if present"
+      (is (= 100.0
+             (build-simple-number-args
+              {:args-spec {:tag "CostOfGoodsSold" :alt "CostOfGoodsAndServicesSold"}
+               :adsh "someadsh"
+               :year "2019"
+               :numbers test-numbers}))))
+    (testing "returns nil if neither first choice or alt are present"
+      (is (nil?
+           (build-simple-number-args
+            {:args-spec {:tag "Crap" :alt "MoreCrap"}
              :adsh "someadsh"
              :year "2019"
              :numbers test-numbers}))))))

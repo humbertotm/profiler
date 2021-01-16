@@ -23,3 +23,8 @@
    target-coll
    docs))
 
+(defn clear-coll
+  "Removes all documents in target-coll"
+  [target-coll]
+  (mgcoll/remove (core/get-profiler-db) target-coll))
+
