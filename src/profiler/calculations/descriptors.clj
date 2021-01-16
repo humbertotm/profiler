@@ -32,6 +32,8 @@
                               :args {:tag "PaymentsForRepurchaseOfCommonStock"}},
    :total-sales {:computation-fn :simple-number,
                  :args {:tag "SalesRevenueNet"}},
+   :cost-of-goods {:computation-fn :simple-number,
+                   :args {:tag "CostOfGoodsSold", :alt "CostOfGoodsAndServicesSold"}}
    :long-term-debt {:computation-fn :simple-number,
                     :args {:tag "LongTermDebt"}},
    :inventory {:computation-fn :simple-number,
@@ -61,6 +63,11 @@
                                                                :sign :positive},
                                                   :consequent {:name :current-liabilities,
                                                                :sign :positive}}}
+   :working-capital-to-current-liabilities {:computation-fn :ratio,
+                                           :args {:antecedent {:name :working-capital,
+                                                               :sign :positive},
+                                                  :consequent {:name :current-liabilities,
+                                                               :sign :positive}}}
    :accounts-payable-to-current-assets {:computation-fn :ratio,
                                         :args {:antecedent {:name :accounts-payable,
                                                             :sign :positive},
@@ -68,6 +75,11 @@
                                                             :sign :positive}}}
    :current-assets-to-total-liabilities {:computation-fn :ratio,
                                          :args {:antecedent {:name :current-assets,
+                                                             :sign :positive},
+                                                :consequent {:name :total-liabilities,
+                                                             :sign :positive}}}
+   :working-capital-to-total-liabilities {:computation-fn :ratio,
+                                         :args {:antecedent {:name :working-capital,
                                                              :sign :positive},
                                                 :consequent {:name :total-liabilities,
                                                              :sign :positive}}}
@@ -80,6 +92,11 @@
                               :args {:antecedent {:name :goodwill,
                                                   :sign :positive},
                                      :consequent {:name :total-assets,
+                                                  :sign :positive}}}
+   :goodwill-to-total-equity {:computation-fn :ratio,
+                              :args {:antecedent {:name :goodwill,
+                                                  :sign :positive},
+                                     :consequent {:name :total-equity,
                                                   :sign :positive}}}
    :return-on-equity {:computation-fn :ratio,
                       :args {:antecedent {:name :net-income,
@@ -99,6 +116,26 @@
    :net-equity {:computation-fn :addition,
                 :args '({:name :total-equity, :sign :positive},
                         {:name :goodwill, :sign :negative})}
+   :total-equity-per-share {:computation-fn :ratio,
+                        :args {:antecedent {:name :total-equity,
+                                            :sign :positive},
+                               :consequent {:name :common-stock-outstanding,
+                                            :sign :positive}}}
+   :net-equity-per-share {:computation-fn :ratio,
+                            :args {:antecedent {:name :net-equity,
+                                                :sign :positive},
+                                   :consequent {:name :common-stock-outstanding,
+                                                :sign :positive}}}
+   :tangible-assets-per-share {:computation-fn :ratio,
+                          :args {:antecedent {:name :tangible-assets,
+                                              :sign :positive},
+                                 :consequent {:name :common-stock-outstanding,
+                                              :sign :positive}}}
+   :total-liabilities-per-share {:computation-fn :ratio,
+                               :args {:antecedent {:name :total-liabilities,
+                                                   :sign :positive},
+                                      :consequent {:name :common-stock-outstanding,
+                                                   :sign :positive}}}
    :debt-to-net-equity {:computation-fn :ratio,
                         :args {:antecedent {:name :total-liabilities,
                                             :sign :positive},
