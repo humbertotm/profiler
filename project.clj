@@ -23,7 +23,6 @@
   :test-paths ["test"]
   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
   :profiles {:uberjar {:aot :all}
-             :user {:plugins [[cider/cider-nrepl "0.24.0"]]} ; Place somewhere else
              :dev [:project/dev :profiles/dev]
              :test [:project/test :profiles/test]
              :profiles/dev {}
