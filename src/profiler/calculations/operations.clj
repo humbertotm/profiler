@@ -30,10 +30,10 @@
         computation-fn (:computation-fn descriptor-spec)
         fn-args (:args descriptor-spec)]
     ((resolve (symbol
-              (str "profiler.calculations.operations/build-"
-                   (name computation-fn)
-                   "-args")))
-    {:args-spec fn-args, :adsh adsh, :year year, :numbers numbers})))
+               (str "profiler.calculations.operations/build-"
+                    (name computation-fn)
+                    "-args")))
+     {:args-spec fn-args, :adsh adsh, :year year, :numbers numbers})))
 
 ;; BASIC CALCULATIONS EMPLOYED IN PROFILE DESCRIPTORS
 ;; AND ITS CORRESPONDING ARGUMENT BUILDING FUNCTION

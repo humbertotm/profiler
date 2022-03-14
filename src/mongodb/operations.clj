@@ -1,6 +1,6 @@
 (ns mongodb.operations
   (:require [monger.collection :as mgcoll]
-   [mongodb.core :as core]))
+            [mongodb.core :as core]))
 
 (defn insert-doc-and-return
   "Wrapper for mongodb insert-and-return. Fetches pertinent db"

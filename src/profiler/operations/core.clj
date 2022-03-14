@@ -93,7 +93,7 @@
                     :year (Integer/parseInt (name (first e)))}
                    :profile
                    (last e))
-            (mdbops/insert-doc "profiles" ,,,))))))
+            (mdbops/insert-doc "profiles"))))))
 
 (defn persist-companies-profiles
   "Profiles companies associated to provided list of tickers. Profile is constructed
@@ -108,7 +108,7 @@
            ticker (tickers/retrieve-ticker-for-cik cik)]
        (log/info "Computing profile for cik" cik "ticker" ticker)
        (->> (company-time-series-full-profile cik years)
-            (write-yearly-profiles cik ticker ,,,))))))
+            (write-yearly-profiles cik ticker))))))
 
 (defn execute-full-profiling
   "Executes full profiling task for full list of available ciks"

@@ -67,56 +67,56 @@
                 profiler.data.tickers/retrieve-mapping (fn [_] {:cik "2678", :ticker "adp"})
                 profiler.data.sub/retrieve-form-from-db (fn [_] "0000234-234234-1")]
     (testing "Returns profile with requested descriptors for company"
-      (is (= {:current_assets_to_current_liabilities 1.62015503875969,	  
-	      :accounts_payable nil,
+      (is (= {:current_assets_to_current_liabilities 1.62015503875969,
+              :accounts_payable nil,
               :stock_split_ratio nil,
-	      :total_equity nil,
+              :total_equity nil,
               :total_equity_per_share nil,
               :net_equity_per_share nil,
-	      :research_expense_to_revenue nil,
-	      :common_stock_outstanding nil,
-	      :debt_to_equity nil,
-	      :current_assets 1.045E9,
-	      :total_assets 4.5E7,
-	      :dividend_payment nil,
-	      :total_tangible_assets_to_total_liabilities nil,
-	      :stock_repurchase_payment nil,
-	      :working_capital 4.0E8,
+              :research_expense_to_revenue nil,
+              :common_stock_outstanding nil,
+              :debt_to_equity nil,
+              :current_assets 1.045E9,
+              :total_assets 4.5E7,
+              :dividend_payment nil,
+              :total_tangible_assets_to_total_liabilities nil,
+              :stock_repurchase_payment nil,
+              :working_capital 4.0E8,
               :working_capital_to_current_liabilities 0.6201550387596899,
               :working_capital_to_total_liabilities nil,
-	      :accounts_payable_to_current_assets nil,
-	      :depreciation nil,
-	      :total_liabilities nil,
+              :accounts_payable_to_current_assets nil,
+              :depreciation nil,
+              :total_liabilities nil,
               :total_liabilities_per_share nil,
-	      :current_liabilities 6.45E8,
-	      :debt_to_net_equity nil,
-	      :goodwill 8450000.0,
+              :current_liabilities 6.45E8,
+              :debt_to_net_equity nil,
+              :goodwill 8450000.0,
               :goodwill_to_total_equity nil,
-	      :current_assets_to_total_liabilities nil,
-	      :inventory nil,
-	      :operational_profit_margin nil,
-	      :net_income 7.45E8,
-	      :return_on_working_capital 1.8625,
-	      :operating_income nil,
-	      :research_and_development_expense nil,
-	      :stock_options_exercised nil,
-	      :stock_options_granted nil,
-	      :tangible_assets 3.655E7,
+              :current_assets_to_total_liabilities nil,
+              :inventory nil,
+              :operational_profit_margin nil,
+              :net_income 7.45E8,
+              :return_on_working_capital 1.8625,
+              :operating_income nil,
+              :research_and_development_expense nil,
+              :stock_options_exercised nil,
+              :stock_options_granted nil,
+              :tangible_assets 3.655E7,
               :tangible_assets_per_share nil,
-	      :dividends_paid_to_net_income nil,
-	      :net_equity nil,
-	      :total_sales nil,
+              :dividends_paid_to_net_income nil,
+              :net_equity nil,
+              :total_sales nil,
               :cost_of_goods nil,
-	      :dividends_per_share_paid nil,
-	      :return_on_equity nil,
-	      :goodwill_to_total_assets 0.18777777777777777,
-	      :long_term_debt nil,
-	      :net_profit_margin nil,
-	      :diluted_eps nil,
-	      :comprehensive_stocks_outstanding nil,
-	      :free_cash_flow nil,
-	      :capital_expenditures nil,
-	      :eps nil}
+              :dividends_per_share_paid nil,
+              :return_on_equity nil,
+              :goodwill_to_total_assets 0.18777777777777777,
+              :long_term_debt nil,
+              :net_profit_margin nil,
+              :diluted_eps nil,
+              :comprehensive_stocks_outstanding nil,
+              :free_cash_flow nil,
+              :capital_expenditures nil,
+              :eps nil}
              (build-company-full-profile
               "someadsh"
               "2019"))))))
@@ -127,7 +127,7 @@
                   (let [numbers (atom adp-numbers)]
                     (fn [_] (last (ffirst (swap-vals! numbers rest)))))
                   profiler.data.tickers/retrieve-mapping
-                  (fn [_] {:ticker "adp", :cik "8680" })
+                  (fn [_] {:ticker "adp", :cik "8680"})
                   profiler.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000077"
                                     "0000002178-19-000078"
@@ -157,34 +157,34 @@
               "xxx"
               '(:tangible-assets, :current-assets-to-current-liabilities)
               '("2010", "2011", "2012", "2013", "2014"))))))
-    (testing "returns nil for descriptors that cannot be calculated"
-      (with-redefs [profiler.data.num/retrieve-numbers-for-submission
-                    (let [numbers (atom adp-numbers)]
-                      (fn [_] (last (ffirst (swap-vals! numbers rest)))))
-                    profiler.data.tickers/retrieve-mapping
-                    (fn [_] {:ticker "adp", :cik "8680" }),
-                    profiler.data.sub/retrieve-form-from-db
-                    (let [subs (atom ["0000002178-19-000077"
-                                      "0000002178-19-000078"
-                                      "0000002178-19-000079"
-                                      "0000002178-19-000080"
-                                      "0000002178-19-000081"])]
-                      (fn [_] (ffirst (swap-vals! subs rest))))]
-        (is (= {:2010 {:tangible_assets 3.655E7, :free_cash_flow nil},
-                :2011 {:tangible_assets 3.475E7, :free_cash_flow nil},
-                :2012 {:tangible_assets 3.52E7, :free_cash_flow nil},
-                :2013 {:tangible_assets 3.565E7, :free_cash_flow nil},
-                :2014 {:tangible_assets 3.61E7, :free_cash_flow nil}}
-               (company-time-series-custom-profile
-                "adp"
-                '(:tangible-assets, :free-cash-flow)
-                '("2010", "2011", "2012", "2013", "2014"))))))
+  (testing "returns nil for descriptors that cannot be calculated"
+    (with-redefs [profiler.data.num/retrieve-numbers-for-submission
+                  (let [numbers (atom adp-numbers)]
+                    (fn [_] (last (ffirst (swap-vals! numbers rest)))))
+                  profiler.data.tickers/retrieve-mapping
+                  (fn [_] {:ticker "adp", :cik "8680"}),
+                  profiler.data.sub/retrieve-form-from-db
+                  (let [subs (atom ["0000002178-19-000077"
+                                    "0000002178-19-000078"
+                                    "0000002178-19-000079"
+                                    "0000002178-19-000080"
+                                    "0000002178-19-000081"])]
+                    (fn [_] (ffirst (swap-vals! subs rest))))]
+      (is (= {:2010 {:tangible_assets 3.655E7, :free_cash_flow nil},
+              :2011 {:tangible_assets 3.475E7, :free_cash_flow nil},
+              :2012 {:tangible_assets 3.52E7, :free_cash_flow nil},
+              :2013 {:tangible_assets 3.565E7, :free_cash_flow nil},
+              :2014 {:tangible_assets 3.61E7, :free_cash_flow nil}}
+             (company-time-series-custom-profile
+              "adp"
+              '(:tangible-assets, :free-cash-flow)
+              '("2010", "2011", "2012", "2013", "2014"))))))
   (testing "throws NullPointerexception when a descriptor is not recognized"
     (with-redefs [profiler.data.num/retrieve-numbers-for-submission
                   (let [numbers (atom adp-numbers)]
                     (fn [_] (last (ffirst (swap-vals! numbers rest)))))
                   profiler.data.tickers/retrieve-mapping
-                  (fn [_] {:ticker "adp", :cik "8680" }),
+                  (fn [_] {:ticker "adp", :cik "8680"}),
                   profiler.data.sub/retrieve-form-from-db
                   (let [subs (atom ["0000002178-19-000077"
                                     "0000002178-19-000078"
@@ -200,4 +200,3 @@
 
 (deftest test-company-time-series-full-profile
   ())
-

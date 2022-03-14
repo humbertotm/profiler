@@ -17,7 +17,8 @@
                  [org.apache.logging.log4j/log4j-core "2.13.3"]
                  [clojure.java-time "0.3.2"]
                  [environ "1.2.0"]]
-  :plugins [[lein-environ "1.2.0"]]
+  :plugins [[lein-environ "1.2.0"]
+            [lein-cljfmt "0.8.0"]]
   :main ^:skip-aot profiler.core
   :target-path "target/%s"
   :test-paths ["test"]
