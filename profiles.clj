@@ -1,8 +1,8 @@
 {:dev {:env {:max-threads 5
-             :db-subname "//profiler-pgdb:5432/screener_dev"
+             :db-subname "//localhost:5432/sec_datasets"
              :db-user "screeneruser"
              :db-password "screeneruser"
-             :mongo-host-ipaddr "screener-mongodb"
+             :mongo-host-ipaddr "localhost"
              :mongo-host-port 27017
              :mongo-auth-db "admin"
              :mongo-username "mongoadmin"
