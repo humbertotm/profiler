@@ -14,6 +14,10 @@ target/
 # Ignore data sources dir
 data_sources/
 
+# Ignore IDE files
+.clj-kondo/
+.lsp/
+
 # Vagrant files
 ubuntu-xenial-16.04-cloudimg-console.log
 
