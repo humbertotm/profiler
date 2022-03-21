@@ -10,12 +10,12 @@
          :Goodwill|2019 {:value 20.0}
          :StockholdersEquity|2019 {:value 40.0}
          :NetIncomeLoss|2019 {:value 10.0}}]
-  (testing "correctly calculates descriptor with simple (non-recursively computed) args"
-    (is (= (double 1.25)
-           (calculate :current-assets-to-current-liabilities "adsh" "2019" test-numbers))))
-  (testing "correctly calculates descriptor with recursively computed args"
-    (is (= (double 0.5)
-           (calculate :return-on-working-capital "adsh" "2019" test-numbers))))))
+    (testing "correctly calculates descriptor with simple (non-recursively computed) args"
+      (is (= (double 1.25)
+             (calculate :current-assets-to-current-liabilities "adsh" "2019" test-numbers))))
+    (testing "correctly calculates descriptor with recursively computed args"
+      (is (= (double 0.5)
+             (calculate :return-on-working-capital "adsh" "2019" test-numbers))))))
 
 (deftest test-build-descriptor-args
   (let [test-numbers
@@ -39,11 +39,11 @@
               test-numbers))))
     (testing "returns expected value for descriptor computed as simple number"
       (is (= 100.0
-              (build-descriptor-args
-               :current-assets
-               "someadsh"
-               "2019"
-               test-numbers))))
+             (build-descriptor-args
+              :current-assets
+              "someadsh"
+              "2019"
+              test-numbers))))
     (testing "throws NullPointerException for unrecognized descriptor"
       (is (thrown? java.lang.NullPointerException
                    (build-descriptor-args
@@ -85,15 +85,15 @@
          :StockholdersEquity|2019 {:value 40.0}
          :NetIncomeLoss|2019 {:value 10.0}
          :Assets|2019 {:value 130.0}}]
-   (testing "returns map of simple values"
-    (is (= {:antecedent 100.0,
-            :consequent 80.0}
-           (build-ratio-args
-            {:args-spec {:antecedent {:name :current-assets, :sign :positive},
-                         :consequent {:name :current-liabilities, :sign :positive}}
-             :adsh "someadsh"
-             :year "2019"
-             :numbers test-numbers}))))
+    (testing "returns map of simple values"
+      (is (= {:antecedent 100.0,
+              :consequent 80.0}
+             (build-ratio-args
+              {:args-spec {:antecedent {:name :current-assets, :sign :positive},
+                           :consequent {:name :current-liabilities, :sign :positive}}
+               :adsh "someadsh"
+               :year "2019"
+               :numbers test-numbers}))))
     (testing "returns map with recursively calculated values"
       (is (= {:antecedent 10.0,
               :consequent 110.0}
@@ -103,14 +103,14 @@
                :adsh "someadsh"
                :year "2019"
                :numbers test-numbers}))))
-  (testing "throws exception when some descriptor is not recognized"
-    (is (thrown? java.lang.NullPointerException
-           (build-ratio-args
-            {:args-spec {:antecedent {:name :non-existent, :sign :positive},
-                         :consequent {:name :current-liabilities, :sign :positive}}
-             :adsh "someadsh"
-             :year "2019"
-             :numbers test-numbers}))))))
+    (testing "throws exception when some descriptor is not recognized"
+      (is (thrown? java.lang.NullPointerException
+                   (build-ratio-args
+                    {:args-spec {:antecedent {:name :non-existent, :sign :positive},
+                                 :consequent {:name :current-liabilities, :sign :positive}}
+                     :adsh "someadsh"
+                     :year "2019"
+                     :numbers test-numbers}))))))
 
 (deftest test-addition
   (testing "returns sum total of args provided"
@@ -175,13 +175,13 @@
 
 (deftest test-build-simple-number-args
   (let [test-numbers
-                {:AssetsCurrent|2019 {:value 100.0}
-                 :LiabilitiesCurrent|2019 {:value 80.0}
-                 :Goodwill|2019 {:value 20.0}
-                 :StockholdersEquity|2019 {:value 40.0}
-                 :NetIncomeLoss|2019 {:value 10.0}
-                 :Assets|2019 {:value 130.0}
-                 :CostOfGoodsAndServicesSold|2019 {:value 100.0}}]
+        {:AssetsCurrent|2019 {:value 100.0}
+         :LiabilitiesCurrent|2019 {:value 80.0}
+         :Goodwill|2019 {:value 20.0}
+         :StockholdersEquity|2019 {:value 40.0}
+         :NetIncomeLoss|2019 {:value 10.0}
+         :Assets|2019 {:value 130.0}
+         :CostOfGoodsAndServicesSold|2019 {:value 100.0}}]
     (testing "returns value for present number record"
       (is (= 130.0
              (build-simple-number-args

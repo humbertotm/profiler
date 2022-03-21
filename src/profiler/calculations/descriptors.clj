@@ -21,7 +21,7 @@
    :net-income {:computation-fn :simple-number,
                 :args {:tag "NetIncomeLoss"}},
    :total-equity {:computation-fn :simple-number,
-                  :args {:tag "StockholdersEquity",} :fallback :calculated-total-equity},
+                  :args {:tag "StockholdersEquity"} :fallback :calculated-total-equity},
    :common-stock-outstanding {:computation-fn :simple-number,
                               :args {:tag "CommonStockSharesOutstanding"}},
    :stock-options-exercised {:computation-fn :simple-number,
@@ -64,10 +64,10 @@
                                                   :consequent {:name :current-liabilities,
                                                                :sign :positive}}}
    :working-capital-to-current-liabilities {:computation-fn :ratio,
-                                           :args {:antecedent {:name :working-capital,
-                                                               :sign :positive},
-                                                  :consequent {:name :current-liabilities,
-                                                               :sign :positive}}}
+                                            :args {:antecedent {:name :working-capital,
+                                                                :sign :positive},
+                                                   :consequent {:name :current-liabilities,
+                                                                :sign :positive}}}
    :accounts-payable-to-current-assets {:computation-fn :ratio,
                                         :args {:antecedent {:name :accounts-payable,
                                                             :sign :positive},
@@ -79,10 +79,10 @@
                                                 :consequent {:name :total-liabilities,
                                                              :sign :positive}}}
    :working-capital-to-total-liabilities {:computation-fn :ratio,
-                                         :args {:antecedent {:name :working-capital,
-                                                             :sign :positive},
-                                                :consequent {:name :total-liabilities,
-                                                             :sign :positive}}}
+                                          :args {:antecedent {:name :working-capital,
+                                                              :sign :positive},
+                                                 :consequent {:name :total-liabilities,
+                                                              :sign :positive}}}
    :total-tangible-assets-to-total-liabilities {:computation-fn :ratio,
                                                 :args {:antecedent {:name :tangible-assets,
                                                                     :sign :positive},
@@ -117,25 +117,25 @@
                 :args '({:name :total-equity, :sign :positive},
                         {:name :goodwill, :sign :negative})}
    :total-equity-per-share {:computation-fn :ratio,
-                        :args {:antecedent {:name :total-equity,
-                                            :sign :positive},
-                               :consequent {:name :common-stock-outstanding,
-                                            :sign :positive}}}
-   :net-equity-per-share {:computation-fn :ratio,
-                            :args {:antecedent {:name :net-equity,
+                            :args {:antecedent {:name :total-equity,
                                                 :sign :positive},
                                    :consequent {:name :common-stock-outstanding,
                                                 :sign :positive}}}
-   :tangible-assets-per-share {:computation-fn :ratio,
-                          :args {:antecedent {:name :tangible-assets,
+   :net-equity-per-share {:computation-fn :ratio,
+                          :args {:antecedent {:name :net-equity,
                                               :sign :positive},
                                  :consequent {:name :common-stock-outstanding,
                                               :sign :positive}}}
-   :total-liabilities-per-share {:computation-fn :ratio,
-                               :args {:antecedent {:name :total-liabilities,
+   :tangible-assets-per-share {:computation-fn :ratio,
+                               :args {:antecedent {:name :tangible-assets,
                                                    :sign :positive},
                                       :consequent {:name :common-stock-outstanding,
                                                    :sign :positive}}}
+   :total-liabilities-per-share {:computation-fn :ratio,
+                                 :args {:antecedent {:name :total-liabilities,
+                                                     :sign :positive},
+                                        :consequent {:name :common-stock-outstanding,
+                                                     :sign :positive}}}
    :debt-to-net-equity {:computation-fn :ratio,
                         :args {:antecedent {:name :total-liabilities,
                                             :sign :positive},
@@ -145,10 +145,10 @@
                                       :args '({:name :common-stock-outstanding, :sign :positive},
                                               {:name :stock-options-granted, :sign :positive})}
    :eps {:computation-fn :ratio,
-                 :args {:antecedent {:name :net-income,
-                                     :sign :positive},
-                        :consequent {:name :common-stock-outstanding,
-                                     :sign :positive}}}
+         :args {:antecedent {:name :net-income,
+                             :sign :positive},
+                :consequent {:name :common-stock-outstanding,
+                             :sign :positive}}}
    :diluted-eps {:computation-fn :ratio,
                  :args {:antecedent {:name :net-income,
                                      :sign :positive},
